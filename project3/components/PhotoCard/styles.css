@@ -1,0 +1,91 @@
+/* General photo card styling */
+.photo-card {
+  display: flex;
+  flex-direction: column;
+  max-width: 400px;
+  height: 100%;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  background-color: white;
+  transition: transform 0.3s ease-in-out;
+}
+
+.photo-card:hover {
+  transform: translateY(-5px);
+}
+
+.photo-card-photo {
+  height: 300px;
+  object-fit: cover;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+.card-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 16px;
+}
+
+.date-time {
+  font-size: 0.875rem;
+  color: #757575;
+  margin-bottom: 12px;
+}
+
+.comments-container {
+  margin-top: 16px;
+  align-items: left;
+}
+
+.comment {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 12px;
+  padding: 8px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.comment:last-child {
+  border-bottom: none;
+}
+
+.user-name-button {
+  font-size: 0.9rem;
+  color: #3f51b5;
+  text-align: left;
+  padding: 0;
+  margin-bottom: 4px;
+  text-transform: none;
+  font-weight: bold;
+}
+
+.user-name-button:hover {
+  text-decoration: underline;
+}
+
+.date-time-comment {
+  font-size: 0.75rem;
+  color: #bdbdbd;
+  margin-bottom: 4px;
+  text-align: left;
+}
+
+.comment p {
+  font-size: 0.875rem;
+  color: #333;
+}
+
+.no-comment-text {
+  color: #757575;
+  font-style: italic;
+  font-size: 0.875rem;
+}
+
+.commenter-info{ /*on its own line*/
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  margin-bottom: 8px;
+}
