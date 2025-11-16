@@ -41,7 +41,7 @@ function TopBar() {
     <AppBar className="topbar-appBar" position="absolute">
       <Toolbar className='topbar-toolbar'>
         <Typography variant="h5" color="inherit" className="topbar-name">
-          Isabella Pereira
+          Isabella Pereira and Douglas Covington
         </Typography>
 
         <FormControlLabel control={

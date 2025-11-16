@@ -19,7 +19,7 @@ function UserPhotos({ userId }) {
     if(!advEnabled)
       fetchUserPhotos();
     else if(advEnabled)
-      return <PhotoDetail userId={userId} initialIndex={0} advEnabled={advEnabled} />;
+      return <PhotoDetail userId={userId} initialIndex={0} />;
     console.log("UserPhotos:", photos);
 
 
@@ -43,7 +43,7 @@ function UserPhotos({ userId }) {
   return (
     <>
       {advEnabled && photos.length > 0 ? (
-        <PhotoDetail userId={userId} photos={photos} initialIndex={0} advEnabled={advEnabled} />
+        <PhotoDetail userId={userId} photos={photos} initialIndex={0} />
       ) : (
         <div className="photo-card-container">
           {photos.length > 0 ? (

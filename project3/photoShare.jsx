@@ -1,10 +1,9 @@
-import { React, useState } from 'react';
+import { React } from 'react';
 import ReactDOM from 'react-dom/client';
 import { Grid, Paper } from '@mui/material';
 import {
   BrowserRouter, Route, Routes, useParams,
 } from 'react-router-dom';
-import PropTypes from 'prop-types';
 import './styles/main.css';
 import TopBar from './components/TopBar';
 import UserDetail from './components/UserDetail';
@@ -13,34 +12,29 @@ import UserPhotos from './components/UserPhotos';
 import PhotoDetail from './components/PhotoDetail';
 import CommentDetail from './components/CommentDetail';
 
-function UserDetailRoute({advEnabled}) {
+function UserDetailRoute() {
   const { userId } = useParams();
   // eslint-disable-next-line no-console
   console.log('UserDetailRoute: userId is:', userId);
-  return <UserDetail userId={userId} advEnabled={advEnabled} />;
+  return <UserDetail userId={userId} />;
 }
 
-function UserPhotosRoute({advEnabled}) {
+function UserPhotosRoute() {
   const { userId } = useParams();
-  return <UserPhotos userId={userId} advEnabled={advEnabled}/>;
+  return <UserPhotos userId={userId} />;
 }
 
-function UserListRoute({advEnabled}){
-  return <UserList advEnabled={advEnabled} />;
-}
-
-function PhotoDetailRoute({advEnabled}){
+function PhotoDetailRoute(){
   const { userId, photoId } = useParams();
-  return <PhotoDetail userId={userId} photoId={photoId} advEnabled={advEnabled}/>;
+  return <PhotoDetail userId={userId} photoId={photoId} />;
 }
 
-function CommentDetailRoute({advEnabled}){
+function CommentDetailRoute(){
   const { userId } = useParams();
-  return <CommentDetail userId={userId} advEnabled={advEnabled}/>;
+  return <CommentDetail userId={userId} />;
 }
 
 function PhotoShare() {
-
   return (
     <BrowserRouter>
       <div>
@@ -61,7 +55,7 @@ function PhotoShare() {
                 <Route path="/photos/:userId" element={<UserPhotosRoute />} />
                 <Route path="/photos/:userId/:index" element={<PhotoDetailRoute />} />
                 <Route path="/comments/:userId" element={<CommentDetailRoute />} />
-                <Route path="/users" element={<UserListRoute />} />
+                <Route path="/users" element={<UserList />} />
               </Routes>
             </Paper>
           </Grid>
@@ -70,7 +64,6 @@ function PhotoShare() {
     </BrowserRouter>
   );
 }
-
 
 const root = ReactDOM.createRoot(document.getElementById('photoshareapp'));
 root.render(<PhotoShare />);
