@@ -1,12 +1,15 @@
 import { React, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Typography, Button } from '@mui/material';
-
 import './styles.css';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { useUIStore } from '../../store/ui-store';
 
-function UserDetail({ userId, advEnabled }) {
+function UserDetail({ userId }) {
+ const {advEnabled} = useUIStore((state) => ({
+    advEnabled: state.advEnabled
+  }));  
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
@@ -59,7 +62,6 @@ function UserDetail({ userId, advEnabled }) {
 
 UserDetail.propTypes = {
   userId: PropTypes.string.isRequired,
-  advEnabled: PropTypes.bool.isRequired
 };
 
 export default UserDetail;

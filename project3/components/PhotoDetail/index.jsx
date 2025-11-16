@@ -1,13 +1,16 @@
 import PropTypes from 'prop-types';
 import { React, useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { IconButton } from '@mui/material';
-import PhotoCard from '../PhotoCard';
 import './styles.css';
 import axios from 'axios';
-import { useLocation } from 'react-router-dom';
+import PhotoCard from '../PhotoCard';
+import { useUIStore } from '../../store/ui-store';
 
-function PhotoDetail({ userId, initialIndex, advEnabled }){
+function PhotoDetail({ userId, initialIndex }){
+  const {advEnabled} = useUIStore((state) => ({
+    advEnabled: state.advEnabled
+  }));
   const [photos, setPhotos] = useState([]);
   const location = useLocation();
 
