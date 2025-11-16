@@ -29,7 +29,7 @@ function PhotoCard({photoInfo}){
 
         <List className="comments-container">
           {(comments.length > 0 ? (
-            comments.map(comment => (comment && comment.user && comment.comment && 
+            comments.map(comment => (comment && comment.user && comment.comment && (
               <ListItem key={comment._id} className="comment">
                 <div className="commenter-info">
                   <Button variant="text" className="user-name-button comment-user-name-button"
@@ -43,6 +43,7 @@ function PhotoCard({photoInfo}){
                 
                 <Typography variant="p">{comment.comment}</Typography>
               </ListItem>
+            )
             ))
           ) : (
             <Typography variant="body2" className="no-comment-text">No comments found.</Typography>

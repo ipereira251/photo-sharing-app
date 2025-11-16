@@ -43,11 +43,11 @@ function TopBar({ advEnabled, toggleAdvEnabled }) {
           <Checkbox checked={advEnabled} onChange={toggleAdvEnabled} color="default" />
           } label="Advanced Features" />
 
-        {context && 
+        {context && (
           <Typography variant="h5">
             {context}
           </Typography>
-        }
+        )}
         
       </Toolbar>
     </AppBar>
@@ -57,6 +57,6 @@ function TopBar({ advEnabled, toggleAdvEnabled }) {
 TopBar.propTypes = {
   advEnabled: PropTypes.bool.isRequired,
   toggleAdvEnabled: PropTypes.func.isRequired
-}
+};
 
 export default TopBar;

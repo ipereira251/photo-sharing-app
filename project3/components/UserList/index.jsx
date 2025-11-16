@@ -62,25 +62,26 @@ function UserList({ advEnabled }) {
         console.log(response.data);
         return response.data;
       }
+      return 0;
     } catch (err){
-      console.error(err);
+      return console.error(err);
     }
-  }
+  };
 
   const handleUserClick = (user) => {
     console.log("Clicked on user", user.first_name, user.last_name, user._id);
     navigate(`/users/${user._id}`);
-  }
+  };
 
   const handlePhotoCountClick = (user) => {
     console.log("photo count click", user.first_name);
     navigate(`/photos/${user._id}/0`);
-  }
+  };
 
   const handleCommentCountClick = (user) => {
     console.log("comment count click", user.first_name);
     navigate(`/comments/${user._id}`);
-  }
+  };
 
   const getPhotoCount = (user) => {
     if(counts){
@@ -89,9 +90,9 @@ function UserList({ advEnabled }) {
         console.log(obj);
         return obj.photoCount;
       }
-      
     }
-  }
+    return 0;
+  };
 
   const getCommentCount = (user) => {
     if(counts){
@@ -101,7 +102,8 @@ function UserList({ advEnabled }) {
         return obj.commentCount;
       }
     }
-  }
+    return 0;
+  };
 
   return (
     <div>
@@ -115,12 +117,15 @@ function UserList({ advEnabled }) {
                   <IconButton className="photo-count-button" 
                   onClick={(e) => {
                     e.stopPropagation(); 
-                    handlePhotoCountClick(user);}}>{getPhotoCount(user)}</IconButton>
+                    handlePhotoCountClick(user);}}>{getPhotoCount(user)}
+                  </IconButton>
                   <IconButton className="comment-count-button" 
                     onClick={(e) => {
                     e.stopPropagation();
-                    handleCommentCountClick(user);}}>{getCommentCount(user)}</IconButton>
-                </>)}
+                    handleCommentCountClick(user);}}>{getCommentCount(user)}
+                  </IconButton>
+                </>
+              )}
             </ListItemButton>
             <Divider/>
           </React.Fragment>
@@ -132,6 +137,6 @@ function UserList({ advEnabled }) {
 
 UserList.propTypes = {
   advEnabled: PropTypes.bool.isRequired
-}
+};
 
 export default UserList;
