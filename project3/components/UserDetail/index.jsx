@@ -4,12 +4,10 @@ import { Typography, Button } from '@mui/material';
 import './styles.css';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { useUIStore } from '../../store/ui-store';
+import useUIStore from '../../store/ui-store';
 
 function UserDetail({ userId }) {
- const {advEnabled} = useUIStore((state) => ({
-    advEnabled: state.advEnabled
-  }));  
+  const {advEnabled} = useUIStore();  
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
 

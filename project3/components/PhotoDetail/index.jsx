@@ -5,12 +5,10 @@ import { IconButton } from '@mui/material';
 import './styles.css';
 import axios from 'axios';
 import PhotoCard from '../PhotoCard';
-import { useUIStore } from '../../store/ui-store';
+import useUIStore from '../../store/ui-store';
 
 function PhotoDetail({ userId, initialIndex }){
-  const {advEnabled} = useUIStore((state) => ({
-    advEnabled: state.advEnabled
-  }));
+  const {advEnabled} = useUIStore();
   const [photos, setPhotos] = useState([]);
   const location = useLocation();
 

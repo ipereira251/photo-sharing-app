@@ -10,19 +10,34 @@ import {
 import './styles.css';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { useUIStore } from '../../store/ui-store';
+import useUIStore from '../../store/ui-store';
 
 function UserList() {
-  const {advEnabled} = useUIStore((state) => ({
-    advEnabled: state.advEnabled
-  }));
+  const {advEnabled} = useUIStore();
   const [users, setUsers] = useState([]);
   const navigate = useNavigate();
   const [counts, setCounts] = useState([]);
 
   useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await axios.get('http://localhost:3001/user/list');
+        if (response.data) {
+          setUsers(response.data);
+          console.log("UserList: Response:", response.data); 
+          console.log("UserList: Fetched users.");
+        } else {
+          console.error("UserList: No users found.");
+        }
+      } catch (err) {
+        console.error("UserList: Error fetching users: ", err);
+      }
+    };
     fetchUsers();
-    if(advEnabled){
+  }, []);
+
+  useEffect(() => {
+    if(advEnabled && users.length > 0){
       console.log("USERLIST: new adv", advEnabled);
       const fetchAllCounts = async () => {
         try {
@@ -40,22 +55,8 @@ function UserList() {
       fetchAllCounts();
     }
     
-  }, [advEnabled]);
+  }, [advEnabled, users]);
 
-  const fetchUsers = async () => {
-    try {
-      const response = await axios.get('http://localhost:3001/user/list');
-      if (response.data) {
-        setUsers(response.data);
-        console.log("UserList: Response:", response.data); 
-        console.log("UserList: Fetched users.");
-      } else {
-        console.error("UserList: No users found.");
-      }
-    } catch (err) {
-      console.error("UserList: Error fetching users: ", err);
-    }
-  };
 
   const fetchCounts = async (userId) => {
     console.log("In fetchCounts"); 

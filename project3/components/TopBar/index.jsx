@@ -3,13 +3,10 @@ import { AppBar, Checkbox, FormControlLabel, Toolbar, Typography } from '@mui/ma
 import './styles.css';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
-import { useUIStore } from '../../store/ui-store';
+import useUIStore from '../../store/ui-store';
 
 function TopBar() {
-  const {advEnabled, toggleAdvEnabled} = useUIStore((state) => ({
-    advEnabled: state.advEnabled, 
-    toggleAdvEnabled: state.advEnabled
-  }));
+  const { advEnabled, toggleAdvEnabled } = useUIStore();
 
   const [context, setContext] = useState("Home");
   const location = useLocation();

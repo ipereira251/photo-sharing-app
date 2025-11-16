@@ -5,12 +5,10 @@ import axios from 'axios';
 import PropTypes from 'prop-types';
 import PhotoCard from "../PhotoCard";
 import PhotoDetail from "../PhotoDetail";
-import { useUIStore } from '../../store/ui-store';
+import useUIStore from '../../store/ui-store';
 
 function UserPhotos({ userId }) {
-  const {advEnabled} = useUIStore((state) => ({
-    advEnabled: state.advEnabled
-  }));
+  const {advEnabled} = useUIStore();
   const [photos, setPhotos] = useState([]);
 
   useEffect(() => {
