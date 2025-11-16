@@ -28,8 +28,10 @@ function PhotoDetail({ userId, initialIndex }){
     if(!advEnabled){
       console.log("Tried to view single image without Adv on");
       const path = `/photos/${userId}`; //regular photo list
-      if(window.location.pathname !== path)
+      if(window.location.pathname !== path){
         navigate(path);
+      }
+
     }
     if(userId && advEnabled){
       fetchUserPhotos();
@@ -39,20 +41,22 @@ function PhotoDetail({ userId, initialIndex }){
       }
       const path = `/photos/${userId}/${currentIndex}`;
       console.log("Current index:", currentIndex);
-      if(window.location.pathname !== path)
+      if(window.location.pathname !== path){
         navigate(path);
+      }  
     }
     console.log("PHOTODETAIL:", userId, initialIndex, currentIndex);
   }, [userId, currentIndex, advEnabled, navigate]);
 
-  const parseIndex = (location) => {
-    const terms = location.pathname.split("/");
+  const parseIndex = (loc) => {
+    const terms = loc.pathname.split("/");
     console.log("terms", terms);
-    if(terms[3] === "")
+    if(terms[3] === ""){
       initialIndex = 0;
-    else
+    } else{
       initialIndex = terms[3];
-  }
+    }
+  };
 
   const fetchUserPhotos = async () => {
     try {
@@ -65,20 +69,20 @@ function PhotoDetail({ userId, initialIndex }){
     } catch (err) {
       console.error("PhotoDetail: Error fetching photos: ", err);
     }
-  }
+  };
 
   const goToPrev = () => {
     if(currentIndex > 0){
       setCurrentIndex(currentIndex - 1);
     }
-  }
+  };
 
   const goToNext = () => {
     if(currentIndex < photos.length - 1){
       setCurrentIndex(currentIndex + 1);
     }
     console.log("go to next: ", currentIndex);
-  }
+  };
   
   if(!userId || photos.length === 0 || currentIndex === undefined){
     console.log("Userid", userId);
@@ -103,7 +107,7 @@ function PhotoDetail({ userId, initialIndex }){
             <IconButton onClick={goToNext} disabled={currentIndex === photos.length - 1}>
               Forward
             </IconButton>
-          </div>
+      </div>
     </div>
   );
 }
@@ -111,7 +115,6 @@ function PhotoDetail({ userId, initialIndex }){
 PhotoDetail.propTypes = {
   userId: PropTypes.string.isRequired, 
   initialIndex: PropTypes.number.isRequired,
-  advEnabled: PropTypes.bool.isRequired
-}
+};
 
 export default PhotoDetail;

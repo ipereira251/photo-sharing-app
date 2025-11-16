@@ -12,15 +12,14 @@ function UserPhotos({ userId }) {
     advEnabled: state.advEnabled
   }));
   const [photos, setPhotos] = useState([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setLoading(true);
-    if(!advEnabled)
+    if(!advEnabled){
       fetchUserPhotos();
-    else if(advEnabled)
+    } else if(advEnabled){
       return <PhotoDetail userId={userId} initialIndex={0} />;
-    console.log("UserPhotos:", photos);
+    }
+    return console.log("UserPhotos:", photos);
 
 
   }, [userId]);
@@ -33,31 +32,27 @@ function UserPhotos({ userId }) {
         console.log("Response data:", response.data);
         setPhotos(response.data);
       }
-      setLoading(false);
     } catch (err) {
       console.error("UserPhotos: Error fetching photos: ", err);
-      setLoading(false);
     }
+  };
+
+  if(advEnabled && photos.length > 0){
+    <PhotoDetail userId={userId} photos={photos} initialIndex={0} />;
   }
 
   return (
-    <>
-      {advEnabled && photos.length > 0 ? (
-        <PhotoDetail userId={userId} photos={photos} initialIndex={0} />
+    <div className="photo-card-container">
+      {photos.length > 0 ? (
+        photos.map((photo) => (
+          <div className="photo-card" key={photo._id}>
+            <PhotoCard photoInfo={photo} />
+          </div>
+        ))
       ) : (
-        <div className="photo-card-container">
-          {photos.length > 0 ? (
-            photos.map((photo) => (
-              <div className="photo-card" key={photo._id}>
-                <PhotoCard photoInfo={photo} />
-              </div>
-            ))
-          ) : (
-            <Typography variant="body1">No photos found. </Typography>
-          )}
-        </div>
+        <Typography variant="body1">No photos found. </Typography>
       )}
-    </>
+    </div>
   );
 }
 

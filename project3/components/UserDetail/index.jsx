@@ -19,11 +19,12 @@ function UserDetail({ userId }) {
 
   const handleViewImgClick = () => {
     console.log("Clicked to view images from userId", userId);
-    if(advEnabled)
+    if(advEnabled){
       navigate(`/photos/${userId}/0`);
-    else
+    } else{
       navigate(`/photos/${userId}`);
-  }
+    }
+  };
 
   const fetchUserInfo = async () => {
     try {

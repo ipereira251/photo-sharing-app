@@ -48,11 +48,11 @@ function TopBar() {
           <Checkbox checked={advEnabled} onChange={toggleAdvEnabled} color="default" />
           } label="Advanced Features" />
 
-        {context && (
+        {context && ((
           <Typography variant="h5">
             {context}
           </Typography>
-        )}
+        ))}
         
       </Toolbar>
     </AppBar>
