@@ -18,19 +18,43 @@ function PhotoDetail({ userId, initialIndex }){
 
 
   useEffect(() => {
-    if(!initialIndex){
-      parseIndex(location);
-    }
-    console.log("Photodetail Props", userId, initialIndex, advEnabled);
-    
+    console.log("PHOTODETAIL STARTING");
+
     if(!advEnabled){
       console.log("Tried to view single image without Adv on");
       const path = `/photos/${userId}`; //regular photo list
       if(window.location.pathname !== path){
         navigate(path);
       }
-
     }
+
+    /*const parseIndex = (loc) => {
+      const terms = loc.pathname.split("/");
+      console.log("terms", terms);
+      if(terms[3] === ""){
+        initialIndex = 0;
+      } else{
+        initialIndex = terms[3];
+      }
+    };*/
+
+    //if(!initialIndex){
+      //parseIndex(location);
+    //}
+    console.log("Photodetail Props", userId, initialIndex, advEnabled);
+
+    const fetchUserPhotos = async () => {
+      try {
+        const response = await axios.get(`http://localhost:3001/photosOfUser/${userId}`);
+        console.log(response);
+        if(response.data){
+          setPhotos(response.data);
+          setLoading(false);
+        }
+      } catch (err) {
+        console.error("PhotoDetail: Error fetching photos: ", err);
+      }
+    };
     if(userId && advEnabled){
       fetchUserPhotos();
       console.log(window.location.pathname);
@@ -41,33 +65,10 @@ function PhotoDetail({ userId, initialIndex }){
       console.log("Current index:", currentIndex);
       if(window.location.pathname !== path){
         navigate(path);
-      }  
+      }
     }
     console.log("PHOTODETAIL:", userId, initialIndex, currentIndex);
-  }, [userId, currentIndex, advEnabled, navigate]);
-
-  const parseIndex = (loc) => {
-    const terms = loc.pathname.split("/");
-    console.log("terms", terms);
-    if(terms[3] === ""){
-      initialIndex = 0;
-    } else{
-      initialIndex = terms[3];
-    }
-  };
-
-  const fetchUserPhotos = async () => {
-    try {
-      const response = await axios.get(`http://localhost:3001/photosOfUser/${userId}`);
-      console.log(response);
-      if(response.data){
-        setPhotos(response.data);
-        setLoading(false);
-      }
-    } catch (err) {
-      console.error("PhotoDetail: Error fetching photos: ", err);
-    }
-  };
+  }, [userId, currentIndex, advEnabled, location.pathname, navigate]);
 
   const goToPrev = () => {
     if(currentIndex > 0){
@@ -87,8 +88,7 @@ function PhotoDetail({ userId, initialIndex }){
     console.log("curr", currentIndex);
     return <p>Loading....</p>;
   }
-    
-
+  
   return (
     <div className="carousel-container">
       <div className="carousel-nav"> 
