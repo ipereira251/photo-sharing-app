@@ -3,23 +3,15 @@ import { Typography } from '@mui/material';
 import PropTypes from 'prop-types';
 import './styles.css';
 import axios from 'axios';
+import { useNavigate } from "react-router-dom";
 import PhotoCard from "../PhotoCard";
-import PhotoDetail from "../PhotoDetail";
 
 function UserPhotos({ userId, advEnabled }) {
   const [photos, setPhotos] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    if(!advEnabled){
-      fetchUserPhotos();
-    }
-    else if(advEnabled){
-      return <PhotoDetail userId={userId} initialIndex={0} advEnabled={advEnabled} />;
-    }
-    return console.log("UserPhotos:", photos);
-  }, [userId]);
-
-  const fetchUserPhotos = async () => {
+    const fetchUserPhotos = async () => {
     try {
       const response = await axios.get(`http://localhost:3001/photosOfUser/${userId}`);
       
@@ -32,8 +24,23 @@ function UserPhotos({ userId, advEnabled }) {
     }
   };
 
+    if(!advEnabled){
+      fetchUserPhotos();
+      console.log("adv toggled off");
+      navigate(`/photos/${userId}`);
+    }
+    else {
+      console.log("redirecting to photo detail");
+      navigate(`/photos/${userId}/0`);
+      //return <PhotoDetail userId={userId} initialIndex={0} advEnabled={advEnabled} />;
+    }
+    return console.log("UserPhotos:", photos);
+  }, [userId, advEnabled]);
+
   if(advEnabled && photos.length > 0){
-    <PhotoDetail userId={userId} photos={photos} initialIndex={0} advEnabled={advEnabled} />;
+    console.log("User photos mounting Photodetail");
+
+    //return <PhotoDetail userId={userId} photos={photos} initialIndex={0} advEnabled={advEnabled} />;
   }
 
   return (

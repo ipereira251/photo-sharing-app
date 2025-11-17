@@ -4,14 +4,13 @@ import { Grid, Paper } from '@mui/material';
 import {
   BrowserRouter, Route, Routes, useParams,
 } from 'react-router-dom';
-
+import PropTypes from 'prop-types';
 import './styles/main.css';
 import TopBar from './components/TopBar';
 import UserDetail from './components/UserDetail';
 import UserList from './components/UserList';
 import UserPhotos from './components/UserPhotos';
 import PhotoDetail from './components/PhotoDetail';
-import PropTypes from 'prop-types';
 import CommentDetail from './components/CommentDetail';
 
 function UserDetailRoute({advEnabled}) {
@@ -48,8 +47,8 @@ function PhotoShare() {
       const newState = !prev;
       console.log("PHOTOSHARE New state:", newState);
       return newState;
-    })
-  }
+    });
+  };
 
   return (
     <BrowserRouter>
