@@ -4,8 +4,10 @@ import './styles.css';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { List, ListItem, Button, Typography, CardMedia } from "@mui/material";
+import useUIStore from '../../store/ui-store';
 
-function CommentDetail({ userId, advEnabled }){
+function CommentDetail({ userId }){
+  const {advEnabled} = useUIStore();
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -80,7 +82,6 @@ function CommentDetail({ userId, advEnabled }){
 
 CommentDetail.propTypes = {
   userId: PropTypes.string.isRequired, 
-  advEnabled: PropTypes.bool.isRequired
 }
 
 export default CommentDetail;

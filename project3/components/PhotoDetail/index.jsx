@@ -5,7 +5,10 @@ import { IconButton } from '@mui/material';
 import './styles.css';
 import axios from 'axios';
 import PhotoCard from '../PhotoCard';
-function PhotoDetail({ userId, initialIndex, advEnabled }){
+import useUIStore from '../../store/ui-store';
+
+function PhotoDetail({ userId, initialIndex }){
+  const {advEnabled} = useUIStore();
   const [photos, setPhotos] = useState([]);
   const location = useLocation();
 
@@ -20,7 +23,7 @@ function PhotoDetail({ userId, initialIndex, advEnabled }){
     if(!advEnabled){
       console.log("Tried to view single image without Adv on");
       const path = `/photos/${userId}`; //regular photo list
-      if(location.pathname !== path){
+      if(window.location.pathname !== path){
         navigate(path);
       }
     }
@@ -99,9 +102,9 @@ function PhotoDetail({ userId, initialIndex, advEnabled }){
       )}
 
       <div className="carousel-nav"> 
-        <IconButton onClick={goToNext} disabled={currentIndex === photos.length - 1}>
-          Forward
-        </IconButton>
+            <IconButton onClick={goToNext} disabled={currentIndex === photos.length - 1}>
+              Forward
+            </IconButton>
       </div>
     </div>
   );
@@ -110,7 +113,6 @@ function PhotoDetail({ userId, initialIndex, advEnabled }){
 PhotoDetail.propTypes = {
   userId: PropTypes.string.isRequired, 
   initialIndex: PropTypes.number.isRequired,
-  advEnabled: PropTypes.bool.isRequired
 };
 
 export default PhotoDetail;

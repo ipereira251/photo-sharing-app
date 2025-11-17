@@ -1,12 +1,15 @@
 import { React, useState, useEffect } from 'react';
 import { Typography } from '@mui/material';
-import PropTypes from 'prop-types';
 import './styles.css';
 import axios from 'axios';
 import { useNavigate } from "react-router-dom";
+import PropTypes from 'prop-types';
 import PhotoCard from "../PhotoCard";
+import PhotoDetail from "../PhotoDetail";
+import useUIStore from '../../store/ui-store';
 
-function UserPhotos({ userId, advEnabled }) {
+function UserPhotos({ userId }) {
+  const {advEnabled} = useUIStore();
   const [photos, setPhotos] = useState([]);
   const navigate = useNavigate();
 
@@ -60,7 +63,6 @@ function UserPhotos({ userId, advEnabled }) {
 
 UserPhotos.propTypes = {
   userId: PropTypes.string.isRequired,
-  advEnabled: PropTypes.bool.isRequired
 };
 
 export default UserPhotos;
