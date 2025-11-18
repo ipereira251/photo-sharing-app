@@ -1,6 +1,6 @@
 import { React, useState, useEffect } from 'react';
 import { AppBar, Checkbox, FormControlLabel, Toolbar, Typography } from '@mui/material';
-import { useQuery } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query';
 import './styles.css';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
