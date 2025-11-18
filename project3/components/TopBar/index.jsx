@@ -5,34 +5,11 @@ import './styles.css';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 import PropTypes from 'prop-types';
+import { getUserFromUrl } from '../../axiosAPI';
 
 function TopBar({ advEnabled, toggleAdvEnabled }) {
   let location = useLocation();
   let url = location.pathname;
-
-  const getUserFromUrl = async (url) => {
-    if (url === '/') {
-      return "Home";
-    }
-
-    const terms = url.split("/");
-
-    if(terms[1]){
-      const response = await axios.get(`http://localhost:3001/user/${terms[2]}`);
-
-      if(response.data){
-        if(terms[1] === "photos"){
-          return `Photos of ${response.data.first_name} ${response.data.last_name}`;
-        } else if(terms[1] === "users"){
-          return `${response.data.first_name} ${response.data.last_name}`;
-        } else {
-          return "Unknown";
-        }
-      }
-    }
-
-    return "Unknown";
-  };
 
   let { data, isLoading, error } = useQuery({
     queryKey: ['topbar', url],
@@ -42,7 +19,7 @@ function TopBar({ advEnabled, toggleAdvEnabled }) {
   let context = data;
 
   if (isLoading) {
-    context = "...";
+    context = "";
   }
 
   if (error) {
