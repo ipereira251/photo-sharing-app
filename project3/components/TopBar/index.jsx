@@ -1,36 +1,54 @@
 import { React, useState, useEffect } from 'react';
 import { AppBar, Checkbox, FormControlLabel, Toolbar, Typography } from '@mui/material';
+import { useQuery } from '@tanstack/react-query'
 import './styles.css';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 import PropTypes from 'prop-types';
 
 function TopBar({ advEnabled, toggleAdvEnabled }) {
-  const [context, setContext] = useState("Home");
-  const location = useLocation();
-  
-  useEffect(() => {
-    getUserFromUrl(location.pathname);
-  }, [location]);
+  let location = useLocation();
+  let url = location.pathname;
 
   const getUserFromUrl = async (url) => {
+    if (url === '/') {
+      return "Home";
+    }
+
     const terms = url.split("/");
+
     if(terms[1]){
-      try {
-        const response = await axios.get(`http://localhost:3001/user/${terms[2]}`);
-        if(response.data){
-          if(terms[1] === "photos"){
-            setContext(`Photos of ${response.data.first_name} ${response.data.last_name}`);
-          } else if(terms[1] === "users"){
-            setContext(`${response.data.first_name} ${response.data.last_name}`);
-          } else {
-            setContext("Unknown");
-          }
+      const response = await axios.get(`http://localhost:3001/user/${terms[2]}`);
+
+      if(response.data){
+        if(terms[1] === "photos"){
+          return `Photos of ${response.data.first_name} ${response.data.last_name}`;
+        } else if(terms[1] === "users"){
+          return `${response.data.first_name} ${response.data.last_name}`;
+        } else {
+          return "Unknown";
         }
-      } catch(err){
-        console.error("Error getting user from URL", err);
-      }}
+      }
+    }
+
+    return "Unknown";
   };
+
+  let { data, isLoading, error } = useQuery({
+    queryKey: ['topbar', url],
+    queryFn: () => getUserFromUrl(url),
+  });
+
+  let context = data;
+
+  if (isLoading) {
+    context = "...";
+  }
+
+  if (error) {
+    console.error(error);
+    context = "Could not get User data";
+  }
 
   return (
     <AppBar className="topbar-appBar" position="absolute">
