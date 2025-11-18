@@ -57,3 +57,8 @@ export const fetchUserListDisplay = async (advEnabled) => {
     let counts = await fetchAllCounts();
     return {users, counts};
 };
+
+export const fetchUserInfo = async (userId) => {
+      let response = await axios.get(`http://localhost:3001/user/${userId}`);
+      return response.data;
+  };

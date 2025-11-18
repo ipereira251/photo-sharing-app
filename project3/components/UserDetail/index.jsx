@@ -1,18 +1,34 @@
 import { React, useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { Typography, Button } from '@mui/material';
+import { useQuery } from '@tanstack/react-query';
+import axios from 'axios';
 
 import './styles.css';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { fetchUserInfo } from '../../axiosAPI';
+
 
 function UserDetail({ userId, advEnabled }) {
-  const [user, setUser] = useState(null);
+  // const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    fetchUserInfo();
-  }, [userId]); //NOT!!!! user
+
+  let {data: user, isLoading, error} = useQuery({
+    queryKey: ['userDetail', userId],
+    queryFn: () => fetchUserInfo(userId)
+  })
+
+  if (isLoading) {
+    return 'Loading ...';
+  }
+
+  if (error) {
+    return 'Could not fetch User profile';
+  }
+  // useEffect(() => {
+  //   fetchUserInfo();
+  // }, [userId]); //NOT!!!! user
 
   const handleViewImgClick = () => {
     console.log("Clicked to view images from userId", userId);
@@ -22,17 +38,17 @@ function UserDetail({ userId, advEnabled }) {
       navigate(`/photos/${userId}`);
   }
 
-  const fetchUserInfo = async () => {
-    try {
-      const response = await axios.get(`http://localhost:3001/user/${userId}`);
-      if(response.data){
-        console.log(response.data);
-        setUser(response.data);
-      }
-    } catch (err){
-      console.error("UserDetail: Error fetching user info: ", err);
-    }
-  };
+// const fetchUserInfo = async (userId) => {
+//     try {
+//       const response = await axios.get(`http://localhost:3001/user/${userId}`);
+//       if(response.data){
+//         console.log(response.data);
+//         setUser(response.data);
+//       }
+//     } catch (err){
+//       console.error("UserDetail: Error fetching user info: ", err);
+//     }
+//   };
 
   if(!user){
     return <p>No such user found.</p>;
