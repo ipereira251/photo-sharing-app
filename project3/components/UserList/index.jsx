@@ -6,67 +6,83 @@ import {
   ListItemText,
   IconButton
 } from '@mui/material';
+import { useQuery } from '@tanstack/react-query';
+import { fetchUserListDisplay } from '../../axiosAPI';
 
 import './styles.css';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 function UserList({ advEnabled }) {
-  const [users, setUsers] = useState([]);
   const navigate = useNavigate();
-  const [counts, setCounts] = useState([]);
 
-  useEffect(() => {
-    fetchUsers();
-    if(advEnabled){
-      console.log("USERLIST: new adv", advEnabled);
-      const fetchAllCounts = async () => {
-        try {
-          const arr = await Promise.all(users.map(async (user) => {
-            const x = await fetchCounts(user._id);
-            return x;
-          }));
-          setCounts(arr.flat());
-          console.log("Fetched counts", arr.flat());
-        } catch (err){
-          console.error("USERLIST", err);
-        }
-      };
+  let {data, isLoading, error} = useQuery({
+    queryKey: ["userList", advEnabled],
+    queryFn: () => fetchUserListDisplay(advEnabled)
+  });
+
+  if (error) {
+    console.error(error);
+    return "";
+  }
+  
+  console.log(data);
+
+  let {users, counts} = data ?? {users: [], counts: null};
+
+  // const [users, setUsers] = useState([]);
+  // const [counts, setCounts] = useState([]);
+  
+  // useEffect(() => {
+  //   fetchUsers();
+  //   if(advEnabled){
+  //     console.log("USERLIST: new adv", advEnabled);
+  //     const fetchAllCounts = async () => {
+  //       try {
+  //         const arr = await Promise.all(users.map(async (user) => {
+  //           const x = await fetchCounts(user._id);
+  //           return x;
+  //         }));
+  //         setCounts(arr.flat());
+  //         console.log("Fetched counts", arr.flat());
+  //       } catch (err){
+  //         console.error("USERLIST", err);
+  //       }
+  //     };
       
-      fetchAllCounts();
-    }
+  //     fetchAllCounts();
+  //   }
     
-  }, [advEnabled]);
+  // }, [advEnabled]);
 
-  const fetchUsers = async () => {
-    try {
-      const response = await axios.get('http://localhost:3001/user/list');
-      if (response.data) {
-        setUsers(response.data);
-        console.log("UserList: Response:", response.data); 
-        console.log("UserList: Fetched users.");
-      } else {
-        console.error("UserList: No users found.");
-      }
-    } catch (err) {
-      console.error("UserList: Error fetching users: ", err);
-    }
-  };
+  // const fetchUsers = async () => {
+  //   try {
+  //     const response = await axios.get('http://localhost:3001/user/list');
+  //     if (response.data) {
+  //       setUsers(response.data);
+  //       console.log("UserList: Response:", response.data); 
+  //       console.log("UserList: Fetched users.");
+  //     } else {
+  //       console.error("UserList: No users found.");
+  //     }
+  //   } catch (err) {
+  //     console.error("UserList: Error fetching users: ", err);
+  //   }
+  // };
 
-  const fetchCounts = async (userId) => {
-    console.log("In fetchCounts"); 
-    try{
-      const response = await axios.get(`http://localhost:3001/counts/${userId}`);
-      if(response.data){
-        console.log(response.data);
-        return response.data;
-      }
-      return 0;
-    } catch (err){
-      return console.error(err);
-    }
-  };
+  // const fetchCounts = async (userId) => {
+  //   console.log("In fetchCounts"); 
+  //   try{
+  //     const response = await axios.get(`http://localhost:3001/counts/${userId}`);
+  //     if(response.data){
+  //       console.log(response.data);
+  //       return response.data;
+  //     }
+  //     return 0;
+  //   } catch (err){
+  //     return console.error(err);
+  //   }
+  // };
 
   const handleUserClick = (user) => {
     console.log("Clicked on user", user.first_name, user.last_name, user._id);

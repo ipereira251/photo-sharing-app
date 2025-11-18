@@ -23,3 +23,37 @@ export const getUserFromUrl = async (url) => {
 
     return "Unknown";
   };
+
+  /*
+returns an object with 2 properties which is used to populate the userList display
+
+{
+  userList: list of all users in database
+  counts: count information for advanced features if turned on, else null
+}
+
+*/
+
+export const fetchUserListDisplay = async (advEnabled) => {
+    let response = await axios.get('http://localhost:3001/user/list');
+    let users = response.data;
+
+    console.log("UserList: Response:", users); 
+    console.log("UserList: Fetched users.");
+
+    if (!advEnabled) {
+        return {users, counts: null};
+    }
+
+    const fetchAllCounts = async () => {
+        const arr = await Promise.all(users.map(async (user) => {
+            const x = await axios.get(`http://localhost:3001/counts/${user._id}`);
+            return x.data;
+        }));
+    
+        return arr.flat();
+    };
+      
+    let counts = await fetchAllCounts();
+    return {users, counts};
+};
