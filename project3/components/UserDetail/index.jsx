@@ -26,7 +26,9 @@ function UserDetail({ userId }) {
 
   const fetchUserInfo = async () => {
     try {
-      const response = await axios.get(`http://localhost:3001/user/${userId}`);
+      const response = await axios.get(`http://localhost:3001/user/${userId}`, {
+        withCredentials: true
+      });
       if(response.data){
         console.log(response.data);
         setUser(response.data);

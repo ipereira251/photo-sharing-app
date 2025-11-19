@@ -1,8 +1,8 @@
-import { React } from 'react';
+import { React, useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
 import { Grid, Paper } from '@mui/material';
 import {
-  BrowserRouter, Route, Routes, useParams,
+  BrowserRouter, Route, Routes, useNavigate, useParams,
 } from 'react-router-dom';
 import './styles/main.css';
 import TopBar from './components/TopBar';
@@ -11,6 +11,9 @@ import UserList from './components/UserList';
 import UserPhotos from './components/UserPhotos';
 import PhotoDetail from './components/PhotoDetail';
 import CommentDetail from './components/CommentDetail';
+import LoginRegister from './components/LoginRegister';
+
+import useSessionStore from './store/session-store';
 
 function UserDetailRoute() {
   const { userId } = useParams();
@@ -35,6 +38,14 @@ function CommentDetailRoute(){
 }
 
 function PhotoShare() {
+  //set session here??, if not logged in go to /login
+  //const { loggedIn, setSession } = useSessionStore();
+
+  //use tanstack
+  //if not logged in, navigate to /login
+
+  //on load, call to /checkSession 
+
   return (
     <BrowserRouter>
       <div>
@@ -42,12 +53,14 @@ function PhotoShare() {
           <Grid item xs={12}>
             <TopBar />
           </Grid>
+
           <div className="main-topbar-buffer" />
           <Grid item sm={3}>
             <Paper className="main-grid-item">
               <UserList />
             </Paper>
           </Grid>
+          
           <Grid item sm={9}>
             <Paper className="main-grid-item">
               <Routes> 
@@ -56,6 +69,7 @@ function PhotoShare() {
                 <Route path="/photos/:userId/:index" element={<PhotoDetailRoute />} />
                 <Route path="/comments/:userId" element={<CommentDetailRoute />} />
                 <Route path="/users" element={<UserList />} />
+                <Route path="/login" element={<LoginRegister />} />
               </Routes>
             </Paper>
           </Grid>

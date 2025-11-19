@@ -1,23 +1,14 @@
-/**
- * Project 2 Express server connected to MongoDB 'project2'.
- * Start with: node webServer.js
- * Client uses axios to call these endpoints.
- */
-
 // eslint-disable-next-line import/no-extraneous-dependencies
 import mongoose from "mongoose";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import bluebird from "bluebird";
 import express from "express";
+import cors from "cors";
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import { ObjectId } from "mongodb";
+import session from "express-session";
 
-// ToDO - Your submission should work without this line. Comment out or delete this line for tests and before submission!
-//import models from "./modelData/photoApp.js";
-
-// Load the Mongoose schema for User, Photo, and SchemaInfo
-// ToDO - Your submission will use code below, so make sure to uncomment this line for tests and before submission!
 import User from "./schema/user.js";
 import Photo from "./schema/photo.js";
 import SchemaInfo from "./schema/schemaInfo.js";
@@ -27,15 +18,36 @@ const app = express();
 
 // Enable CORS for all routes
 app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  res.header('Access-Control-Allow-Credentials', 'true');
   if (req.method === 'OPTIONS') {
     res.sendStatus(200);
   } else {
     next();
   }
 });
+
+/*app.use(cors({
+  origin: 'http://localhost:3000', 
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization"], 
+  credentials: true,
+}));*/
+
+//Set up session
+app.use(session({
+  secret: 'something', 
+  resave: false, 
+  saveUninitialized: false, 
+  cookie:{
+    maxAge: 7200000, //2 hours
+    httpOnly: true, 
+    secure: false, 
+  }
+}));
+
 
 mongoose.Promise = bluebird;
 mongoose.set("strictQuery", false);
@@ -51,7 +63,10 @@ const __dirname = dirname(__filename);
 // (http://expressjs.com/en/starter/static-files.html) do all the work for us.
 app.use(express.static(__dirname));
 
+app.use(express.json()); 
+
 app.get("/", function (request, response) {
+  console.log("Session:", response.session);
   response.send("Simple web server of files from " + __dirname);
 });
 
@@ -83,9 +98,69 @@ app.get('/test/counts', async (request, response) => {
 });
 
 /**
+ * URL /admin/login 
+ */
+app.post('/admin/login', async (request, response) => {
+  console.log("/admin/login called", request.body);
+  if(!request.body){
+    console.log("Admin/login: no request body");
+  }
+  const { username, password } = request.body;
+  //find user
+  //const user = await User.findOne({ username, password }); 
+   if(username === "admin"){
+      request.session.user = {
+        id: "admin-id", 
+        name: "Admin", 
+        username: username
+      };
+      console.log("session:", request.session);
+      return response.json({ message: "Logged in successfully", user: request.session.user });
+ /* if(user){
+    request.session.user = {
+      id: user.id, 
+      username: user.username
+    };
+    
+    return response.json({ message: "Logged in successfully", user: request.session.user });
+  } else {
+    //remove later
+   
+      return response.json({message: "Logged in successfully", user: request.session.user});
+    }*/
+    
+    return response.status(401).send("Invalid username or password");
+  }
+
+});
+
+
+function checkAuth(request, response, next){
+  console.log("FROM REQUEST AUTH:", request.session.user);
+  if(!request.session.user){
+    //return response.status(401);
+    return response.status(401).redirect('/login');
+  }
+  return next();
+}
+
+app.use((request, response, next) => {
+  console.log("Session checker: ", request.session);
+  if (request.session.user) {
+    return next();
+  }
+  return response.status(401).send();
+});
+
+/**
  * URL /user/list - Returns all the User objects.
  */
 app.get('/user/list', async (request, response) => {
+  console.log("Check auth:", request.session);
+  if(!request.session.user){
+    console.log("Not finding your account");
+    return response.status(401).send("Unauthorized, please log in");
+  }
   try{
     const userModels = await User.find({});
     const users = userModels.map((model) => {
@@ -96,11 +171,11 @@ app.get('/user/list', async (request, response) => {
       };
     });
     const toRet = users.flat();
-    response.status(200).json(toRet);
     console.log(toRet);
+    return response.status(200).json(toRet);
   } catch (err){
     console.error(err);
-    response.status(400).send("Internal server error");
+    return response.status(400).send("Internal server error");
   }
 });
 
@@ -109,6 +184,13 @@ app.get('/user/list', async (request, response) => {
  */
 app.get('/user/:id', async (request, response) => {
   try{
+    if(!request.params.id){
+      return response.status(400).send("Please provide user ID");
+    }
+    console.log(request.params.id);
+    if(!mongoose.Types.ObjectId.isValid(request.params.id)){
+      return response.status(400).send("Invalid user ID");
+    }
     const userModel = await User.findById(request.params.id);
     const user = { 
       _id: userModel.id, 
@@ -118,10 +200,10 @@ app.get('/user/:id', async (request, response) => {
       description: userModel.description,
       occupation: userModel.occupation
     };
-    response.status(200).json(user);
+    return response.status(200).json(user);
   } catch (err){
     console.error(err);
-    response.status(400).send("Internal server error");
+    return response.status(400).send("Internal server error");
   }
 });
 

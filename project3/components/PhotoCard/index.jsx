@@ -15,7 +15,7 @@ function PhotoCard({photoInfo}){
   //handle name click
   const handleProfileClick = (userId) => {
     navigate(`/users/${userId}`);
-  }
+  };
   
   return (
     <Card className="photo-card">
@@ -71,6 +71,6 @@ PhotoCard.propTypes = {
       })
     )
   }).isRequired
-}
+};
 
 export default PhotoCard;

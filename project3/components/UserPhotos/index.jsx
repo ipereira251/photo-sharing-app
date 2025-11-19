@@ -5,7 +5,6 @@ import axios from 'axios';
 import { useNavigate } from "react-router-dom";
 import PropTypes from 'prop-types';
 import PhotoCard from "../PhotoCard";
-import PhotoDetail from "../PhotoDetail";
 import useUIStore from '../../store/ui-store';
 
 function UserPhotos({ userId }) {
@@ -16,7 +15,9 @@ function UserPhotos({ userId }) {
   useEffect(() => {
     const fetchUserPhotos = async () => {
     try {
-      const response = await axios.get(`http://localhost:3001/photosOfUser/${userId}`);
+      const response = await axios.get(`http://localhost:3001/photosOfUser/${userId}`, {
+        withCredentials: true
+      });
       
       if(response.data){
         console.log("Response data:", response.data);

@@ -28,7 +28,9 @@ function CommentDetail({ userId }){
 
   const fetchComments = async () => {
     try{
-      const response = await axios.get(`http://localhost:3001/comments/${userId}`);
+      const response = await axios.get(`http://localhost:3001/comments/${userId}`, {
+        withCredentials: true
+      });
       if(response.data){
         console.log(response.data);
         setComments(response.data);
