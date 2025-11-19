@@ -11,8 +11,10 @@ import './styles.css';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import useUIStore from '../../store/ui-store';
 
-function UserList({ advEnabled }) {
+function UserList() {
+  const {advEnabled} = useUIStore();
   const [users, setUsers] = useState([]);
   const navigate = useNavigate();
   const [counts, setCounts] = useState([]);
@@ -128,10 +130,6 @@ function UserList({ advEnabled }) {
       </List>
     </div>
   );
-}
-
-UserList.propTypes = {
-  advEnabled: PropTypes.bool.isRequired
 }
 
 export default UserList;

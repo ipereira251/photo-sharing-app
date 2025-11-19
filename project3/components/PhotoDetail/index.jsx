@@ -1,13 +1,14 @@
 import PropTypes from 'prop-types';
 import { React, useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { IconButton } from '@mui/material';
-import PhotoCard from '../PhotoCard';
 import './styles.css';
 import axios from 'axios';
-import { useLocation } from 'react-router-dom';
+import useUIStore from '../../store/ui-store';
+import PhotoCard from '../PhotoCard';
 
-function PhotoDetail({ userId, initialIndex, advEnabled }){
+function PhotoDetail({ userId, initialIndex }){
+  const {advEnabled} = useUIStore();
   const [photos, setPhotos] = useState([]);
   const location = useLocation();
 
@@ -108,7 +109,6 @@ function PhotoDetail({ userId, initialIndex, advEnabled }){
 PhotoDetail.propTypes = {
   userId: PropTypes.string.isRequired, 
   initialIndex: PropTypes.number.isRequired,
-  advEnabled: PropTypes.bool.isRequired
 }
 
 export default PhotoDetail;

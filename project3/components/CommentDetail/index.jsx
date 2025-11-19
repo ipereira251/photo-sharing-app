@@ -4,8 +4,10 @@ import './styles.css';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { List, ListItem, Button, Typography, CardMedia } from "@mui/material";
+import useUIStore from '../../store/ui-store';
 
-function CommentDetail({ userId, advEnabled }){
+function CommentDetail({ userId }){
+  const {advEnabled} = useUIStore();
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -36,8 +38,8 @@ function CommentDetail({ userId, advEnabled }){
     }
   }
 
-  const handleProfileClick = (userId) => {
-    navigate(`/users/${userId}`);
+  const handleProfileClick = (id) => {
+    navigate(`/users/${id}`);
   }
 
   const handleListItemClick = (comment) => {
@@ -53,36 +55,33 @@ function CommentDetail({ userId, advEnabled }){
   }
 
   return(
-    <>
-      <List className="comments-container">
-        {comments.length > 0 ? (
-          comments.map(comment => (comment && comment.photoFileName && comment.commenterId 
-            && comment.comment && comment.date_time && (
-            <ListItem key={comment.commentId} className="comment" onClick={() => handleListItemClick(comment)}>
-              <CardMedia className="thumbnail-photo" component="img" image={`/images/${comment.photoFileName}`} />
-              <Button variant="text" className="user-name-button comment-user-name-button"
-              onClick={(e) => {
-                e.stopPropagation(); 
-                handleProfileClick(comment.commenterId);}}>
-                {comment.commenterFirstName} {comment.commenterLastName}
-              </Button>
-              <Typography variant="p" className="date-time date-time-comment">
-                  {new Date(comment.date_time).toLocaleString()}
-                </Typography>
-                <Typography variant="p">{comment.comment}</Typography>
-            </ListItem>
-          )))
-        ) : (
-          <Typography variant="body2" className="no-comment-text">No comments found.</Typography>
-        )}
-        </List>
-    </>
+    <List className="comments-container">
+      {comments.length > 0 ? (
+        comments.map(comment => (comment && comment.photoFileName && comment.commenterId 
+          && comment.comment && comment.date_time && (
+          <ListItem key={comment.commentId} className="comment" onClick={() => handleListItemClick(comment)}>
+            <CardMedia className="thumbnail-photo" component="img" image={`/images/${comment.photoFileName}`} />
+            <Button variant="text" className="user-name-button comment-user-name-button"
+            onClick={(e) => {
+              e.stopPropagation(); 
+              handleProfileClick(comment.commenterId);}}>
+              {comment.commenterFirstName} {comment.commenterLastName}
+            </Button>
+            <Typography variant="p" className="date-time date-time-comment">
+              {new Date(comment.date_time).toLocaleString()}
+            </Typography>
+            <Typography variant="p">{comment.comment}</Typography>
+          </ListItem>
+        )))
+      ) : (
+        <Typography variant="body2" className="no-comment-text">No comments found.</Typography>
+      )}
+    </List>
   );
 }
 
 CommentDetail.propTypes = {
   userId: PropTypes.string.isRequired, 
-  advEnabled: PropTypes.bool.isRequired
-}
+};
 
 export default CommentDetail;

@@ -13,6 +13,7 @@ import UserPhotos from './components/UserPhotos';
 import PhotoDetail from './components/PhotoDetail';
 import PropTypes from 'prop-types';
 import CommentDetail from './components/CommentDetail';
+import LoginRegister from './components/LoginRegister';
 
 function UserDetailRoute({advEnabled}) {
   const { userId } = useParams();
@@ -48,8 +49,8 @@ function PhotoShare() {
       const newState = !prev;
       console.log("PHOTOSHARE New state:", newState);
       return newState;
-    })
-  }
+    });
+  };
 
   return (
     <BrowserRouter>
@@ -72,6 +73,7 @@ function PhotoShare() {
                 <Route path="/photos/:userId/:index" element={<PhotoDetailRoute advEnabled={advEnabled}/>} />
                 <Route path="/comments/:userId" element={<CommentDetailRoute advEnabled={advEnabled}/>} />
                 <Route path="/users" element={<UserListRoute advEnabled={advEnabled} />} />
+                <Route path="/login" element={<LoginRegister />} />
               </Routes>
             </Paper>
           </Grid>
