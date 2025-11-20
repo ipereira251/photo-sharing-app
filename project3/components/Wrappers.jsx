@@ -3,6 +3,7 @@ import UserPhotos from './UserPhotos';
 import PhotoDetail from './PhotoDetail';
 import CommentDetail from './CommentDetail';
 import PropTypes from 'prop-types';
+import UserList from './UserList';
 import { useParams } from 'react-router-dom';
 
 export function UserDetailRoute({advEnabled}) {

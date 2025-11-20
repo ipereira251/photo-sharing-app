@@ -12,7 +12,7 @@ import './styles/main.css';
 import TopBar from './components/TopBar';
 import UserList from './components/UserList';
 
-import { UserDetailRoute, UserPhotosRoute, UserListRoute, UserListRoute, PhotoDetailRoute, CommentDetailRoute } from './components/Wrappers';
+import { UserDetailRoute, UserPhotosRoute, UserListRoute, PhotoDetailRoute, CommentDetailRoute } from './components/Wrappers';
 
 const queryClient = new QueryClient();
 
