@@ -9,7 +9,8 @@ import PhotoDetail from "../PhotoDetail";
 import { useQuery } from '@tanstack/react-query';
 
 function UserPhotos({ userId, advEnabled, setAdvEnabled }) {
-  setAdvEnabled(false);
+  if (advEnabled)
+    setAdvEnabled(false);
 
   let {data: photos, isLoading, error} = useQuery({
     queryKey: ['userPhotos', userId],

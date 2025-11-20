@@ -9,15 +9,13 @@ import { getUserFromUrl } from '../../axiosAPI';
 
 function TopBar({ advEnabled, setAdvEnabled }) {
   let location = useLocation();
-  let url = location.pathname;
   let navigate = useNavigate();
 
-  let { data, isLoading, error } = useQuery({
+  let url = location.pathname;
+  let { data: context, isLoading, error } = useQuery({
     queryKey: ['topbar', url],
     queryFn: () => getUserFromUrl(url),
   });
-
-  let context = data;
 
   if (isLoading) {
     context = "";
@@ -71,7 +69,7 @@ function TopBar({ advEnabled, setAdvEnabled }) {
         //if you're on the User Photos route, and the Advanced Features button got turned on
         //then redirect to the first User Details route
         if (userPhotosRouteMatch && currIsAdvEnabled) {
-          let userId = photoDetailRouteMatch[0].split('/')[2];
+          let userId = userPhotosRouteMatch[0].split('/')[2];
           navigate(`/photos/${userId}/0`);
         }
       }

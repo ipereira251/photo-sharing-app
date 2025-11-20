@@ -13,18 +13,14 @@ export function UserDetailRoute({advEnabled}) {
   return <UserDetail userId={userId} advEnabled={advEnabled} />;
 }
 
-export function UserPhotosRoute({advEnabled, setAdvEnabled}) {
+export function UserPhotosRoute({ advEnabled, setAdvEnabled }) {
   const { userId } = useParams();
   return <UserPhotos userId={userId} advEnabled={advEnabled} setAdvEnabled={setAdvEnabled}/>;
 }
 
-export function UserListRoute({advEnabled}){
-  return <UserList advEnabled={advEnabled} />;
-}
-
-export function PhotoDetailRoute({advEnabled}){
-  const { userId, photoId } = useParams();
-  return <PhotoDetail userId={userId} initialIndex={photoId} advEnabled={advEnabled}/>;
+export function PhotoDetailRoute({advEnabled, setAdvEnabled}){
+  const { userId, index } = useParams();
+  return <PhotoDetail userId={userId} initialIndex={index} advEnabled={advEnabled} setAdvEnabled={setAdvEnabled}/>;
 }
 
 export function CommentDetailRoute({advEnabled}){
@@ -32,22 +28,26 @@ export function CommentDetailRoute({advEnabled}){
   return <CommentDetail userId={userId} advEnabled={advEnabled}/>;
 }
 
-UserDetailRoute.propTypes = {
-  advEnabled: PropTypes.bool.isRequired
+export function UserListRoute({advEnabled}){
+  return <UserList advEnabled={advEnabled} />;
 }
 
-UserPhotosRoute.propTypes = {
-  advEnabled: PropTypes.bool.isRequired
-}
+// UserDetailRoute.propTypes = {
+//   advEnabled: PropTypes.bool.isRequired
+// }
 
-PhotoDetailRoute.propTypes = {
-  advEnabled: PropTypes.bool.isRequired
-}
+// UserPhotosRoute.propTypes = {
+//   advEnabled: PropTypes.bool.isRequired
+// }
 
-CommentDetailRoute.propTypes = {
-  advEnabled: PropTypes.bool.isRequired
-}
+// PhotoDetailRoute.propTypes = {
+//   advEnabled: PropTypes.bool.isRequired
+// }
 
-UserListRoute.propTypes = {
-  advEnabled: PropTypes.bool.isRequired
-}
+// CommentDetailRoute.propTypes = {
+//   advEnabled: PropTypes.bool.isRequired
+// }
+
+// UserListRoute.propTypes = {
+//   advEnabled: PropTypes.bool.isRequired
+// }
