@@ -6,7 +6,6 @@ import PropTypes from "prop-types";
 
 function PhotoCard({photoInfo}){
   const navigate = useNavigate();
-  //const [comments, setComments] = useState(photoInfo.comments); keeping bc commenting is coming for sure
   const comments = photoInfo.comments || [];
   const fileName = `/images/${photoInfo.file_name}`;
   const date = new Date(photoInfo.date_time);
@@ -60,14 +59,14 @@ PhotoCard.propTypes = {
     date_time: PropTypes.string.isRequired,
     comments: PropTypes.arrayOf(
       PropTypes.shape({
-        _id: PropTypes.string.isRequired,
-        comment: PropTypes.string.isRequired,
-        date_time: PropTypes.string.isRequired,
+        _id: PropTypes.string,
+        comment: PropTypes.string,
+        date_time: PropTypes.string,
         user: PropTypes.shape({
           _id: PropTypes.string.isRequired,
           first_name: PropTypes.string.isRequired,
           last_name: PropTypes.string.isRequired
-        }).isRequired
+        })
       })
     )
   }).isRequired

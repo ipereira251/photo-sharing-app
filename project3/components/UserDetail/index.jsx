@@ -5,26 +5,19 @@ import './styles.css';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import useUIStore from '../../store/ui-store';
+import useSessionStore from '../../store/session-store';
 
 function UserDetail({ userId }) {
   const {advEnabled} = useUIStore();  
+  const {loggedIn} = useSessionStore();
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchUserInfo();
-  }, [userId]); //NOT!!!! user
-
-  const handleViewImgClick = () => {
-    console.log("Clicked to view images from userId", userId);
-    if(advEnabled){
-      navigate(`/photos/${userId}/0`);
-    } else{
-      navigate(`/photos/${userId}`);
+    if(!loggedIn){
+      navigate('/login');
     }
-  };
-
-  const fetchUserInfo = async () => {
+    const fetchUserInfo = async () => {
     try {
       const response = await axios.get(`http://localhost:3001/user/${userId}`, {
         withCredentials: true
@@ -35,6 +28,18 @@ function UserDetail({ userId }) {
       }
     } catch (err){
       console.error("UserDetail: Error fetching user info: ", err);
+    }
+  };
+
+    fetchUserInfo();
+  }, [userId]); //NOT!!!! user
+
+  const handleViewImgClick = () => {
+    console.log("Clicked to view images from userId", userId);
+    if(advEnabled){
+      navigate(`/photos/${userId}/0`);
+    } else{
+      navigate(`/photos/${userId}`);
     }
   };
 

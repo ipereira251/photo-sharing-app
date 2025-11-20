@@ -12,6 +12,7 @@ import express from "express";
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import { ObjectId } from "mongodb";
+// eslint-disable-next-line import/no-extraneous-dependencies
 import session from "express-session";
 
 import User from "./schema/user.js";
@@ -135,29 +136,24 @@ app.post('/admin/logout', (request, response) => {
  * URL /session
  */
 app.get("/session", async (request, response) => {
+  console.log("request", request.session);
   if(request.session.user){
     console.log(request.session.user);
     const user = await User.findById(request.session.user.id); 
     if(user){
-      return response.json({ username: user.login_name, firstName: user.first_name});
-    }
-    if(request.session.user){
-      return response.json({loggedIn: true, user: request.session.user});
+      return response.status(200).json({ username: user.login_name, firstName: user.first_name});
     }
   }
- 
-  return response.json({loggedIn: false});
+  return response.status(401);
 });
 
 /**
  * SESSION CHECKER MIDDLEWARE
  */
 app.use((request, response, next) => {
-  //console.log("Session checker: ", request.session);
   if (request.session.user) {
     return next();
   }
-  console.log("SESSION CHECKER FAILED");
   return response.status(401).send();
 });
 
@@ -228,7 +224,7 @@ app.get('/photosOfUser/:id', async (request, response) => {
           from: 'users', 
           localField: 'comments.user_id', 
           foreignField: '_id', 
-          pipeline: [ {$project: {first_name: 1, last_name: 1}}],
+          pipeline: [{$project: {first_name: 1, last_name: 1}}],
           as: 'commenter'
         }
       }, {

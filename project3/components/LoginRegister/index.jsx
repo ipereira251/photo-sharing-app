@@ -1,13 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button, IconButton, InputAdornment, Grid, TextField } from "@mui/material";
+import { Button, IconButton, InputAdornment, TextField } from "@mui/material";
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import axios from "axios";
 import useSessionStore from "../../store/session-store";
 
 function LoginRegister(){
   const navigate = useNavigate();
-  const setSession = useSessionStore((state) => state.setSession);
+  const {loggedIn, setSession, clearSession} = useSessionStore();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = React.useState(false);
@@ -15,6 +16,13 @@ function LoginRegister(){
     username: '', 
     password: ''
   });
+  const [apiError, setApiError] = useState('');
+
+  useEffect(() => {
+    if(loggedIn){
+      navigate("/", {replace:true});
+    }
+  }, [loggedIn, navigate]);
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
@@ -55,6 +63,9 @@ function LoginRegister(){
         }
         console.log("Logging in as", username);
       } catch (err){
+        clearSession();
+        setApiError("Invalid username or password. Try again.");
+        setPassword("");
         console.error(err);
       }
       
@@ -64,47 +75,47 @@ function LoginRegister(){
   };
 
   return (
-  <form onSubmit={handleSubmit}>
-            <TextField 
-              fullWidth 
-              label="Username"
-              variant="outlined"
-              onChange={handleUsernameChange}
-              error={!!errors.username}
-              helperText={errors.username}
-              style={{ marginBottom: '20px' }}
-            />
+    <form onSubmit={handleSubmit}>
+      <TextField 
+        fullWidth 
+        label="Username"
+        variant="outlined"
+        onChange={handleUsernameChange}
+        error={!!errors.username}
+        helperText={errors.username}
+        style={{ marginBottom: '20px' }}
+      />
 
-            <TextField
-              label="Password"
-              fullWidth
-              variant="outlined"
-              type={showPassword ? "text" : "password"}
-              value={password}
-              onChange={handlePasswordChange}
-              error={!!errors.password} 
-              helperText={errors.password} 
-              style={{ marginBottom: '20px' }}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      aria-label={showPassword ? 'Hide password' : 'Show password'}
-                      onClick={handleClickShowPassword}
-                    >
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-            />
+      <TextField
+        label="Password"
+        fullWidth
+        variant="outlined"
+        type={showPassword ? "text" : "password"}
+        value={password}
+        onChange={handlePasswordChange}
+        error={!!errors.password} 
+        helperText={errors.password} 
+        style={{ marginBottom: '20px' }}
+        InputProps={{
+          endAdornment: (
+            <InputAdornment position="end">
+              <IconButton
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                onClick={handleClickShowPassword}
+              >
+              {showPassword ? <VisibilityOff /> : <Visibility />}
+              </IconButton>
+            </InputAdornment>
+          ),
+        }}
+      />
 
-            <Button type="submit" variant="contained" fullWidth>
-              Log In
-            </Button>
+      {apiError && <p style={{ color: "red"}}>{apiError}</p>}
 
-          </form>
-    
+      <Button type="submit" variant="contained" fullWidth>
+        Log In
+      </Button>
+    </form>    
   );
 }   
 

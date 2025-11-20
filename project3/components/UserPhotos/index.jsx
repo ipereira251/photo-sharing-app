@@ -6,13 +6,18 @@ import { useNavigate } from "react-router-dom";
 import PropTypes from 'prop-types';
 import PhotoCard from "../PhotoCard";
 import useUIStore from '../../store/ui-store';
+import useSessionStore from '../../store/session-store';
 
 function UserPhotos({ userId }) {
   const {advEnabled} = useUIStore();
+  const {loggedIn} = useSessionStore();
   const [photos, setPhotos] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
+    if(!loggedIn){
+      navigate('/login');
+    }
     const fetchUserPhotos = async () => {
     try {
       const response = await axios.get(`http://localhost:3001/photosOfUser/${userId}`, {

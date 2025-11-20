@@ -53,6 +53,20 @@ function TopBar() {
       console.error("Couldn't log out.", err);
     }
   };
+  
+  const toggle = async () => {
+    toggleAdvEnabled(); 
+    if(location.pathname.split("/")[1] === "photos"){
+      const id = location.pathname.split("/")[2];
+      if(advEnabled){
+        console.log("leaving detail");
+        navigate(`/photos/${id}`);
+      } else {
+        console.log("going to detail");
+        navigate(`/photos/${id}/0`);
+      }
+    }
+  };
 
   return (
     <AppBar className="topbar-appBar" position="absolute">
@@ -72,7 +86,7 @@ function TopBar() {
         )}
       
         <FormControlLabel control={
-          <Checkbox checked={advEnabled} onChange={toggleAdvEnabled} color="default" />
+          <Checkbox checked={advEnabled} onChange={() => toggle()} color="default" />
           } label="Advanced Features" />
 
         {/*display only when logged in */}

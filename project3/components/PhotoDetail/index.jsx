@@ -1,30 +1,28 @@
 import PropTypes from 'prop-types';
 import { React, useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { IconButton } from '@mui/material';
 import './styles.css';
 import axios from 'axios';
 import useUIStore from '../../store/ui-store';
+import useSessionStore from '../../store/session-store';
 import PhotoCard from '../PhotoCard';
 
 function PhotoDetail({ userId, initialIndex }){
   const {advEnabled} = useUIStore();
+  const {loggedIn} = useSessionStore();
   const [photos, setPhotos] = useState([]);
-  const location = useLocation();
 
   const [currentIndex, setCurrentIndex] = useState(initialIndex || 0);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();    
 
-
   useEffect(() => {
-
+    if(!loggedIn){
+      navigate('/login');
+    }
     if(!advEnabled){
       console.log("Tried to view single image without Adv on");
-      const path = `/photos/${userId}`; //regular photo list
-      if(window.location.pathname !== path){
-        navigate(path);
-      }
     }
 
     const fetchUserPhotos = async () => {
@@ -54,29 +52,28 @@ function PhotoDetail({ userId, initialIndex }){
     console.log("PHOTODETAIL:", userId, initialIndex, currentIndex);
   }, [userId, currentIndex, advEnabled, navigate]);
 
-  const parseIndex = (location) => {
-    const terms = location.pathname.split("/");
+  /*const parseIndex = (loc) => {
+    const terms = loc.pathname.split("/");
     console.log("terms", terms);
-    if(terms[3] === "")
+    if(terms[3] === ""){
       initialIndex = 0;
-    else
+    } else {
       initialIndex = terms[3];
-  }
-
- 
+    }
+  };*/
 
   const goToPrev = () => {
     if(currentIndex > 0){
       setCurrentIndex(currentIndex - 1);
     }
-  }
+  };
 
   const goToNext = () => {
     if(currentIndex < photos.length - 1){
       setCurrentIndex(currentIndex + 1);
     }
     console.log("go to next: ", currentIndex);
-  }
+  };
   
   if(!userId || photos.length === 0 || currentIndex === undefined){
     console.log("Userid", userId);
@@ -98,10 +95,10 @@ function PhotoDetail({ userId, initialIndex }){
       )}
 
       <div className="carousel-nav"> 
-            <IconButton onClick={goToNext} disabled={currentIndex === photos.length - 1}>
-              Forward
-            </IconButton>
-          </div>
+        <IconButton onClick={goToNext} disabled={currentIndex === photos.length - 1}>
+          Forward
+        </IconButton>
+      </div>
     </div>
   );
 }

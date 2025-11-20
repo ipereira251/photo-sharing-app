@@ -4,8 +4,7 @@ import {
   List,
   ListItemButton, /* changed from plain List Item */
   ListItemText,
-  IconButton, 
-  Grid
+  IconButton
 } from '@mui/material';
 
 import './styles.css';
@@ -47,6 +46,19 @@ function UserList() {
   }, [loggedIn]);
 
   useEffect(() => {
+    const fetchCounts = async (userId) => {
+      console.log("In fetchCounts"); 
+      try{
+        const response = await axios.get(`http://localhost:3001/counts/${userId}`, {withCredentials: true});
+        if(response.data){
+          return response.data;
+        }
+        return 0;
+      } catch (err){
+        return console.error(err);
+      }
+    };
+
     if(advEnabled && users.length > 0){
       console.log("USERLIST: new adv", advEnabled);
       const fetchAllCounts = async () => {
@@ -66,20 +78,6 @@ function UserList() {
     }
     
   }, [advEnabled, users]);
-
-
-  const fetchCounts = async (userId) => {
-    console.log("In fetchCounts"); 
-    try{
-      const response = await axios.get(`http://localhost:3001/counts/${userId}`, {withCredentials: true});
-      if(response.data){
-        return response.data;
-      }
-      return 0;
-    } catch (err){
-      return console.error(err);
-    }
-  };
 
   const handleUserClick = (user) => {
     console.log("Clicked on user", user.first_name, user.last_name, user._id);

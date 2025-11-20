@@ -2,7 +2,7 @@ import { React, useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
 import { Grid, Paper } from '@mui/material';
 import {
-  BrowserRouter, Route, Routes, useParams,
+  BrowserRouter, Route, Routes, useParams
 } from 'react-router-dom';
 import axios from 'axios';
 
@@ -17,11 +17,11 @@ import LoginRegister from './components/LoginRegister';
 
 import useSessionStore from './store/session-store';
 
-function UserDetailRoute({advEnabled}) {
+function UserDetailRoute() {
   const { userId } = useParams();
   // eslint-disable-next-line no-console
   console.log('UserDetailRoute: userId is:', userId);
-  return <UserDetail userId={userId} advEnabled={advEnabled} />;
+  return <UserDetail userId={userId} />;
 }
 
 function UserPhotosRoute() {
@@ -41,15 +41,14 @@ function CommentDetailRoute(){
 
 function PhotoShare() {
   const { setSession, clearSession } = useSessionStore();
-
   useEffect(() => {
     const checkSession = async () => {
       try {
         console.log("trying session");
         const response = await axios.get("http://localhost:3001/session", {withCredentials: true});
-        if(response.data){
+        console.log(response);
+        if(response.status === 200){
           setSession({username: response.data.username, firstName: response.data.firstName });
-          console.log("Setting session", response.data.username, response.data.firstName);
         } else {
           clearSession();
         }
@@ -60,7 +59,8 @@ function PhotoShare() {
     };
 
     checkSession();
-  }, []);
+    useSessionStore.getState().initSession();
+  }, [setSession, clearSession]);
 
   return (
     <BrowserRouter>
