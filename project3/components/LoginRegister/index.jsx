@@ -26,10 +26,10 @@ function LoginRegister(){
       username: '',
       password: ''
     };
-    if(!username){
+    if(!username.trim()){
       newErrors.username = "Username is required";
     }
-    if(!password){
+    if(!password.trim()){
       newErrors.password = "Password is required";
     }
 
@@ -44,19 +44,20 @@ function LoginRegister(){
       ///actual log in attempt
       try{
         console.log("calling /admin/login");
-        const response = await axios.post('http://localhost:3001/admin/login', {username:"admin", password:"admin"}, {withCredentials:true});
+        const response = await axios.post('http://localhost:3001/admin/login', {username, password}, {withCredentials:true});
         if(response){
           console.log("Response from /admin/login", response);
         }
+        if(response.data.success){ 
+          console.log("updating zustand session");
+          setSession({username: response.data.username, firstName: response.data.firstName });
+          navigate(`/users/${response.data.id}`);
+        }
+        console.log("Logging in as", username);
       } catch (err){
         console.error(err);
       }
-      if(username === "admin" && password === "admin"){ //update for users
-        console.log("updating zustand session");
-        setSession({ loggedIn: true,  username: "admin", firstName: "Admin" });
-        navigate('/');
-      }
-      console.log("Logging in as", username);
+      
     } else {
       console.log("Errors in form");
     }

@@ -1,9 +1,10 @@
-import { React, useState } from 'react';
+import { React, useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
 import { Grid, Paper } from '@mui/material';
 import {
   BrowserRouter, Route, Routes, useParams,
 } from 'react-router-dom';
+import axios from 'axios';
 
 import './styles/main.css';
 import TopBar from './components/TopBar';
@@ -11,9 +12,10 @@ import UserDetail from './components/UserDetail';
 import UserList from './components/UserList';
 import UserPhotos from './components/UserPhotos';
 import PhotoDetail from './components/PhotoDetail';
-import PropTypes from 'prop-types';
 import CommentDetail from './components/CommentDetail';
 import LoginRegister from './components/LoginRegister';
+
+import useSessionStore from './store/session-store';
 
 function UserDetailRoute({advEnabled}) {
   const { userId } = useParams();
@@ -22,57 +24,65 @@ function UserDetailRoute({advEnabled}) {
   return <UserDetail userId={userId} advEnabled={advEnabled} />;
 }
 
-function UserPhotosRoute({advEnabled}) {
+function UserPhotosRoute() {
   const { userId } = useParams();
-  return <UserPhotos userId={userId} advEnabled={advEnabled}/>;
+  return <UserPhotos userId={userId} />;
 }
 
-function UserListRoute({advEnabled}){
-  return <UserList advEnabled={advEnabled} />;
-}
-
-function PhotoDetailRoute({advEnabled}){
+function PhotoDetailRoute(){
   const { userId, photoId } = useParams();
-  return <PhotoDetail userId={userId} photoId={photoId} advEnabled={advEnabled}/>;
+  return <PhotoDetail userId={userId} photoId={photoId} />;
 }
 
-function CommentDetailRoute({advEnabled}){
+function CommentDetailRoute(){
   const { userId } = useParams();
-  return <CommentDetail userId={userId} advEnabled={advEnabled}/>;
+  return <CommentDetail userId={userId} />;
 }
 
 function PhotoShare() {
-  const [advEnabled, setAdvEnabled] = useState(false);
+  const { setSession, clearSession } = useSessionStore();
 
-  const toggleAdvEnabled = () => {
-    setAdvEnabled((prev) => {
-      const newState = !prev;
-      console.log("PHOTOSHARE New state:", newState);
-      return newState;
-    });
-  };
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        console.log("trying session");
+        const response = await axios.get("http://localhost:3001/session", {withCredentials: true});
+        if(response.data){
+          setSession({username: response.data.username, firstName: response.data.firstName });
+          console.log("Setting session", response.data.username, response.data.firstName);
+        } else {
+          clearSession();
+        }
+      } catch (err){
+        console.error("Failed session check", err);
+        clearSession();
+      }
+    };
+
+    checkSession();
+  }, []);
 
   return (
     <BrowserRouter>
       <div>
         <Grid container spacing={2}>
           <Grid item xs={12}>
-            <TopBar advEnabled={advEnabled} toggleAdvEnabled={toggleAdvEnabled}/>
+            <TopBar />
           </Grid>
           <div className="main-topbar-buffer" />
           <Grid item sm={3}>
             <Paper className="main-grid-item">
-              <UserList advEnabled={advEnabled}/>
+              <UserList />
             </Paper>
           </Grid>
           <Grid item sm={9}>
             <Paper className="main-grid-item">
               <Routes> 
-                <Route path="/users/:userId" element={<UserDetailRoute advEnabled={advEnabled}/>} />
-                <Route path="/photos/:userId" element={<UserPhotosRoute advEnabled={advEnabled}/>} />
-                <Route path="/photos/:userId/:index" element={<PhotoDetailRoute advEnabled={advEnabled}/>} />
-                <Route path="/comments/:userId" element={<CommentDetailRoute advEnabled={advEnabled}/>} />
-                <Route path="/users" element={<UserListRoute advEnabled={advEnabled} />} />
+                <Route path="/users/:userId" element={<UserDetailRoute />} />
+                <Route path="/photos/:userId" element={<UserPhotosRoute />} />
+                <Route path="/photos/:userId/:index" element={<PhotoDetailRoute />} />
+                <Route path="/comments/:userId" element={<CommentDetailRoute />} />
+                <Route path="/users" element={<UserList />} />
                 <Route path="/login" element={<LoginRegister />} />
               </Routes>
             </Paper>
@@ -81,26 +91,6 @@ function PhotoShare() {
       </div>
     </BrowserRouter>
   );
-}
-
-UserDetailRoute.propTypes = {
-  advEnabled: PropTypes.bool.isRequired
-}
-
-UserPhotosRoute.propTypes = {
-  advEnabled: PropTypes.bool.isRequired
-}
-
-PhotoDetailRoute.propTypes = {
-  advEnabled: PropTypes.bool.isRequired
-}
-
-CommentDetailRoute.propTypes = {
-  advEnabled: PropTypes.bool.isRequired
-}
-
-UserListRoute.propTypes = {
-  advEnabled: PropTypes.bool.isRequired
 }
 
 const root = ReactDOM.createRoot(document.getElementById('photoshareapp'));

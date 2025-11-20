@@ -1,14 +1,13 @@
 import { React, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Typography, Button } from '@mui/material';
-
 import './styles.css';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import useUIStore from '../../store/ui-store';
 
 function UserDetail({ userId }) {
-  const {advEnabled} = useUIStore();
+  const {advEnabled} = useUIStore();  
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
@@ -18,15 +17,18 @@ function UserDetail({ userId }) {
 
   const handleViewImgClick = () => {
     console.log("Clicked to view images from userId", userId);
-    if(advEnabled)
+    if(advEnabled){
       navigate(`/photos/${userId}/0`);
-    else
+    } else{
       navigate(`/photos/${userId}`);
-  }
+    }
+  };
 
   const fetchUserInfo = async () => {
     try {
-      const response = await axios.get(`http://localhost:3001/user/${userId}`);
+      const response = await axios.get(`http://localhost:3001/user/${userId}`, {
+        withCredentials: true
+      });
       if(response.data){
         console.log(response.data);
         setUser(response.data);

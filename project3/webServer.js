@@ -12,12 +12,8 @@ import express from "express";
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import { ObjectId } from "mongodb";
+import session from "express-session";
 
-// ToDO - Your submission should work without this line. Comment out or delete this line for tests and before submission!
-//import models from "./modelData/photoApp.js";
-
-// Load the Mongoose schema for User, Photo, and SchemaInfo
-// ToDO - Your submission will use code below, so make sure to uncomment this line for tests and before submission!
 import User from "./schema/user.js";
 import Photo from "./schema/photo.js";
 import SchemaInfo from "./schema/schemaInfo.js";
@@ -27,15 +23,27 @@ const app = express();
 
 // Enable CORS for all routes
 app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  res.header('Access-Control-Allow-Credentials', 'true');
   if (req.method === 'OPTIONS') {
     res.sendStatus(200);
   } else {
     next();
   }
 });
+
+app.use(session({
+  secret: 'something', 
+  resave: false, 
+  saveUninitialized: false, 
+  cookie: {
+    maxAge: 7200000, 
+    httpOnly: true, 
+    secure: false
+  }
+}));
 
 mongoose.Promise = bluebird;
 mongoose.set("strictQuery", false);
@@ -50,6 +58,8 @@ const __dirname = dirname(__filename);
 // We have the express static module
 // (http://expressjs.com/en/starter/static-files.html) do all the work for us.
 app.use(express.static(__dirname));
+
+app.use(express.json());
 
 app.get("/", function (request, response) {
   response.send("Simple web server of files from " + __dirname);
@@ -81,6 +91,76 @@ app.get('/test/counts', async (request, response) => {
     response.status(400).send("Internal server error");
   }
 });
+
+/**
+ * URL /admin/login 
+ */
+app.post('/admin/login', async (request, response) => {
+  console.log("/admin/login called", request.body);
+  if(!request.body){
+    console.log("Admin/login: no request body");
+  }
+  const { username, password } = request.body;
+  //find user
+  const user = await User.findOne({ login_name: username, password }); 
+  if(user){
+    request.session.user = {
+      id: user._id, 
+      name: user.first_name, 
+      username: user.login_name
+    };
+    console.log("session:", request.session);
+    return response.json({ success: true, user: request.session.user, id: user._id, firstName: user.first_name });
+  } else {
+    console.log("failed log in");
+    return response.status(401).send("Invalid username or password");
+  }
+});
+
+/**
+ * URL /admin/logout
+ */
+app.post('/admin/logout', (request, response) => {
+  request.session.destroy((err) => {
+    if(err){
+      console.error("Couldn't destroy session", err);
+      return response.status(500).send("Error logging out");
+    }
+    response.clearCookie("connect.sid");
+    return response.json({ success:true });
+  });
+});
+
+/**
+ * URL /session
+ */
+app.get("/session", async (request, response) => {
+  if(request.session.user){
+    console.log(request.session.user);
+    const user = await User.findById(request.session.user.id); 
+    if(user){
+      return response.json({ username: user.login_name, firstName: user.first_name});
+    }
+    if(request.session.user){
+      return response.json({loggedIn: true, user: request.session.user});
+    }
+  }
+ 
+  return response.json({loggedIn: false});
+});
+
+/**
+ * SESSION CHECKER MIDDLEWARE
+ */
+app.use((request, response, next) => {
+  //console.log("Session checker: ", request.session);
+  if (request.session.user) {
+    return next();
+  }
+  console.log("SESSION CHECKER FAILED");
+  return response.status(401).send();
+});
+
 
 /**
  * URL /user/list - Returns all the User objects.
@@ -168,10 +248,11 @@ app.get('/photosOfUser/:id', async (request, response) => {
       }
     ]);
     console.log("PhotoModels:", photos);
-    if(!photos)
+    if(!photos){
       response.status(404).send("No user found");
-    else
+    } else{
       response.status(200).json(photos);
+    }
   } catch (err){
     console.error(err);
     response.status(400).send("Internal server error");

@@ -1,45 +1,50 @@
 import { React, useState, useEffect } from 'react';
-import { Typography, List, ListItem, toggleButtonClasses } from '@mui/material';
-import PhotoCard from "../PhotoCard";
-import PhotoDetail from "../PhotoDetail";
-import PropTypes from 'prop-types';
+import { Typography } from '@mui/material';
 import './styles.css';
 import axios from 'axios';
+import { useNavigate } from "react-router-dom";
+import PropTypes from 'prop-types';
+import PhotoCard from "../PhotoCard";
 import useUIStore from '../../store/ui-store';
 
 function UserPhotos({ userId }) {
   const {advEnabled} = useUIStore();
   const [photos, setPhotos] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    setLoading(true);
-    if(!advEnabled)
-      fetchUserPhotos();
-    else if(advEnabled)
-      return <PhotoDetail userId={userId} initialIndex={0} advEnabled={advEnabled} />;
-    console.log("UserPhotos:", photos);
-
-
-  }, [userId]);
-
-  const fetchUserPhotos = async () => {
+    const fetchUserPhotos = async () => {
     try {
-      const response = await axios.get(`http://localhost:3001/photosOfUser/${userId}`);
+      const response = await axios.get(`http://localhost:3001/photosOfUser/${userId}`, {
+        withCredentials: true
+      });
       
       if(response.data){
         console.log("Response data:", response.data);
         setPhotos(response.data);
       }
-      setLoading(false);
     } catch (err) {
       console.error("UserPhotos: Error fetching photos: ", err);
-      setLoading(false);
     }
   };
 
+    if(!advEnabled){
+      fetchUserPhotos();
+      console.log("adv toggled off");
+      navigate(`/photos/${userId}`);
+    }
+    else {
+      console.log("redirecting to photo detail");
+      navigate(`/photos/${userId}/0`);
+      //return <PhotoDetail userId={userId} initialIndex={0} advEnabled={advEnabled} />;
+    }
+    return console.log("UserPhotos:", photos);
+  }, [userId, advEnabled]);
+
   if(advEnabled && photos.length > 0){
-    <PhotoDetail userId={userId} photos={photos} initialIndex={0} />;
+    console.log("User photos mounting Photodetail");
+
+    //return <PhotoDetail userId={userId} photos={photos} initialIndex={0} advEnabled={advEnabled} />;
   }
 
   return (
@@ -56,6 +61,7 @@ function UserPhotos({ userId }) {
     </div>
   );
 }
+
 UserPhotos.propTypes = {
   userId: PropTypes.string.isRequired,
 };

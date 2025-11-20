@@ -2,11 +2,10 @@ import { create } from 'zustand';
 
 const useSessionStore = create((set) => ({
   loggedIn: false,
-  username: '', 
-  firstName: '', 
-  lastName: '',
-  setSession: (session) => set({ loggedIn: session.loggedIn, username: session.username, firstName: session.firstName, lastName: session.lastName }), 
-  clearSession: () => set({ loggedIn: false, user: null })
+  username: null, 
+  firstName: '',
+  setSession: (user) => set({ loggedIn: true, username: user.username, firstName: user.firstName }),
+  clearSession: () => set({ loggedIn: false, username: null })
 }));
 
 export default useSessionStore;

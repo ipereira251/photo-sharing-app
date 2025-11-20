@@ -28,7 +28,9 @@ function CommentDetail({ userId }){
 
   const fetchComments = async () => {
     try{
-      const response = await axios.get(`http://localhost:3001/comments/${userId}`);
+      const response = await axios.get(`http://localhost:3001/comments/${userId}`, {
+        withCredentials: true
+      });
       if(response.data){
         console.log(response.data);
         setComments(response.data);
@@ -36,11 +38,11 @@ function CommentDetail({ userId }){
     } catch(err){
       console.error("COMMENTDETAIL", err);
     }
-  }
+  };
 
   const handleProfileClick = (id) => {
     navigate(`/users/${id}`);
-  }
+  };
 
   const handleListItemClick = (comment) => {
     console.log("Clicked list item", comment);
@@ -48,7 +50,7 @@ function CommentDetail({ userId }){
       console.log("Navigating", `/photos/${comment.originalPostersId}/${comment.photoIndexInPosters}`);
       navigate(`/photos/${comment.originalPostersId}/${comment.photoIndexInPosters}`);
     }
-  }
+  };
 
   if(loading){
     return <p>Loading...</p>;
@@ -62,7 +64,7 @@ function CommentDetail({ userId }){
           <ListItem key={comment.commentId} className="comment" onClick={() => handleListItemClick(comment)}>
             <CardMedia className="thumbnail-photo" component="img" image={`/images/${comment.photoFileName}`} />
             <Button variant="text" className="user-name-button comment-user-name-button"
-            onClick={(e) => {
+              onClick={(e) => {
               e.stopPropagation(); 
               handleProfileClick(comment.commenterId);}}>
               {comment.commenterFirstName} {comment.commenterLastName}
@@ -82,6 +84,6 @@ function CommentDetail({ userId }){
 
 CommentDetail.propTypes = {
   userId: PropTypes.string.isRequired, 
-};
+}
 
 export default CommentDetail;
