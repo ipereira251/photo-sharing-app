@@ -40,7 +40,7 @@ function PhotoShare() {
                   <Route path="/users/:userId" element={<UserDetailRoute advEnabled={advEnabled}/>} />
                   <Route path="/photos/:userId" element={<UserPhotosRoute advEnabled={advEnabled} setAdvEnabled={setAdvEnabled}/>} />
                   <Route path="/photos/:userId/:index" element={<PhotoDetailRoute advEnabled={advEnabled} setAdvEnabled={setAdvEnabled}/>} />
-                  <Route path="/comments/:userId" element={<CommentDetailRoute advEnabled={advEnabled}/>} />
+                  <Route path="/comments/:userId" element={<CommentDetailRoute advEnabled={advEnabled} setAdvEnabled={setAdvEnabled}/>} />
                   <Route path="/users" element={<UserListRoute advEnabled={advEnabled} />} />
                 </Routes>
               </Paper>

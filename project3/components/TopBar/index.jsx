@@ -55,7 +55,8 @@ function TopBar({ advEnabled, setAdvEnabled }) {
       const currIsAdvEnabled = !prev;
       console.log("PHOTOSHARE New state:", currIsAdvEnabled);
 
-      let photoDetailRouteMatch = /^\/photos\/[a-z0-9]+\/[0-9]+/.exec(window.location.pathname);
+      let path = window.location.pathname;
+      let photoDetailRouteMatch = /^\/photos\/[a-z0-9]+\/[0-9]+/.exec(path);
 
       //if you're on a Photo Detail route currently, and the Advanced Features button got turned off
       //then redirect to the User Photos route
@@ -64,7 +65,7 @@ function TopBar({ advEnabled, setAdvEnabled }) {
         navigate(`/photos/${userId}`)
       }
       else {
-        let userPhotosRouteMatch = /^\/photos\/[a-z0-9]+/.exec(window.location.pathname);
+        let userPhotosRouteMatch = /^\/photos\/[a-z0-9]+/.exec(path);
 
         //if you're on the User Photos route, and the Advanced Features button got turned on
         //then redirect to the first User Details route
@@ -72,6 +73,15 @@ function TopBar({ advEnabled, setAdvEnabled }) {
           let userId = userPhotosRouteMatch[0].split('/')[2];
           navigate(`/photos/${userId}/0`);
         }
+      }
+      
+      let userCommentsRouteMatch = /^\/comments\/[a-zA-Z0-9]+/.exec(path);
+
+      //if you're on the User Comments Route, and the button got turned off
+      //then redirect to the users profile
+      if (userCommentsRouteMatch && !currIsAdvEnabled) {
+        let userId = userCommentsRouteMatch[0].split('/')[2];
+        navigate(`/users/${userId}`);
       }
 
     return currIsAdvEnabled;

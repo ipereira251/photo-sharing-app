@@ -25,33 +25,6 @@ function UserPhotos({ userId, advEnabled, setAdvEnabled }) {
     return "Cannot load users photos";
   }
 
-  // useEffect(() => {
-  //   if(!advEnabled){
-  //     fetchUserPhotos();
-  //   }
-  //   else if(advEnabled){
-  //     return <PhotoDetail userId={userId} initialIndex={0} advEnabled={advEnabled} />;
-  //   }
-  //   return console.log("UserPhotos:", photos);
-  // }, [userId]);
-
-  // const fetchUserPhotos = async () => {
-  //   try {
-  //     const response = await axios.get(`http://localhost:3001/photosOfUser/${userId}`);
-      
-  //     if(response.data){
-  //       console.log("Response data:", response.data);
-  //       setPhotos(response.data);
-  //     }
-  //   } catch (err) {
-  //     console.error("UserPhotos: Error fetching photos: ", err);
-  //   }
-  // };
-
-  // if(advEnabled && photos.length > 0){
-  //   <PhotoDetail userId={userId} photos={photos} initialIndex={0} advEnabled={advEnabled} />;
-  // }
-
   return (
     <div className="photo-card-container">
       {photos.length > 0 ? (

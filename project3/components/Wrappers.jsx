@@ -23,9 +23,9 @@ export function PhotoDetailRoute({advEnabled, setAdvEnabled}){
   return <PhotoDetail userId={userId} initialIndex={index} advEnabled={advEnabled} setAdvEnabled={setAdvEnabled}/>;
 }
 
-export function CommentDetailRoute({advEnabled}){
+export function CommentDetailRoute({advEnabled, setAdvEnabled}){
   const { userId } = useParams();
-  return <CommentDetail userId={userId} advEnabled={advEnabled}/>;
+  return <CommentDetail userId={userId} advEnabled={advEnabled} setAdvEnabled={setAdvEnabled}/>;
 }
 
 export function UserListRoute({advEnabled}){

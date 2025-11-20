@@ -66,4 +66,9 @@ export const fetchUserInfo = async (userId) => {
 export const fetchUserPhotos = async (userId) => {
     const response = await axios.get(`http://localhost:3001/photosOfUser/${userId}`);
     return response.data;
-}
+};
+
+export const fetchUserComments = async (userId) => {
+  let resposne = await axios.get(`http://localhost:3001/comments/${userId}`);
+  return resposne.data;
+  }
