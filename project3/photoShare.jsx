@@ -10,8 +10,8 @@ import {
 
 import './styles/main.css';
 import TopBar from './components/TopBar';
-import UserDetail from './components/UserDetail';
 import UserList from './components/UserList';
+import UserDetail from './components/UserDetail';
 import UserPhotos from './components/UserPhotos';
 import PhotoDetail from './components/PhotoDetail';
 import PropTypes from 'prop-types';
