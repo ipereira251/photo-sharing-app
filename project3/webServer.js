@@ -148,7 +148,7 @@ app.get('/photosOfUser/:id', async (request, response) => {
           from: 'users', 
           localField: 'comments.user_id', 
           foreignField: '_id', 
-          pipeline: [ {$project: {first_name: 1, last_name: 1}}],
+          pipeline: [{$project: {first_name: 1, last_name: 1}}],
           as: 'commenter'
         }
       }, {
@@ -168,10 +168,12 @@ app.get('/photosOfUser/:id', async (request, response) => {
       }
     ]);
     console.log("PhotoModels:", photos);
-    if(!photos)
+    if(!photos) {
       response.status(404).send("No user found");
-    else
+    }
+    else {
       response.status(200).json(photos);
+    }
   } catch (err){
     console.error(err);
     response.status(400).send("Internal server error");

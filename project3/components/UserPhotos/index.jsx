@@ -1,11 +1,9 @@
-import { React, useState, useEffect } from 'react';
+import React from 'react';
 import { Typography } from '@mui/material';
 import PropTypes from 'prop-types';
 import './styles.css';
-import axios from 'axios';
 import { fetchUserPhotos } from '../../axiosAPI';
 import PhotoCard from "../PhotoCard";
-import PhotoDetail from "../PhotoDetail";
 import { useQuery } from '@tanstack/react-query';
 import useStore from '../../appStore';
 
@@ -44,9 +42,8 @@ function UserPhotos({ userId }) {
   );
 }
 
-// UserPhotos.propTypes = {
-//   userId: PropTypes.string.isRequired,
-//   advEnabled: PropTypes.bool.isRequired
-// };
+UserPhotos.propTypes = {
+  userId: PropTypes.string.isRequired,
+};
 
 export default UserPhotos;

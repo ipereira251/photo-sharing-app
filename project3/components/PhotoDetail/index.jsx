@@ -1,9 +1,8 @@
 import PropTypes from 'prop-types';
-import { React, useState, useEffect } from 'react';
+import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { IconButton } from '@mui/material';
 import './styles.css';
-import axios from 'axios';
 import { fetchUserPhotos } from '../../axiosAPI';
 import { useQuery } from '@tanstack/react-query';
 import PhotoCard from '../PhotoCard';
@@ -32,6 +31,8 @@ function PhotoDetail({userId, initialIndex}){
     return "Could not load User Photo"
   }
   
+  //If the index is not in bounds
+  //then yell at the user
   if(!/[0-9]+/.test(String(initialIndex))) {
     return "Not a number";
   }
@@ -82,10 +83,9 @@ function PhotoDetail({userId, initialIndex}){
   );
 }
 
-// PhotoDetail.propTypes = {
-//   userId: PropTypes.string.isRequired, 
-//   initialIndex: PropTypes.number.isRequired,
-//   advEnabled: PropTypes.bool.isRequired
-// };
+PhotoDetail.propTypes = {
+  userId: PropTypes.string.isRequired, 
+  initialIndex: PropTypes.number.isRequired,
+};
 
 export default PhotoDetail;

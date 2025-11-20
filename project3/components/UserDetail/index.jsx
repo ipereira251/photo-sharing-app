@@ -1,9 +1,8 @@
-import { React, useState, useEffect } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { Typography, Button } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
 
 import './styles.css';
 import { fetchUserInfo } from '../../axiosAPI';
@@ -27,9 +26,6 @@ function UserDetail({userId}) {
   if (error) {
     return 'Could not fetch User profile';
   }
-  // useEffect(() => {
-  //   fetchUserInfo();
-  // }, [userId]); //NOT!!!! user
 
   const handleViewImgClick = () => {
     console.log("Clicked to view images from userId", userId);
@@ -62,9 +58,8 @@ function UserDetail({userId}) {
   );
 }
 
-// UserDetail.propTypes = {
-//   userId: PropTypes.string.isRequired,
-//   advEnabled: PropTypes.bool.isRequired
-// };
+UserDetail.propTypes = {
+  userId: PropTypes.string.isRequired,
+};
 
 export default UserDetail;

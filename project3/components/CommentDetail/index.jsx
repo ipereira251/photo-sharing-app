@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import './styles.css';
-import axios from 'axios';
 import { useQuery } from '@tanstack/react-query';
 import { fetchUserComments } from '../../axiosAPI';
 import { useNavigate } from 'react-router-dom';
@@ -69,9 +68,8 @@ function CommentDetail({userId}){
   );
 }
 
-// CommentDetail.propTypes = {
-//   userId: PropTypes.string.isRequired, 
-//   advEnabled: PropTypes.bool.isRequired
-// }
+CommentDetail.propTypes = {
+  userId: PropTypes.string.isRequired, 
+}
 
 export default CommentDetail;

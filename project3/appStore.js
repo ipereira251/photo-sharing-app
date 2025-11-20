@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-let useStore = create((set) => ({
+const useStore = create((set) => ({
     advEnabled: false,
     setAdvEnabled: (value) => set(() => ({advEnabled: value})),
     set: (f) => set(f),

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import {
   Divider,
   List,
@@ -11,7 +11,6 @@ import { fetchUserListDisplay } from '../../axiosAPI';
 
 import './styles.css';
 import { useNavigate } from 'react-router-dom';
-import PropTypes from 'prop-types';
 import useStore from '../../appStore';
 
 
@@ -24,68 +23,17 @@ function UserList() {
     queryFn: () => fetchUserListDisplay(advEnabled)
   });
 
-  if (error) {
-    console.error(error);
+  if (isLoading) {
     return "";
   }
   
+  if (error) {
+    return "Could not load Users";
+  }
+ 
   console.log(data);
-
-  let {users, counts} = data ?? {users: [], counts: null};
-
-  // const [users, setUsers] = useState([]);
-  // const [counts, setCounts] = useState([]);
   
-  // useEffect(() => {
-  //   fetchUsers();
-  //   if(advEnabled){
-  //     console.log("USERLIST: new adv", advEnabled);
-  //     const fetchAllCounts = async () => {
-  //       try {
-  //         const arr = await Promise.all(users.map(async (user) => {
-  //           const x = await fetchCounts(user._id);
-  //           return x;
-  //         }));
-  //         setCounts(arr.flat());
-  //         console.log("Fetched counts", arr.flat());
-  //       } catch (err){
-  //         console.error("USERLIST", err);
-  //       }
-  //     };
-      
-  //     fetchAllCounts();
-  //   }
-    
-  // }, [advEnabled]);
-
-  // const fetchUsers = async () => {
-  //   try {
-  //     const response = await axios.get('http://localhost:3001/user/list');
-  //     if (response.data) {
-  //       setUsers(response.data);
-  //       console.log("UserList: Response:", response.data); 
-  //       console.log("UserList: Fetched users.");
-  //     } else {
-  //       console.error("UserList: No users found.");
-  //     }
-  //   } catch (err) {
-  //     console.error("UserList: Error fetching users: ", err);
-  //   }
-  // };
-
-  // const fetchCounts = async (userId) => {
-  //   console.log("In fetchCounts"); 
-  //   try{
-  //     const response = await axios.get(`http://localhost:3001/counts/${userId}`);
-  //     if(response.data){
-  //       console.log(response.data);
-  //       return response.data;
-  //     }
-  //     return 0;
-  //   } catch (err){
-  //     return console.error(err);
-  //   }
-  // };
+  let {users, counts} = data ?? {users: [], counts: null};
 
   const handleUserClick = (user) => {
     console.log("Clicked on user", user.first_name, user.last_name, user._id);
@@ -153,9 +101,5 @@ function UserList() {
     </div>
   );
 }
-
-// UserList.propTypes = {
-//   advEnabled: PropTypes.bool.isRequired
-// };
 
 export default UserList;

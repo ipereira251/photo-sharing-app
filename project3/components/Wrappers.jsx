@@ -2,7 +2,6 @@ import UserDetail from './UserDetail';
 import UserPhotos from './UserPhotos';
 import PhotoDetail from './PhotoDetail';
 import CommentDetail from './CommentDetail';
-import PropTypes from 'prop-types';
 import UserList from './UserList';
 import { useParams } from 'react-router-dom';
 
@@ -32,22 +31,3 @@ export function UserListRoute(){
   return <UserList />;
 }
 
-// UserDetailRoute.propTypes = {
-//   advEnabled: PropTypes.bool.isRequired
-// }
-
-// UserPhotosRoute.propTypes = {
-//   advEnabled: PropTypes.bool.isRequired
-// }
-
-// PhotoDetailRoute.propTypes = {
-//   advEnabled: PropTypes.bool.isRequired
-// }
-
-// CommentDetailRoute.propTypes = {
-//   advEnabled: PropTypes.bool.isRequired
-// }
-
-// UserListRoute.propTypes = {
-//   advEnabled: PropTypes.bool.isRequired
-// }

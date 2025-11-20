@@ -1,8 +1,7 @@
-import { React } from "react";
+import React from 'react';
 import { Typography, Card, CardContent, CardMedia, Button, List, ListItem } from "@mui/material";
 import "./styles.css";
 import { useNavigate } from "react-router-dom";
-import PropTypes from "prop-types";
 
 function PhotoCard({photoInfo}){
   const navigate = useNavigate();
