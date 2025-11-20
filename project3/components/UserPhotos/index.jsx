@@ -3,38 +3,53 @@ import { Typography } from '@mui/material';
 import PropTypes from 'prop-types';
 import './styles.css';
 import axios from 'axios';
+import { fetchUserPhotos } from '../../axiosAPI';
 import PhotoCard from "../PhotoCard";
 import PhotoDetail from "../PhotoDetail";
+import { useQuery } from '@tanstack/react-query';
 
-function UserPhotos({ userId, advEnabled }) {
-  const [photos, setPhotos] = useState([]);
+function UserPhotos({ userId, advEnabled, setAdvEnabled }) {
+  setAdvEnabled(false);
 
-  useEffect(() => {
-    if(!advEnabled){
-      fetchUserPhotos();
-    }
-    else if(advEnabled){
-      return <PhotoDetail userId={userId} initialIndex={0} advEnabled={advEnabled} />;
-    }
-    return console.log("UserPhotos:", photos);
-  }, [userId]);
+  let {data: photos, isLoading, error} = useQuery({
+    queryKey: ['userPhotos', userId],
+    queryFn: () => fetchUserPhotos(userId),
+  });
 
-  const fetchUserPhotos = async () => {
-    try {
-      const response = await axios.get(`http://localhost:3001/photosOfUser/${userId}`);
-      
-      if(response.data){
-        console.log("Response data:", response.data);
-        setPhotos(response.data);
-      }
-    } catch (err) {
-      console.error("UserPhotos: Error fetching photos: ", err);
-    }
-  };
-
-  if(advEnabled && photos.length > 0){
-    <PhotoDetail userId={userId} photos={photos} initialIndex={0} advEnabled={advEnabled} />;
+  if (isLoading) {
+    return "Loading Photos ...";
   }
+
+  if (error) {
+    return "Cannot load users photos";
+  }
+
+  // useEffect(() => {
+  //   if(!advEnabled){
+  //     fetchUserPhotos();
+  //   }
+  //   else if(advEnabled){
+  //     return <PhotoDetail userId={userId} initialIndex={0} advEnabled={advEnabled} />;
+  //   }
+  //   return console.log("UserPhotos:", photos);
+  // }, [userId]);
+
+  // const fetchUserPhotos = async () => {
+  //   try {
+  //     const response = await axios.get(`http://localhost:3001/photosOfUser/${userId}`);
+      
+  //     if(response.data){
+  //       console.log("Response data:", response.data);
+  //       setPhotos(response.data);
+  //     }
+  //   } catch (err) {
+  //     console.error("UserPhotos: Error fetching photos: ", err);
+  //   }
+  // };
+
+  // if(advEnabled && photos.length > 0){
+  //   <PhotoDetail userId={userId} photos={photos} initialIndex={0} advEnabled={advEnabled} />;
+  // }
 
   return (
     <div className="photo-card-container">

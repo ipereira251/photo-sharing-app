@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import { React, useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { IconButton } from '@mui/material';
+
 import './styles.css';
 import axios from 'axios';
 import PhotoCard from '../PhotoCard';
@@ -13,6 +14,8 @@ function PhotoDetail({ userId, initialIndex, advEnabled }){
   const [currentIndex, setCurrentIndex] = useState(initialIndex || 0);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();    
+
+  
 
 
   useEffect(() => {
@@ -51,19 +54,6 @@ function PhotoDetail({ userId, initialIndex, advEnabled }){
     }
   };
 
-  const fetchUserPhotos = async () => {
-    try {
-      const response = await axios.get(`http://localhost:3001/photosOfUser/${userId}`);
-      console.log(response);
-      if(response.data){
-        setPhotos(response.data);
-        setLoading(false);
-      }
-    } catch (err) {
-      console.error("PhotoDetail: Error fetching photos: ", err);
-    }
-  };
-
   const goToPrev = () => {
     if(currentIndex > 0){
       setCurrentIndex(currentIndex - 1);
@@ -76,13 +66,6 @@ function PhotoDetail({ userId, initialIndex, advEnabled }){
     }
     console.log("go to next: ", currentIndex);
   };
-  
-  if(!userId || photos.length === 0 || currentIndex === undefined){
-    console.log("Userid", userId);
-    console.log("curr", currentIndex);
-    return <p>Loading....</p>;
-  }
-    
 
   return (
     <div className="carousel-container">

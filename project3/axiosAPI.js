@@ -62,3 +62,8 @@ export const fetchUserInfo = async (userId) => {
       let response = await axios.get(`http://localhost:3001/user/${userId}`);
       return response.data;
   };
+
+export const fetchUserPhotos = async (userId) => {
+    const response = await axios.get(`http://localhost:3001/photosOfUser/${userId}`);
+    return response.data;
+}

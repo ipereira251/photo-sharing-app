@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import { Grid, Paper } from '@mui/material';
 import {
   BrowserRouter, Route, Routes,
+  useNavigate,
 } from 'react-router-dom';
 import {  
   QueryClient, QueryClientProvider 
@@ -19,21 +20,13 @@ const queryClient = new QueryClient();
 function PhotoShare() {
   const [advEnabled, setAdvEnabled] = useState(false);
 
-  const toggleAdvEnabled = () => {
-    setAdvEnabled((prev) => {
-      const newState = !prev;
-      console.log("PHOTOSHARE New state:", newState);
-      return newState;
-    })
-  }
-
   return (
     <BrowserRouter>   
       <QueryClientProvider client={queryClient}>
         <div>
           <Grid container spacing={2}>
             <Grid item xs={12}>
-              <TopBar advEnabled={advEnabled} toggleAdvEnabled={toggleAdvEnabled}/>
+              <TopBar advEnabled={advEnabled} setAdvEnabled={setAdvEnabled}/>
             </Grid>
             <div className="main-topbar-buffer" />
             <Grid item sm={3}>
@@ -45,8 +38,8 @@ function PhotoShare() {
               <Paper className="main-grid-item">
                 <Routes> 
                   <Route path="/users/:userId" element={<UserDetailRoute advEnabled={advEnabled}/>} />
-                  <Route path="/photos/:userId" element={<UserPhotosRoute advEnabled={advEnabled}/>} />
-                  <Route path="/photos/:userId/:index" element={<PhotoDetailRoute advEnabled={advEnabled}/>} />
+                  <Route path="/photos/:userId" element={<UserPhotosRoute advEnabled={advEnabled} setAdvEnabled={setAdvEnabled}/>} />
+                  <Route path="/photos/:userId/:index" element={<PhotoDetailRoute advEnabled={advEnabled} setAdvEnabled={setAdvEnabled}/>} />
                   <Route path="/comments/:userId" element={<CommentDetailRoute advEnabled={advEnabled}/>} />
                   <Route path="/users" element={<UserListRoute advEnabled={advEnabled} />} />
                 </Routes>

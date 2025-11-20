@@ -13,9 +13,9 @@ export function UserDetailRoute({advEnabled}) {
   return <UserDetail userId={userId} advEnabled={advEnabled} />;
 }
 
-export function UserPhotosRoute({advEnabled}) {
+export function UserPhotosRoute({advEnabled, setAdvEnabled}) {
   const { userId } = useParams();
-  return <UserPhotos userId={userId} advEnabled={advEnabled}/>;
+  return <UserPhotos userId={userId} advEnabled={advEnabled} setAdvEnabled={setAdvEnabled}/>;
 }
 
 export function UserListRoute({advEnabled}){
