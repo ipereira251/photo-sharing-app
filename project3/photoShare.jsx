@@ -11,11 +11,6 @@ import {
 import './styles/main.css';
 import TopBar from './components/TopBar';
 import UserList from './components/UserList';
-import UserDetail from './components/UserDetail';
-import UserPhotos from './components/UserPhotos';
-import PhotoDetail from './components/PhotoDetail';
-import PropTypes from 'prop-types';
-import CommentDetail from './components/CommentDetail';
 
 import { UserDetailRoute, UserPhotosRoute, UserListRoute, UserListRoute, PhotoDetailRoute, CommentDetailRoute } from './components/Wrappers';
 

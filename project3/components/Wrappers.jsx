@@ -23,7 +23,7 @@ export function UserListRoute({advEnabled}){
 
 export function PhotoDetailRoute({advEnabled}){
   const { userId, photoId } = useParams();
-  return <PhotoDetail userId={userId} photoId={photoId} advEnabled={advEnabled}/>;
+  return <PhotoDetail userId={userId} initialIndex={photoId} advEnabled={advEnabled}/>;
 }
 
 export function CommentDetailRoute({advEnabled}){
