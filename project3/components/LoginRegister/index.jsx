@@ -200,6 +200,7 @@ function LoginRegister({register}){
     setOnRegister(prev => !prev);
     setApiError("");
     clearFormData();
+    setErrors("");
     console.log("On register", onRegister);
     if(onRegister === false){
       navigate('/register');
