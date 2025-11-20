@@ -5,15 +5,16 @@ import './styles.css';
 import { fetchUserPhotos } from '../../axiosAPI';
 import PhotoCard from "../PhotoCard";
 import { useQuery } from '@tanstack/react-query';
-import useStore from '../../appStore';
+import useStore from '../../store/appStore';
 
 function UserPhotos({ userId }) {
   let advEnabled = useStore((s) => s.advEnabled);
   let setAdvEnabled = useStore((s) => s.setAdvEnabled);
 
-  if (advEnabled)
+  if (advEnabled){
     setAdvEnabled(false);
-
+  }
+  
   let {data: photos, isLoading, error} = useQuery({
     queryKey: ['userPhotos', userId],
     queryFn: () => fetchUserPhotos(userId),

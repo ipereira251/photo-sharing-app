@@ -1,9 +1,9 @@
+import React from 'react';
+import { useParams } from 'react-router-dom';
 import UserDetail from './UserDetail';
 import UserPhotos from './UserPhotos';
 import PhotoDetail from './PhotoDetail';
 import CommentDetail from './CommentDetail';
-import UserList from './UserList';
-import { useParams } from 'react-router-dom';
 
 export function UserDetailRoute() {
   const { userId } = useParams();
@@ -27,7 +27,4 @@ export function CommentDetailRoute(){
   return <CommentDetail userId={userId}/>;
 }
 
-export function UserListRoute(){
-  return <UserList />;
-}
 

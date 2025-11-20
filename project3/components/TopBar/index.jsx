@@ -1,13 +1,16 @@
-import React from 'react';
-import { AppBar, Checkbox, FormControlLabel, Toolbar, Typography } from '@mui/material';
+import React, { useEffect } from 'react';
+import { AppBar, Button, Checkbox, FormControlLabel, Toolbar, Typography } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
+import axios from 'axios';
 import './styles.css';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { getUserFromUrl } from '../../axiosAPI';
-import useStore from '../../appStore';
+import useStore from '../../store/appStore';
+import useSessionStore from '../../store/sessionStore';
 
 function TopBar() {
-  let advEnabled = useStore((s) => s.advEnabled);
+  let {advEnabled} = useStore();
+  let {loggedIn, firstName, clearSession} = useSessionStore();
   let set = useStore((s) => s.set);
 
   let location = useLocation();
@@ -17,7 +20,14 @@ function TopBar() {
   let { data: context, isLoading, error } = useQuery({
     queryKey: ['topbar', url],
     queryFn: () => getUserFromUrl(url),
+    enabled: loggedIn
   });
+
+  useEffect(() => {
+    if(!loggedIn){
+      navigate('/login');
+    }
+  }, []);
 
   if (isLoading) {
     context = "";
@@ -28,27 +38,20 @@ function TopBar() {
     context = "Could not get User data";
   }
 
-  return (
-    <AppBar className="topbar-appBar" position="absolute">
-      <Toolbar className='topbar-toolbar'>
-        <Typography variant="h5" color="inherit" className="topbar-name">
-          Isabella Pereira
-        </Typography>
-
-        <FormControlLabel control={
-          <Checkbox checked={advEnabled} onChange={toggleAdvEnabled} color="default" />
-          } label="Advanced Features" />
-
-        {context && (
-          <Typography variant="h5">
-            {context}
-          </Typography>
-        )}
-        
-      </Toolbar>
-    </AppBar>
-  );
-
+  const handleLogoutClick = async () => {
+    console.log("Clicked topbar logout button");
+    try{
+      const response = await axios.post("http://localhost:3001/admin/logout", {}, {withCredentials:true});
+      if(response){
+        console.log("Successfully logged out");
+        //setContext("Home");
+        clearSession();
+        navigate("/login", { replace: true });
+      }
+    } catch (err){
+      console.error("Couldn't log out.", err);
+    }
+  };
 
   //please forgive me for the following code
   function toggleAdvEnabled() {
@@ -65,7 +68,7 @@ function TopBar() {
       //then redirect to the User Photos route
       if (photoDetailRouteMatch && !currIsAdvEnabled) {
         let userId = photoDetailRouteMatch[0].split('/')[2];
-        navigate(`/photos/${userId}`)
+        navigate(`/photos/${userId}`);
       }
       else {
         let userPhotosRouteMatch = /^\/photos\/[a-z0-9]+/.exec(path);
@@ -88,8 +91,40 @@ function TopBar() {
       }
 
     return {advEnabled: currIsAdvEnabled};
-    })
+    });
   }
+
+  return (
+    <AppBar className="topbar-appBar" position="absolute">
+      <Toolbar className='topbar-toolbar'>
+
+        {loggedIn && (
+          <>
+            <Typography variant="h5" color="inherit" className="topbar-name">
+              Hi {firstName}
+            </Typography>   {/* toggle or toggleAdvEnabled both? vv */}
+            <FormControlLabel control={
+              <Checkbox checked={advEnabled} onChange={() => toggleAdvEnabled()} color="default" /> 
+              } label="Advanced Features" />
+            <Button variant="contained" onClick={() => handleLogoutClick()}>Logout</Button>
+          </>
+        )}
+
+        {!loggedIn && (
+          <Typography variant="h5" color="inherit" className="topbar-name">
+            Please Log In
+          </Typography>
+        )}
+
+        {context && (
+          <Typography variant="h5">
+            {context}
+          </Typography>
+        )}
+        
+      </Toolbar>
+    </AppBar>
+  );
 }
 
 export default TopBar;

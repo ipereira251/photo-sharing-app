@@ -2,17 +2,18 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import './styles.css';
 import { useQuery } from '@tanstack/react-query';
-import { fetchUserComments } from '../../axiosAPI';
 import { useNavigate } from 'react-router-dom';
 import { List, ListItem, Button, Typography, CardMedia } from "@mui/material";
-import useStore from '../../appStore';
+import { fetchUserComments } from '../../axiosAPI';
+import useStore from '../../store/appStore';
 
 function CommentDetail({userId}){
   let advEnabled = useStore((s) => s.advEnabled);
   let setAdvEnabled = useStore((s) => s.setAdvEnabled);
 
-  if (!advEnabled)
+  if (!advEnabled){
     setAdvEnabled(true);
+  }
 
   const navigate = useNavigate();
 
@@ -26,7 +27,7 @@ function CommentDetail({userId}){
   }
 
   if (error) {
-    return "Could not load users comments =("
+    return "Could not load users comments =(";
   }
 
   const handleProfileClick = (id) => {
@@ -70,6 +71,6 @@ function CommentDetail({userId}){
 
 CommentDetail.propTypes = {
   userId: PropTypes.string.isRequired, 
-}
+};
 
 export default CommentDetail;

@@ -3,18 +3,26 @@ import axios from "axios";
 export const getUserFromUrl = async (url) => {
     if (url === '/') {
       return "Home";
+    } 
+    if(url === '/login'){
+      return "Login";
+    }
+    if(url === '/register'){
+      return "Register";
     }
 
     const terms = url.split("/");
 
     if(terms[1]){
-      const response = await axios.get(`http://localhost:3001/user/${terms[2]}`);
+      const response = await axios.get(`http://localhost:3001/user/${terms[2]}`, {withCredentials: true});
 
       if(response.data){
         if(terms[1] === "photos"){
           return `Photos of ${response.data.first_name} ${response.data.last_name}`;
         } else if(terms[1] === "users"){
           return `${response.data.first_name} ${response.data.last_name}`;
+        } else if(terms[1] === "comments"){
+          return `${response.data.first_name} ${response.data.last_name}'s Comments`;
         } else {
           return "Unknown";
         }
@@ -35,7 +43,7 @@ returns an object with 2 properties which is used to populate the userList displ
 */
 
 export const fetchUserListDisplay = async (advEnabled) => {
-    let response = await axios.get('http://localhost:3001/user/list');
+    let response = await axios.get('http://localhost:3001/user/list', {withCredentials: true});
     let users = response.data;
 
     console.log("UserList: Response:", users); 
@@ -47,7 +55,7 @@ export const fetchUserListDisplay = async (advEnabled) => {
 
     const fetchAllCounts = async () => {
         const arr = await Promise.all(users.map(async (user) => {
-            const x = await axios.get(`http://localhost:3001/counts/${user._id}`);
+            const x = await axios.get(`http://localhost:3001/counts/${user._id}`, {withCredentials: true});
             return x.data;
         }));
     
@@ -59,16 +67,16 @@ export const fetchUserListDisplay = async (advEnabled) => {
 };
 
 export const fetchUserInfo = async (userId) => {
-      let response = await axios.get(`http://localhost:3001/user/${userId}`);
-      return response.data;
+    let response = await axios.get(`http://localhost:3001/user/${userId}`, {withCredentials: true});
+    return response.data;
   };
 
 export const fetchUserPhotos = async (userId) => {
-    const response = await axios.get(`http://localhost:3001/photosOfUser/${userId}`);
+    const response = await axios.get(`http://localhost:3001/photosOfUser/${userId}`, {withCredentials: true});
     return response.data;
 };
 
 export const fetchUserComments = async (userId) => {
-  let resposne = await axios.get(`http://localhost:3001/comments/${userId}`);
-  return resposne.data;
-  };
+  let response = await axios.get(`http://localhost:3001/comments/${userId}`, {withCredentials: true});
+  return response.data;
+};

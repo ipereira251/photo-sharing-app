@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom/client';
 import { Grid, Paper } from '@mui/material';
 import {
   BrowserRouter, Route, Routes,
-  useNavigate,
 } from 'react-router-dom';
 import {  
   QueryClient, QueryClientProvider 
@@ -12,8 +11,9 @@ import {
 import './styles/main.css';
 import TopBar from './components/TopBar';
 import UserList from './components/UserList';
+import LoginRegister from './components/LoginRegister';
+import { UserDetailRoute, UserPhotosRoute, PhotoDetailRoute, CommentDetailRoute } from './components/Wrappers';
 
-import { UserDetailRoute, UserPhotosRoute, UserListRoute, PhotoDetailRoute, CommentDetailRoute } from './components/Wrappers';
 
 const queryClient = new QueryClient();
 
@@ -40,7 +40,9 @@ function PhotoShare() {
                   <Route path="/photos/:userId" element={<UserPhotosRoute />} />
                   <Route path="/photos/:userId/:index" element={<PhotoDetailRoute />} />
                   <Route path="/comments/:userId" element={<CommentDetailRoute />} />
-                  <Route path="/users" element={<UserListRoute  />} />
+                  <Route path="/users" element={<UserList />} />
+                  <Route path="/login" element={<LoginRegister register={false} />} />
+                  <Route path="/register" element={<LoginRegister register={true} />} />
                 </Routes>
               </Paper>
             </Grid>

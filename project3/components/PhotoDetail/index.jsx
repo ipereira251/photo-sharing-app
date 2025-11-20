@@ -1,12 +1,12 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { IconButton } from '@mui/material';
 import './styles.css';
 import { fetchUserPhotos } from '../../axiosAPI';
 import { useQuery } from '@tanstack/react-query';
 import PhotoCard from '../PhotoCard';
-import useStore from '../../appStore';
+import useStore from '../../store/appStore';
 
 
 function PhotoDetail({userId, initialIndex}){
@@ -15,8 +15,9 @@ function PhotoDetail({userId, initialIndex}){
 
   let navigate = useNavigate();
 
-  if (!advEnabled)
+  if (!advEnabled){
     setAdvEnabled(true);
+  }
 
   let {data: photos, isLoading, error} = useQuery({
     queryKey: ['PhotoDetail', userId],
@@ -24,11 +25,11 @@ function PhotoDetail({userId, initialIndex}){
   });
 
   if (isLoading) {
-   return "Loading Photo ..."
+   return "Loading Photo ...";
   }
 
   if (error) {
-    return "Could not load User Photo"
+    return "Could not load User Photo";
   }
   
   //If the index is not in bounds
@@ -41,12 +42,12 @@ function PhotoDetail({userId, initialIndex}){
 
   //If the index is not in bounds
   //then yell at the user
-  if(! ( 0 <= currentIndex && currentIndex < photos.length)) {
+  if(! (currentIndex >= 0 && currentIndex < photos.length)) {
     return "out of bounds";
   }
 
-  let url = window.location.pathname;
-  let pathStem = `/photos/${userId}/`
+  //let url = window.location.pathname;
+  let pathStem = `/photos/${userId}/`;
   
   const goToPrev = () => {
     if(currentIndex > 0){

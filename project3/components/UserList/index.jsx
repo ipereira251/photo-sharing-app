@@ -7,20 +7,23 @@ import {
   IconButton
 } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 import { fetchUserListDisplay } from '../../axiosAPI';
 
 import './styles.css';
-import { useNavigate } from 'react-router-dom';
-import useStore from '../../appStore';
+import useStore from '../../store/appStore';
+import useSessionStore from '../../store/sessionStore';
 
 
 function UserList() {
   let advEnabled = useStore((s) => s.advEnabled);
   const navigate = useNavigate();
+  const {loggedIn} = useSessionStore();
 
   let {data, isLoading, error} = useQuery({
     queryKey: ["userList", advEnabled],
-    queryFn: () => fetchUserListDisplay(advEnabled)
+    queryFn: () => fetchUserListDisplay(advEnabled), 
+    enabled: loggedIn
   });
 
   if (isLoading) {
@@ -36,17 +39,14 @@ function UserList() {
   let {users, counts} = data ?? {users: [], counts: null};
 
   const handleUserClick = (user) => {
-    console.log("Clicked on user", user.first_name, user.last_name, user._id);
     navigate(`/users/${user._id}`);
   };
 
   const handlePhotoCountClick = (user) => {
-    console.log("photo count click", user.first_name);
     navigate(`/photos/${user._id}/0`);
   };
 
   const handleCommentCountClick = (user) => {
-    console.log("comment count click", user.first_name);
     navigate(`/comments/${user._id}`);
   };
 

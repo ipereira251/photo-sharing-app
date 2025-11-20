@@ -6,7 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 
 import './styles.css';
 import { fetchUserInfo } from '../../axiosAPI';
-import useStore from '../../appStore';
+import useStore from '../../store/appStore';
 
 
 function UserDetail({userId}) {
@@ -17,7 +17,7 @@ function UserDetail({userId}) {
   let {data: user, isLoading, error} = useQuery({
     queryKey: ['userDetail', userId],
     queryFn: () => fetchUserInfo(userId)
-  })
+  });
 
   if (isLoading) {
     return 'Loading ...';
@@ -29,11 +29,12 @@ function UserDetail({userId}) {
 
   const handleViewImgClick = () => {
     console.log("Clicked to view images from userId", userId);
-    if(advEnabled)
+    if(advEnabled){
       navigate(`/photos/${userId}/0`);
-    else
+    } else{
       navigate(`/photos/${userId}`);
-  }
+    }
+  };
 
   if(!user){
     return <p>No such user found.</p>;
