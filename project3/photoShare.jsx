@@ -2,7 +2,7 @@ import { React, useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import { Grid, Paper } from '@mui/material';
 import {
-  BrowserRouter, Route, Routes, useParams,
+  BrowserRouter, Route, Routes,
 } from 'react-router-dom';
 import {  
   QueryClient, QueryClientProvider 
@@ -17,31 +17,7 @@ import PhotoDetail from './components/PhotoDetail';
 import PropTypes from 'prop-types';
 import CommentDetail from './components/CommentDetail';
 
-function UserDetailRoute({advEnabled}) {
-  const { userId } = useParams();
-  // eslint-disable-next-line no-console
-  console.log('UserDetailRoute: userId is:', userId);
-  return <UserDetail userId={userId} advEnabled={advEnabled} />;
-}
-
-function UserPhotosRoute({advEnabled}) {
-  const { userId } = useParams();
-  return <UserPhotos userId={userId} advEnabled={advEnabled}/>;
-}
-
-function UserListRoute({advEnabled}){
-  return <UserList advEnabled={advEnabled} />;
-}
-
-function PhotoDetailRoute({advEnabled}){
-  const { userId, photoId } = useParams();
-  return <PhotoDetail userId={userId} photoId={photoId} advEnabled={advEnabled}/>;
-}
-
-function CommentDetailRoute({advEnabled}){
-  const { userId } = useParams();
-  return <CommentDetail userId={userId} advEnabled={advEnabled}/>;
-}
+import { UserDetailRoute, UserPhotosRoute, UserListRoute, UserListRoute, PhotoDetailRoute, CommentDetailRoute } from './components/Wrappers';
 
 const queryClient = new QueryClient();
 
@@ -86,26 +62,6 @@ function PhotoShare() {
       </QueryClientProvider>
     </BrowserRouter>
   );
-}
-
-UserDetailRoute.propTypes = {
-  advEnabled: PropTypes.bool.isRequired
-}
-
-UserPhotosRoute.propTypes = {
-  advEnabled: PropTypes.bool.isRequired
-}
-
-PhotoDetailRoute.propTypes = {
-  advEnabled: PropTypes.bool.isRequired
-}
-
-CommentDetailRoute.propTypes = {
-  advEnabled: PropTypes.bool.isRequired
-}
-
-UserListRoute.propTypes = {
-  advEnabled: PropTypes.bool.isRequired
 }
 
 const root = ReactDOM.createRoot(document.getElementById('photoshareapp'));

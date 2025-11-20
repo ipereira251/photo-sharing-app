@@ -5,6 +5,7 @@ import { IconButton } from '@mui/material';
 import './styles.css';
 import axios from 'axios';
 import PhotoCard from '../PhotoCard';
+
 function PhotoDetail({ userId, initialIndex, advEnabled }){
   const [photos, setPhotos] = useState([]);
   const location = useLocation();
