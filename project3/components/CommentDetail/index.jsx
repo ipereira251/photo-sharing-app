@@ -6,11 +6,15 @@ import { useQuery } from '@tanstack/react-query';
 import { fetchUserComments } from '../../axiosAPI';
 import { useNavigate } from 'react-router-dom';
 import { List, ListItem, Button, Typography, CardMedia } from "@mui/material";
+import useStore from '../../appStore';
 
-function CommentDetail({ userId, advEnabled, setAdvEnabled }){
+function CommentDetail({userId}){
+  let advEnabled = useStore((s) => s.advEnabled);
+  let setAdvEnabled = useStore((s) => s.setAdvEnabled);
+
   if (!advEnabled)
     setAdvEnabled(true);
-  
+
   const navigate = useNavigate();
 
   let {data: comments, isLoading, error} = useQuery({
@@ -25,21 +29,6 @@ function CommentDetail({ userId, advEnabled, setAdvEnabled }){
   if (error) {
     return "Could not load users comments =("
   }
-
-  // useEffect(() => {
-  //   if(!advEnabled){
-  //     //get out!!! navigate away to user detail?
-  //     navigate(`/users/${userId}`);
-  //   } else {
-  //     const loadComments = async () => {
-  //       setLoading(true);
-  //       await fetchComments();
-  //       setLoading(false);
-  //     };
-  //     loadComments();
-  //   }
-  // }, [userId, advEnabled, navigate]);
-
 
   const handleProfileClick = (id) => {
     navigate(`/users/${id}`);
@@ -80,9 +69,9 @@ function CommentDetail({ userId, advEnabled, setAdvEnabled }){
   );
 }
 
-CommentDetail.propTypes = {
-  userId: PropTypes.string.isRequired, 
-  advEnabled: PropTypes.bool.isRequired
-}
+// CommentDetail.propTypes = {
+//   userId: PropTypes.string.isRequired, 
+//   advEnabled: PropTypes.bool.isRequired
+// }
 
 export default CommentDetail;

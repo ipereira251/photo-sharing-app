@@ -12,8 +12,11 @@ import { fetchUserListDisplay } from '../../axiosAPI';
 import './styles.css';
 import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import useStore from '../../appStore';
 
-function UserList({ advEnabled }) {
+
+function UserList() {
+  let advEnabled = useStore((s) => s.advEnabled);
   const navigate = useNavigate();
 
   let {data, isLoading, error} = useQuery({
@@ -151,8 +154,8 @@ function UserList({ advEnabled }) {
   );
 }
 
-UserList.propTypes = {
-  advEnabled: PropTypes.bool.isRequired
-};
+// UserList.propTypes = {
+//   advEnabled: PropTypes.bool.isRequired
+// };
 
 export default UserList;

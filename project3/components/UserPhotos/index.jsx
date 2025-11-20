@@ -7,8 +7,12 @@ import { fetchUserPhotos } from '../../axiosAPI';
 import PhotoCard from "../PhotoCard";
 import PhotoDetail from "../PhotoDetail";
 import { useQuery } from '@tanstack/react-query';
+import useStore from '../../appStore';
 
-function UserPhotos({ userId, advEnabled, setAdvEnabled }) {
+function UserPhotos({ userId }) {
+  let advEnabled = useStore((s) => s.advEnabled);
+  let setAdvEnabled = useStore((s) => s.setAdvEnabled);
+
   if (advEnabled)
     setAdvEnabled(false);
 
@@ -40,9 +44,9 @@ function UserPhotos({ userId, advEnabled, setAdvEnabled }) {
   );
 }
 
-UserPhotos.propTypes = {
-  userId: PropTypes.string.isRequired,
-  advEnabled: PropTypes.bool.isRequired
-};
+// UserPhotos.propTypes = {
+//   userId: PropTypes.string.isRequired,
+//   advEnabled: PropTypes.bool.isRequired
+// };
 
 export default UserPhotos;

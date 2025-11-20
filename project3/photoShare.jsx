@@ -18,7 +18,6 @@ import { UserDetailRoute, UserPhotosRoute, UserListRoute, PhotoDetailRoute, Comm
 const queryClient = new QueryClient();
 
 function PhotoShare() {
-  const [advEnabled, setAdvEnabled] = useState(false);
 
   return (
     <BrowserRouter>   
@@ -26,22 +25,22 @@ function PhotoShare() {
         <div>
           <Grid container spacing={2}>
             <Grid item xs={12}>
-              <TopBar advEnabled={advEnabled} setAdvEnabled={setAdvEnabled}/>
+              <TopBar />
             </Grid>
             <div className="main-topbar-buffer" />
             <Grid item sm={3}>
               <Paper className="main-grid-item">
-                <UserList advEnabled={advEnabled}/>
+                <UserList />
               </Paper>
             </Grid>
             <Grid item sm={9}>
               <Paper className="main-grid-item">
                 <Routes> 
-                  <Route path="/users/:userId" element={<UserDetailRoute advEnabled={advEnabled}/>} />
-                  <Route path="/photos/:userId" element={<UserPhotosRoute advEnabled={advEnabled} setAdvEnabled={setAdvEnabled}/>} />
-                  <Route path="/photos/:userId/:index" element={<PhotoDetailRoute advEnabled={advEnabled} setAdvEnabled={setAdvEnabled}/>} />
-                  <Route path="/comments/:userId" element={<CommentDetailRoute advEnabled={advEnabled} setAdvEnabled={setAdvEnabled}/>} />
-                  <Route path="/users" element={<UserListRoute advEnabled={advEnabled} />} />
+                  <Route path="/users/:userId" element={<UserDetailRoute />} />
+                  <Route path="/photos/:userId" element={<UserPhotosRoute />} />
+                  <Route path="/photos/:userId/:index" element={<PhotoDetailRoute />} />
+                  <Route path="/comments/:userId" element={<CommentDetailRoute />} />
+                  <Route path="/users" element={<UserListRoute  />} />
                 </Routes>
               </Paper>
             </Grid>

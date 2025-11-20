@@ -7,10 +7,11 @@ import axios from 'axios';
 
 import './styles.css';
 import { fetchUserInfo } from '../../axiosAPI';
+import useStore from '../../appStore';
 
 
-function UserDetail({ userId, advEnabled }) {
-  // const [user, setUser] = useState(null);
+function UserDetail({userId}) {
+  let advEnabled = useStore((s) => s.advEnabled);
   const navigate = useNavigate();
 
 
@@ -38,18 +39,6 @@ function UserDetail({ userId, advEnabled }) {
       navigate(`/photos/${userId}`);
   }
 
-// const fetchUserInfo = async (userId) => {
-//     try {
-//       const response = await axios.get(`http://localhost:3001/user/${userId}`);
-//       if(response.data){
-//         console.log(response.data);
-//         setUser(response.data);
-//       }
-//     } catch (err){
-//       console.error("UserDetail: Error fetching user info: ", err);
-//     }
-//   };
-
   if(!user){
     return <p>No such user found.</p>;
   }
@@ -73,9 +62,9 @@ function UserDetail({ userId, advEnabled }) {
   );
 }
 
-UserDetail.propTypes = {
-  userId: PropTypes.string.isRequired,
-  advEnabled: PropTypes.bool.isRequired
-};
+// UserDetail.propTypes = {
+//   userId: PropTypes.string.isRequired,
+//   advEnabled: PropTypes.bool.isRequired
+// };
 
 export default UserDetail;

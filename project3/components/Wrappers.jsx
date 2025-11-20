@@ -6,30 +6,30 @@ import PropTypes from 'prop-types';
 import UserList from './UserList';
 import { useParams } from 'react-router-dom';
 
-export function UserDetailRoute({advEnabled}) {
+export function UserDetailRoute() {
   const { userId } = useParams();
   // eslint-disable-next-line no-console
   console.log('UserDetailRoute: userId is:', userId);
-  return <UserDetail userId={userId} advEnabled={advEnabled} />;
+  return <UserDetail userId={userId}/>;
 }
 
-export function UserPhotosRoute({ advEnabled, setAdvEnabled }) {
+export function UserPhotosRoute() {
   const { userId } = useParams();
-  return <UserPhotos userId={userId} advEnabled={advEnabled} setAdvEnabled={setAdvEnabled}/>;
+  return <UserPhotos userId={userId}/>;
 }
 
-export function PhotoDetailRoute({advEnabled, setAdvEnabled}){
+export function PhotoDetailRoute(){
   const { userId, index } = useParams();
-  return <PhotoDetail userId={userId} initialIndex={index} advEnabled={advEnabled} setAdvEnabled={setAdvEnabled}/>;
+  return <PhotoDetail userId={userId} initialIndex={index} />;
 }
 
-export function CommentDetailRoute({advEnabled, setAdvEnabled}){
+export function CommentDetailRoute(){
   const { userId } = useParams();
-  return <CommentDetail userId={userId} advEnabled={advEnabled} setAdvEnabled={setAdvEnabled}/>;
+  return <CommentDetail userId={userId}/>;
 }
 
-export function UserListRoute({advEnabled}){
-  return <UserList advEnabled={advEnabled} />;
+export function UserListRoute(){
+  return <UserList />;
 }
 
 // UserDetailRoute.propTypes = {

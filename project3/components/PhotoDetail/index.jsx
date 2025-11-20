@@ -7,8 +7,13 @@ import axios from 'axios';
 import { fetchUserPhotos } from '../../axiosAPI';
 import { useQuery } from '@tanstack/react-query';
 import PhotoCard from '../PhotoCard';
+import useStore from '../../appStore';
 
-function PhotoDetail({ userId, initialIndex, advEnabled, setAdvEnabled}){
+
+function PhotoDetail({userId, initialIndex}){
+  let advEnabled = useStore((s) => s.advEnabled);
+  let setAdvEnabled = useStore((s) => s.setAdvEnabled);
+
   let navigate = useNavigate();
 
   if (!advEnabled)
@@ -27,45 +32,6 @@ function PhotoDetail({ userId, initialIndex, advEnabled, setAdvEnabled}){
     return "Could not load User Photo"
   }
   
-
-  // useEffect(() => {
-  //   if(!initialIndex){
-  //     parseIndex(location);
-  //   }
-  //   console.log("Photodetail Props", userId, initialIndex, advEnabled);
-    
-  //   if(!advEnabled){
-  //     console.log("Tried to view single image without Adv on");
-  //     const path = `/photos/${userId}`; //regular photo list
-  //     if(window.location.pathname !== path)
-  //       navigate(path);
-  //   }
-  //   if(userId && advEnabled){
-  //     fetchUserPhotos();
-  //     console.log(window.location.pathname);
-  //     if(currentIndex === undefined){
-  //       setCurrentIndex(initialIndex);
-  //     }
-  //     const path = `/photos/${userId}/${currentIndex}`;
-  //     console.log("Current index:", currentIndex);
-  //     if(window.location.pathname !== path)
-  //       navigate(path);
-  //   }
-  //   console.log("PHOTODETAIL:", userId, initialIndex, currentIndex);
-  // }, [userId, currentIndex, advEnabled, navigate]);
-
-  // const parseIndex = (loc) => {
-  //   const terms = loc.pathname.split("/");
-  //   console.log("terms", terms);
-  //   if(terms[3] === ""){
-  //     initialIndex = 0;
-  //   } else{
-  //     initialIndex = terms[3];
-  //   }
-  // };
-
-  //If the index is not a number
-  //then yell at the user
   if(!/[0-9]+/.test(String(initialIndex))) {
     return "Not a number";
   }
@@ -116,10 +82,10 @@ function PhotoDetail({ userId, initialIndex, advEnabled, setAdvEnabled}){
   );
 }
 
-PhotoDetail.propTypes = {
-  userId: PropTypes.string.isRequired, 
-  initialIndex: PropTypes.number.isRequired,
-  advEnabled: PropTypes.bool.isRequired
-};
+// PhotoDetail.propTypes = {
+//   userId: PropTypes.string.isRequired, 
+//   initialIndex: PropTypes.number.isRequired,
+//   advEnabled: PropTypes.bool.isRequired
+// };
 
 export default PhotoDetail;

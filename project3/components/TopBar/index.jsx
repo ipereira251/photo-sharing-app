@@ -6,8 +6,12 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import PropTypes from 'prop-types';
 import { getUserFromUrl } from '../../axiosAPI';
+import useStore from '../../appStore';
 
-function TopBar({ advEnabled, setAdvEnabled }) {
+function TopBar() {
+  let advEnabled = useStore((s) => s.advEnabled);
+  let set = useStore((s) => s.set);
+
   let location = useLocation();
   let navigate = useNavigate();
 
@@ -26,33 +30,11 @@ function TopBar({ advEnabled, setAdvEnabled }) {
     context = "Could not get User data";
   }
 
-  return (
-    <AppBar className="topbar-appBar" position="absolute">
-      <Toolbar className='topbar-toolbar'>
-        <Typography variant="h5" color="inherit" className="topbar-name">
-          Isabella Pereira
-        </Typography>
-
-        <FormControlLabel control={
-          <Checkbox checked={advEnabled} onChange={toggleAdvEnabled} color="default" />
-          } label="Advanced Features" />
-
-        {context && (
-          <Typography variant="h5">
-            {context}
-          </Typography>
-        )}
-        
-      </Toolbar>
-    </AppBar>
-  );
-
-  //please forgive me for the following code
   function toggleAdvEnabled() {
-    setAdvEnabled((prev) => {
+    set((prev) => {
 
       //toggle the button to reflect the current state
-      const currIsAdvEnabled = !prev;
+      const currIsAdvEnabled = !(prev.advEnabled);
       console.log("PHOTOSHARE New state:", currIsAdvEnabled);
 
       let path = window.location.pathname;
@@ -84,14 +66,38 @@ function TopBar({ advEnabled, setAdvEnabled }) {
         navigate(`/users/${userId}`);
       }
 
-    return currIsAdvEnabled;
+    return {advEnabled: currIsAdvEnabled};
     })
   }
+
+  return (
+    <AppBar className="topbar-appBar" position="absolute">
+      <Toolbar className='topbar-toolbar'>
+        <Typography variant="h5" color="inherit" className="topbar-name">
+          Isabella Pereira
+        </Typography>
+
+        <FormControlLabel control={
+          <Checkbox checked={advEnabled} onChange={toggleAdvEnabled} color="default" />
+          } label="Advanced Features" />
+
+        {context && (
+          <Typography variant="h5">
+            {context}
+          </Typography>
+        )}
+        
+      </Toolbar>
+    </AppBar>
+  );
 }
 
-TopBar.propTypes = {
-  advEnabled: PropTypes.bool.isRequired,
-  setAdvEnabled: PropTypes.func.isRequired
-};
+  //please forgive me for the following code
+  
+
+// TopBar.propTypes = {
+//   advEnabled: PropTypes.bool.isRequired,
+//   setAdvEnabled: PropTypes.func.isRequired
+// };
 
 export default TopBar;
