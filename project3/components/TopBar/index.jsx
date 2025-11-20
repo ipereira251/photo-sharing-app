@@ -15,10 +15,13 @@ function TopBar() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    getUserFromUrl(location.pathname);
-  }, [location]);
+    if(!loggedIn){
+      navigate('/login');
+    }
+  }, []);
 
-  const getUserFromUrl = async (url) => {
+  useEffect(() => {
+    const getUserFromUrl = async (url) => {
     const terms = url.split("/");
     if(terms[1] && terms[2]){
       try {
@@ -38,6 +41,8 @@ function TopBar() {
         console.error("Error getting user from URL", err);
       }}
   };
+    getUserFromUrl(location.pathname);
+  }, [location]);
 
   const handleLogoutClick = async () => {
     console.log("Clicked topbar logout button");
@@ -85,13 +90,15 @@ function TopBar() {
           </Typography>
         )}
       
-        <FormControlLabel control={
-          <Checkbox checked={advEnabled} onChange={() => toggle()} color="default" />
-          } label="Advanced Features" />
-
         {/*display only when logged in */}
-        {loggedIn &&
-          <Button variant="contained" onClick={() => handleLogoutClick()}>Logout</Button>}
+        {loggedIn && (
+          <>
+            <FormControlLabel control={
+              <Checkbox checked={advEnabled} onChange={() => toggle()} color="default" />
+              } label="Advanced Features" />
+          <Button variant="contained" onClick={() => handleLogoutClick()}>Logout</Button>
+          </>
+        )}
 
         {context && ((
           <Typography variant="h5">

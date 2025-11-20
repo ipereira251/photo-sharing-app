@@ -5,14 +5,19 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { List, ListItem, Button, Typography, CardMedia } from "@mui/material";
 import useUIStore from '../../store/ui-store';
+import useSessionStore from '../../store/session-store';
 
 function CommentDetail({ userId }){
   const {advEnabled} = useUIStore();
+  const {loggedIn} = useSessionStore();
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
+    if(!loggedIn){
+      navigate('/login');
+    }
     if(!advEnabled){
       //get out!!! navigate away to user detail?
       navigate(`/users/${userId}`);

@@ -83,7 +83,8 @@ function PhotoShare() {
                 <Route path="/photos/:userId/:index" element={<PhotoDetailRoute />} />
                 <Route path="/comments/:userId" element={<CommentDetailRoute />} />
                 <Route path="/users" element={<UserList />} />
-                <Route path="/login" element={<LoginRegister />} />
+                <Route path="/login" element={<LoginRegister register={false}/>} />
+                <Route path="/register" element={<LoginRegister register={true}/>} />
               </Routes>
             </Paper>
           </Grid>
