@@ -10,49 +10,41 @@ function LoginRegister({register}){
   const navigate = useNavigate();
   const {loggedIn, setSession, clearSession} = useSessionStore();
   const [formData, setFormData] = useState({
-    firstName: '', 
-    lastName: '', 
-    username: '',
-    password1: '', 
+    first_name: '', 
+    last_name: '', 
+    login_name: '',
+    password: '', 
     password2: '', 
     location: '', 
     occupation: '', 
-    description: ''
+    description: '',
   });
   const [showPassword, setShowPassword] = React.useState(false);
   const [errors, setErrors] = useState({
-    firstName: '', 
-    lastName: '', 
-    username: '', 
-    password1: '', 
+    first_name: '', 
+    last_name: '', 
+    login_name: '', 
+    password: '', 
     password2: '', 
     location: '', 
     occupation: '', 
-    description: ''
+    description: '',
   });
   const [apiError, setApiError] = useState('');
   const [onRegister, setOnRegister] = useState(register);
-
-  useEffect(() => {
-    if(loggedIn){
-      navigate("/", {replace:true});
-    }
-    if(onRegister){
-      navigate("/register", {replace:true});
-    }
-  }, [loggedIn, navigate]);
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
   const clearFormData = () => {
     setFormData({
-      firstName: '',
-      lastName: '',
-      username: '',
-      password1: '',
+      first_name: '',
+      last_name: '',
+      login_name: '',
+      password: '',
       password2: '',
       location: '',
-      occupation: ''
+      occupation: '',
+      description: '',
     });
   };
 
@@ -69,20 +61,20 @@ function LoginRegister({register}){
 
   const validateLogin = () => {
     const newErrors = {
-      username: '',
+      login_name: '',
       password: ''
     };
 
     //all required fields filled?
-    if(!formData.username.trim()){
-      newErrors.username = "Username is required";
+    if(!formData.login_name.trim()){
+      newErrors.login_name = "Username is required";
     }
-    if(!formData.password1.trim()){
-      newErrors.password1 = "Password is required";
+    if(!formData.password.trim()){
+      newErrors.password = "Password is required";
     }
 
     setErrors(newErrors);
-    return !newErrors.username && !newErrors.password1;
+    return !newErrors.login_name && !newErrors.password;
   };
 
   const handleLogin = async () => {
@@ -90,21 +82,22 @@ function LoginRegister({register}){
       try{
         console.log("calling /admin/login");
         const response = await axios.post('http://localhost:3001/admin/login', 
-          {username: formData.username, password: formData.password1}, 
+          {login_name: formData.login_name, password: formData.password}, 
           {withCredentials:true});
         if(response){
           console.log("Response from /admin/login", response);
         }
         if(response.data.success){ 
           console.log("updating zustand session");
-          setSession({username: response.data.username, firstName: response.data.firstName });
+          console.log(response.data.first_name);
+          setSession({username: response.data.username, firstName: response.data.first_name });
           navigate(`/users/${response.data.id}`);
         }
       } catch (err){
         clearSession();
         setApiError("Invalid username or password. Try again.");
         setFormData((prev) => ({
-          ...prev, password1: ""
+          ...prev, password: ""
         }));
         console.error(err);
       }
@@ -116,10 +109,10 @@ function LoginRegister({register}){
 
   const validateRegistration = () => {
     const newErrors = {
-      firstName: '', 
-      lastName: '',
-      username: '', 
-      password1: '', 
+      first_name: '', 
+      last_name: '',
+      login_name: '', 
+      password: '', 
       password2: '', 
       location: '', //these not needed for now, possibly in part 4
       occupation: '', 
@@ -127,20 +120,20 @@ function LoginRegister({register}){
     };
 
     //all required fields filled?
-    if(!formData.firstName.trim()){
-      newErrors.firstName = "First name field is required.";
+    if(!formData.first_name.trim()){
+      newErrors.first_name = "First name field is required.";
     }
-    if(!formData.lastName.trim()){
-      newErrors.lastName = "Last name field is required.";
+    if(!formData.last_name.trim()){
+      newErrors.last_name = "Last name field is required.";
     }
-    if(!formData.username.trim()){
-      newErrors.username = "Username is required.";
+    if(!formData.login_name.trim()){
+      newErrors.login_name = "Username is required.";
     }
-    if(!formData.password1.trim()){
-      newErrors.password1 = "Password is required.";
+    if(!formData.password.trim()){
+      newErrors.password = "Password is required.";
     }
     if(!formData.password2.trim()){
-      if(!formData.password1.trim()){
+      if(!formData.password.trim()){
         newErrors.password2 = "Password is required.";
       } else {
         newErrors.password2 = "Must confirm password.";
@@ -148,8 +141,8 @@ function LoginRegister({register}){
     }
 
     //do passwords match?
-    if(formData.password1 && formData.password2){
-      if(formData.password1 !== formData.password2){
+    if(formData.password && formData.password2){
+      if(formData.password !== formData.password2){
         newErrors.password2 = "Password does not match";
       }
     }
@@ -165,24 +158,26 @@ function LoginRegister({register}){
         //axios
         console.log("Calling /user");
         const response = await axios.post('http://localhost:3001/user', 
-          {}, 
+          {formData}, 
           {withCredentials: true});
         if(response){
           console.log("Response from /user", response);
         }
-        if(response.data.success){
-          setSession({username: response.data.username, firstName: response.data.firstName});
+        if(response.status === 201){
+          console.log("201 status", response);
+          setSession({username: response.data.username, firstName: response.data.first_name});
           navigate(`/users/${response.data.id}`);
-        } else {
-          //is username already taken?
-
         }
         
       } catch (err){
+        if(err.status === 409){
+          setErrors((prev) => ({
+            ...prev, login_name: "Username already in use."
+          }));
+        }
         clearSession();
-        //username taken?
         setFormData((prev) => ({
-          ...prev, password1: "", password2: ""
+          ...prev, password: "", password2: ""
         }));
         console.error(err);
       }
@@ -207,10 +202,8 @@ function LoginRegister({register}){
     clearFormData();
     console.log("On register", onRegister);
     if(onRegister === false){
-      console.log("Nav to register");
       navigate('/register');
     } else {
-      console.log("Nav to register");
       navigate('/login');
     }
   };
@@ -227,23 +220,23 @@ function LoginRegister({register}){
         <>
           <TextField
             label="First Name"
-            name="firstName"
-            value={formData.firstName}
+            name="first_name"
+            value={formData.first_name}
             variant="outlined"
             onChange={handleInputChange}
-            error={!!errors.firstName}
-            helperText={errors.firstName}
+            error={!!errors.first_name}
+            helperText={errors.first_name}
             style={{ marginBottom: '20px', width: '50%' }}
           />
 
           <TextField
             label="Last Name"
-            name="lastName"
-            value={formData.lastName}
+            name="last_name"
+            value={formData.last_name}
             variant="outlined"
             onChange={handleInputChange}
-            error={!!errors.lastName}
-            helperText={errors.lastName}
+            error={!!errors.last_name}
+            helperText={errors.last_name}
             style={{ marginBottom: '20px', width: '50%' }}
           />
         </>
@@ -251,26 +244,26 @@ function LoginRegister({register}){
 
       <TextField 
         fullWidth 
-        name="username"
-        value={formData.username}
+        name="login_name"
+        value={formData.login_name}
         label="Username"
         variant="outlined"
         onChange={handleInputChange}
-        error={!!errors.username}
-        helperText={errors.username}
+        error={!!errors.login_name}
+        helperText={errors.login_name}
         style={{ marginBottom: '20px' }}
       />
 
       <TextField
         label="Password"
         fullWidth
-        name="password1"
-        value={formData.password1}
+        name="password"
+        value={formData.password}
         variant="outlined"
         type={showPassword ? "text" : "password"}
         onChange={handleInputChange}
-        error={!!errors.password1} 
-        helperText={errors.password1} 
+        error={!!errors.password} 
+        helperText={errors.password} 
         style={{ marginBottom: '20px' }}
         InputProps={{
           endAdornment: (

@@ -112,7 +112,7 @@ function TopBar() {
 
         {!loggedIn && (
           <Typography variant="h5" color="inherit" className="topbar-name">
-            Please Log In
+            Please Sign In
           </Typography>
         )}
 

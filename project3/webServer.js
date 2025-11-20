@@ -93,16 +93,17 @@ app.get('/test/counts', async (request, response) => {
 });
 
 /**
- * URL /admin/login 
+ * URL /admin/login - Logs user in.
  */
 app.post('/admin/login', async (request, response) => {
   console.log("/admin/login called", request.body);
   if(!request.body){
     console.log("Admin/login: no request body");
+    return response.status(401).send("No request body");
   }
-  const { username, password } = request.body;
+  const { login_name, password } = request.body;
   //find user
-  const user = await User.findOne({ login_name: username, password }); 
+  const user = await User.findOne({ login_name, password }); 
   if(user){
     request.session.user = {
       id: user._id, 
@@ -110,7 +111,7 @@ app.post('/admin/login', async (request, response) => {
       username: user.login_name
     };
     console.log("session:", request.session);
-    return response.json({ success: true, user: request.session.user, id: user._id, firstName: user.first_name });
+    return response.json({ success: true, user: request.session.user, id: user._id, first_name: user.first_name });
   } else {
     console.log("failed log in");
     return response.status(401).send("Invalid username or password");
@@ -118,7 +119,7 @@ app.post('/admin/login', async (request, response) => {
 });
 
 /**
- * URL /admin/logout
+ * URL /admin/logout - Logs current user out.
  */
 app.post('/admin/logout', (request, response) => {
   request.session.destroy((err) => {
@@ -132,7 +133,49 @@ app.post('/admin/logout', (request, response) => {
 });
 
 /**
- * URL /session
+ * URL /user - Registers a user.
+ */
+app.post('/user', async (request, response) => {
+  //see if a user with that login_name exists already
+  if(!request.body){
+    console.log("/user: no request body");
+    return response.status(401).send("No request body");
+  }  
+  console.log(request.body);
+  const { first_name, last_name, login_name, password, location, occupation, description } = request.body.formData;
+  console.log(login_name);
+  const user = await User.findOne({ login_name });
+  if(user){
+    console.log("Duplicate:", user);
+    return response.status(409).json({error: "Username already in use"});
+  }
+  try{
+    const newUser = new User({
+      first_name: first_name, 
+      last_name: last_name, 
+      login_name: login_name, 
+      password: password,  //hash!!
+      location: location, 
+      occupation: occupation, 
+      description: description
+    });
+    const savedUser = await newUser.save();
+    if(savedUser){
+      request.session.user = {
+        id: savedUser._id, 
+        name: savedUser.first_name,
+        username: savedUser.login_name
+      };
+      return response.status(201).json({id: savedUser._id, username: savedUser.login_name, first_name: savedUser.first_name});
+    }
+   } catch (err){ 
+    console.error(err);
+    return response.status(500).send("Failed to create user");
+  }
+});
+
+/**
+ * URL /session - Gets session information.
  */
 app.get("/session", async (request, response) => {
   console.log("request", request.session);
