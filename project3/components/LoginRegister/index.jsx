@@ -90,7 +90,7 @@ function LoginRegister({register}){
         if(response.data.success){ 
           console.log("updating zustand session");
           console.log(response.data.first_name);
-          setSession({username: response.data.username, firstName: response.data.first_name });
+          setSession({username: response.data.username, firstName: response.data.first_name, userId: response.data.id });
           navigate(`/users/${response.data.id}`);
         }
       } catch (err){

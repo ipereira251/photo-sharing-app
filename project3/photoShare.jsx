@@ -13,11 +13,13 @@ import TopBar from './components/TopBar';
 import UserList from './components/UserList';
 import LoginRegister from './components/LoginRegister';
 import { UserDetailRoute, UserPhotosRoute, PhotoDetailRoute, CommentDetailRoute } from './components/Wrappers';
+import useSessionStore from './store/sessionStore';
 
 
 const queryClient = new QueryClient();
 
 function PhotoShare() {
+  let loggedIn = useSessionStore((s) => s.loggedIn);
 
   return (
     <BrowserRouter>   
@@ -30,7 +32,7 @@ function PhotoShare() {
             <div className="main-topbar-buffer" />
             <Grid item sm={3}>
               <Paper className="main-grid-item">
-                <UserList />
+                {loggedIn ? <UserList /> : <></>}
               </Paper>
             </Grid>
             <Grid item sm={9}>

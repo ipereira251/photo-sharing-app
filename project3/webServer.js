@@ -13,10 +13,13 @@ import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import { ObjectId } from "mongodb";
 import session from "express-session";
+import multer from "multer"
 
 import User from "./schema/user.js";
 import Photo from "./schema/photo.js";
 import SchemaInfo from "./schema/schemaInfo.js";
+import { request } from "http";
+import fs from 'node:fs'
 
 const portno = 3001; // Port number to use
 const app = express();
@@ -397,6 +400,49 @@ app.get('/comments/:id', async (request, response) => {
   } catch(err){
     console.error(err);
   }
+});
+
+app.post('/commentsOfPhoto/:photoId', async (request, response) => {
+
+  console.log("Entering (post, /commentsOfPhoto/:photoId) endpoint")
+  let comment = request.body.comment
+  let photoId = request.params.photoId;
+  let userId = request.session.user.id;
+
+  if (!comment) {
+    return response.status(400).send(`Bad Request: ${comment}`);
+  }
+
+  let photo = await Photo.findById(photoId).exec();
+  let entry = {comment: comment, user_id: userId};
+
+  photo.comments.push({comment: comment, user_id: userId});
+  await photo.save();
+  console.log(entry)
+
+  response.status(200).json({comment: comment, user_id: userId});
+})
+
+const processFormBody = multer({storage: multer.memoryStorage()}).single("myImage");
+
+app.post('/photos/new', (request, response) => {
+  console.log("entering endpoint (Post, /photos/new)")
+  processFormBody(request, response, function (err) {
+    if (err || !request.file) {
+      response.status(400).send("Bad Request");
+      return
+    }
+
+    const timestamp = new Date().valueOf();
+    const filename = 'U' +  String(timestamp) + request.file.originalname;
+
+    fs.writeFile("./images/" + filename, request.file.buffer, async function (err) {
+      let photo = new Photo({file_name: filename, user_id: request.session.user.id, comments: []});
+      await photo.save();
+      response.status(200).json(photo);
+  });
+
+  })
 });
 
 

@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { AppBar, Button, Checkbox, FormControlLabel, Toolbar, Typography } from '@mui/material';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import './styles.css';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -9,12 +9,16 @@ import useStore from '../../store/appStore';
 import useSessionStore from '../../store/sessionStore';
 
 function TopBar() {
+  let queryClient = useQueryClient();
   let {advEnabled} = useStore();
   let {loggedIn, firstName, clearSession} = useSessionStore();
   let set = useStore((s) => s.set);
+  let userId = useSessionStore(s => s.userId);
 
   let location = useLocation();
   let navigate = useNavigate();
+
+  const uploadInputRef = useRef(null);
 
   let url = location.pathname;
   let { data: context, isLoading, error } = useQuery({
@@ -28,10 +32,6 @@ function TopBar() {
       navigate('/login');
     }
   }, []);
-
-  if (isLoading) {
-    context = "";
-  }
 
   if (error) {
     console.error(error);
@@ -52,6 +52,20 @@ function TopBar() {
       console.error("Couldn't log out.", err);
     }
   };
+
+  function handleUpload() {
+    const file = uploadInputRef.current.files[0];
+    console.log(file);
+    const domForm = new FormData();
+    domForm.append("myImage", file);
+    axios.post('http://localhost:3001/photos/new', domForm, {withCredentials: true})
+    .then((res) => {
+      queryClient.invalidateQueries({ queryKey: ['photos', userId] });
+      navigate(`/photos/${userId}`);
+      console.log(res);
+    })
+    .catch((err) => console.log(`POST ERR: ${err}`));
+  }
 
   //please forgive me for the following code
   function toggleAdvEnabled() {
@@ -110,11 +124,18 @@ function TopBar() {
           </>
         )}
 
+      {loggedIn &&
+        <>
+          <input type="file" accept="image/*" ref={uploadInputRef}/>
+          <Button variant="contained" onClick={() => handleUpload()}>Upload Photo</Button>
+        </>
+      }
         {!loggedIn && (
           <Typography variant="h5" color="inherit" className="topbar-name">
             Please Sign In
           </Typography>
         )}
+
 
         {context && (
           <Typography variant="h5">

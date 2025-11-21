@@ -20,7 +20,7 @@ function PhotoDetail({userId, initialIndex}){
   }
 
   let {data: photos, isLoading, error} = useQuery({
-    queryKey: ['PhotoDetail', userId],
+    queryKey: ['photos', userId],
     queryFn: () => fetchUserPhotos(userId),
   });
 
