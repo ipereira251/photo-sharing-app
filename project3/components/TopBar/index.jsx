@@ -62,6 +62,8 @@ function TopBar() {
     .then((res) => {
       queryClient.invalidateQueries({ queryKey: ['photos', userId] });
       navigate(`/photos/${userId}`);
+
+      uploadInputRef.current.value = "";
       console.log(res);
     })
     .catch((err) => console.log(`POST ERR: ${err}`));
