@@ -157,8 +157,9 @@ function LoginRegister({register}){
       try{
         //axios
         console.log("Calling /user");
+        const { password2, ...sendData} = formData;
         const response = await axios.post('http://localhost:3001/user', 
-          {formData}, 
+          sendData, 
           {withCredentials: true});
         if(response){
           console.log("Response from /user", response);

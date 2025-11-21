@@ -105,6 +105,9 @@ app.post('/admin/login', async (request, response) => {
     return response.status(401).send("No request body");
   }
   const { login_name, password } = request.body;
+  if(!login_name || !password){
+    return response.status(401).send("Missing username or password");
+  }
   //find user
   const user = await User.findOne({ login_name, password }); 
   if(user){
@@ -278,6 +281,10 @@ app.get('/photosOfUser/:id', async (request, response) => {
           "comments.user": { $arrayElemAt: ["$commenter", 0]}
         }
       }, {
+        $project: {
+          "comments.user_id": 0
+        }
+      }, {
         $group: {
           _id: `$_id`, 
           file_name: { $first: `$file_name` },
@@ -286,15 +293,25 @@ app.get('/photosOfUser/:id', async (request, response) => {
           user_id: { $first: `$user_id` }
         }
       }, {
+        $addFields: {
+          comments: {
+            $cond: {
+              if: { $eq: [{ $size: "$comments" }, 0] },
+              then: [],
+              else: "$comments"
+            }
+          }
+        }
+      }, {
         $sort: { date_time: -1 }
       }
     ]);
-    console.log("PhotoModels:", photos);
-    if(!photos) {
-      response.status(404).send("No user found");
+    if(!photos || photos.length === 0) {
+      response.status(404).send("No photos found");
     }
     else {
       response.status(200).json(photos);
+      console.log("Photos of user:", photos);
     }
   } catch (err){
     console.error(err);
