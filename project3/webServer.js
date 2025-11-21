@@ -437,9 +437,13 @@ app.post('/photos/new', (request, response) => {
     const filename = 'U' +  String(timestamp) + request.file.originalname;
 
     fs.writeFile("./images/" + filename, request.file.buffer, async function (err1) {
+      if (err1) {
+        return response.status(500).json({error: "Could not save file"});
+      }
       let photo = new Photo({file_name: filename, user_id: request.session.user.id, comments: []});
       await photo.save();
       return response.status(200).json(photo);
+      
   });
     return response.status(500);
   });
