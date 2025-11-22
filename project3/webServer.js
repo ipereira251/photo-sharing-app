@@ -26,6 +26,7 @@ const app = express();
 
 // Enable CORS for all routes
 app.use((req, res, next) => {
+  //This might be an issue when we do web sockets for project 4 since it's a different scheme than htpp
   res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
@@ -100,28 +101,29 @@ app.get('/test/counts', async (request, response) => {
  */
 app.post('/admin/login', async (request, response) => {
   //console.log("/admin/login called", request.body); 
-  if(!request.body){
-    //console.log("Admin/login: no request body");
-    return response.status(401).send("No request body");
-  }
-  const { login_name, password } = request.body;
-  if(!login_name || !password){
-    return response.status(400).send("Missing username or password");
-  }
-  //find user
-  const user = await User.findOne({ login_name, password }); 
-  if(user){
-    request.session.user = {
-      id: user._id, 
-      name: user.first_name, 
-      username: user.login_name
-    };
-    //console.log("session:", request.session);
-    return response.status(200).json({ success: true, user: request.session.user, _id: user._id, first_name: user.first_name });
-  } else {
-    //console.log("failed log in");
-    return response.status(400).send("Invalid username or password");
-  }
+  try {
+    const { login_name, password } = request.body;
+
+    if(!login_name || !password){
+      return response.status(400).send("Missing username or password");
+    }
+    //find user
+    const user = await User.findOne({ login_name, password }); 
+    if(user){
+      request.session.user = {
+        id: user._id, 
+        name: user.first_name, 
+        username: user.login_name
+      };
+      //console.log("session:", request.session);
+      return response.status(200).json({ success: true, user: request.session.user, _id: user._id, first_name: user.first_name });
+    } else {
+      //console.log("failed log in");
+      return response.status(400).send("Invalid username or password");
+    }
+} catch (err) {
+    return response.status(400).send("Bad Request");
+}
 });
 
 /**
