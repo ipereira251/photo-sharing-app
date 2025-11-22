@@ -13,13 +13,13 @@ import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import { ObjectId } from "mongodb";
 import session from "express-session";
-import multer from "multer"
+import multer from "multer";
+import fs from 'node:fs';
 
 import User from "./schema/user.js";
 import Photo from "./schema/photo.js";
 import SchemaInfo from "./schema/schemaInfo.js";
-import { request } from "http";
-import fs from 'node:fs'
+
 
 const portno = 3001; // Port number to use
 const app = express();
@@ -64,7 +64,7 @@ app.use(express.static(__dirname));
 
 app.use(express.json());
 
-app.get("/", function (request, response) {
+app.get("/", function (_request, response) {
   response.send("Simple web server of files from " + __dirname);
 });
 
@@ -76,7 +76,7 @@ app.get("/", function (request, response) {
 app.get('/test/info', (request, response) => {
   const info = SchemaInfo; //models.schemaInfo();
   response.status(200).send(info);
-  console.log(info, "trying");
+  //console.log(info, "trying");
 });
 
 /**
@@ -86,11 +86,11 @@ app.get('/test/info', (request, response) => {
 app.get('/test/counts', async (request, response) => {
   try{
     const photoModels = await Photo.find({});
-    console.log("PhotoModels:", photoModels, photoModels.length);
+    //console.log("PhotoModels:", photoModels, photoModels.length);
     let photoCount = photoModels.length;
     response.status(200).json(photoCount);
   } catch(err){
-    console.error(err);
+    //console.error(err);
     response.status(400).send("Internal server error");
   }
 });
@@ -99,12 +99,15 @@ app.get('/test/counts', async (request, response) => {
  * URL /admin/login - Logs user in.
  */
 app.post('/admin/login', async (request, response) => {
-  console.log("/admin/login called", request.body);
+  //console.log("/admin/login called", request.body); 
   if(!request.body){
-    console.log("Admin/login: no request body");
+    //console.log("Admin/login: no request body");
     return response.status(401).send("No request body");
   }
   const { login_name, password } = request.body;
+  if(!login_name || !password){
+    return response.status(400).send("Missing username or password");
+  }
   //find user
   const user = await User.findOne({ login_name, password }); 
   if(user){
@@ -113,11 +116,11 @@ app.post('/admin/login', async (request, response) => {
       name: user.first_name, 
       username: user.login_name
     };
-    console.log("session:", request.session);
-    return response.json({ success: true, user: request.session.user, id: user._id, first_name: user.first_name });
+    //console.log("session:", request.session);
+    return response.status(200).json({ success: true, user: request.session.user, _id: user._id, first_name: user.first_name });
   } else {
-    console.log("failed log in");
-    return response.status(401).send("Invalid username or password");
+    //console.log("failed log in");
+    return response.status(400).send("Invalid username or password");
   }
 });
 
@@ -127,7 +130,7 @@ app.post('/admin/login', async (request, response) => {
 app.post('/admin/logout', (request, response) => {
   request.session.destroy((err) => {
     if(err){
-      console.error("Couldn't destroy session", err);
+      //console.error("Couldn't destroy session", err);
       return response.status(500).send("Error logging out");
     }
     response.clearCookie("connect.sid");
@@ -141,39 +144,47 @@ app.post('/admin/logout', (request, response) => {
 app.post('/user', async (request, response) => {
   //see if a user with that login_name exists already
   if(!request.body){
-    console.log("/user: no request body");
-    return response.status(401).send("No request body");
+    //console.log("/user: no request body");
+    return response.status(400).send("No request body");
   }  
-  console.log(request.body);
+  //console.log(request.body);
+
+  try {
   const { first_name, last_name, login_name, password, location, occupation, description } = request.body.formData;
-  console.log(login_name);
-  const user = await User.findOne({ login_name });
-  if(user){
-    console.log("Duplicate:", user);
-    return response.status(409).json({error: "Username already in use"});
-  }
-  try{
-    const newUser = new User({
-      first_name: first_name, 
-      last_name: last_name, 
-      login_name: login_name, 
-      password: password,  //hash!!
-      location: location, 
-      occupation: occupation, 
-      description: description
-    });
-    const savedUser = await newUser.save();
-    if(savedUser){
-      request.session.user = {
-        id: savedUser._id, 
-        name: savedUser.first_name,
-        username: savedUser.login_name
-      };
-      return response.status(201).json({id: savedUser._id, username: savedUser.login_name, first_name: savedUser.first_name});
+  
+    //console.log(login_name);
+    const user = await User.findOne({ login_name });
+    if(user){
+      //console.log("Duplicate:", user);
+      return response.status(409).json({error: "Username already in use"});
     }
-   } catch (err){ 
-    console.error(err);
-    return response.status(500).send("Failed to create user");
+    try{
+      const newUser = new User({
+        first_name: first_name, 
+        last_name: last_name, 
+        login_name: login_name, 
+        password: password,  //hash!!
+        location: location, 
+        occupation: occupation, 
+        description: description
+      });
+      const savedUser = await newUser.save();
+      if(savedUser){
+        request.session.user = {
+          id: savedUser._id, 
+          name: savedUser.first_name,
+          username: savedUser.login_name
+        };
+        return response.status(200).json({id: savedUser._id, username: savedUser.login_name, first_name: savedUser.first_name});
+      }
+      return response.status(500).send("Failed to create user");
+    } catch (err){ 
+      //console.error(err);
+      return response.status(500).send("Failed to create user");
+    }
+  }
+  catch(err) {
+    return response.status(400).send("Bad Request");
   }
 });
 
@@ -181,9 +192,9 @@ app.post('/user', async (request, response) => {
  * URL /session - Gets session information.
  */
 app.get("/session", async (request, response) => {
-  console.log("request", request.session);
+  //console.log("request", request.session);
   if(request.session.user){
-    console.log(request.session.user);
+    //console.log(request.session.user);
     const user = await User.findById(request.session.user.id); 
     if(user){
       return response.status(200).json({ username: user.login_name, firstName: user.first_name});
@@ -218,9 +229,9 @@ app.get('/user/list', async (request, response) => {
     });
     const toRet = users.flat();
     response.status(200).json(toRet);
-    console.log(toRet);
+    //console.log(toRet);
   } catch (err){
-    console.error(err);
+    //console.error(err);
     response.status(400).send("Internal server error");
   }
 });
@@ -241,7 +252,7 @@ app.get('/user/:id', async (request, response) => {
     };
     response.status(200).json(user);
   } catch (err){
-    console.error(err);
+    //console.error(err);
     response.status(400).send("Internal server error");
   }
 });
@@ -253,11 +264,11 @@ app.get('/photosOfUser/:id', async (request, response) => {
   try{
 
     if(!ObjectId.isValid(request.params.id)){
-      response.status(400);
+      response.status(400).send("No photos found");
       return;
     }
     const userId = new ObjectId(request.params.id);
-    console.log("Userid, objid:", userId);
+    //console.log("Userid, objid:", userId);
 
     const photos = await Photo.aggregate([
       {
@@ -277,6 +288,10 @@ app.get('/photosOfUser/:id', async (request, response) => {
           "comments.user": { $arrayElemAt: ["$commenter", 0]}
         }
       }, {
+        $project: {
+          "comments.user_id": 0
+        }
+      }, {
         $group: {
           _id: `$_id`, 
           file_name: { $first: `$file_name` },
@@ -285,18 +300,31 @@ app.get('/photosOfUser/:id', async (request, response) => {
           user_id: { $first: `$user_id` }
         }
       }, {
+        $addFields: {
+          comments: {
+            $cond: {
+              if: { $and: [
+                { $eq: [{ $size: "$comments" }, 1] },
+                { $eq: [{ $objectToArray: { $arrayElemAt: ["$comments", 0] } }, []] }
+              ] },
+              then: [],
+              else: "$comments"
+            }
+          }
+        }
+      }, {
         $sort: { date_time: -1 }
       }
     ]);
-    console.log("PhotoModels:", photos);
-    if(!photos) {
-      response.status(404).send("No user found");
+    if(!photos || photos.length === 0) {
+      response.status(404).send("No photos found");
     }
     else {
       response.status(200).json(photos);
+      //console.log("Photos of user:", photos);
     }
   } catch (err){
-    console.error(err);
+    //console.error(err);
     response.status(400).send("Internal server error");
   }
 });
@@ -340,7 +368,7 @@ app.get('/counts/:id', async (request, response) => {
     response.status(200).json(photoModels);
     
   } catch(err){
-    console.error(err);
+    //console.error(err);
     response.status(400).send("Internal server error");
   }
 });
@@ -395,17 +423,17 @@ app.get('/comments/:id', async (request, response) => {
         }
       }
     ]);
-    console.log("COMMENTS", comments);
+    //console.log("COMMENTS", comments);
     response.status(200).json(comments);
   } catch(err){
-    console.error(err);
+    //console.error(err);
   }
 });
 
 app.post('/commentsOfPhoto/:photoId', async (request, response) => {
 
-  console.log("Entering (post, /commentsOfPhoto/:photoId) endpoint")
-  let comment = request.body.comment
+  //console.log("Entering (post, /commentsOfPhoto/:photoId) endpoint");
+  let comment = request.body.comment;
   let photoId = request.params.photoId;
   let userId = request.session.user.id;
 
@@ -418,31 +446,40 @@ app.post('/commentsOfPhoto/:photoId', async (request, response) => {
 
   photo.comments.push({comment: comment, user_id: userId});
   await photo.save();
-  console.log(entry)
+  //console.log(entry);
 
-  response.status(200).json({comment: comment, user_id: userId});
-})
+  return response.status(200).json({comment: comment, user_id: userId});
+});
 
-const processFormBody = multer({storage: multer.memoryStorage()}).single("myImage");
+const processFormBody = multer({storage: multer.memoryStorage()}).single("uploadedphoto");
 
 app.post('/photos/new', (request, response) => {
-  console.log("entering endpoint (Post, /photos/new)")
+  console.log("entering endpoint (Post, /photos/new)");
   processFormBody(request, response, function (err) {
     if (err || !request.file) {
-      response.status(400).send("Bad Request");
-      return
+      console.log("return status code of 400");
+      return response.status(400).send("Bad Request");
     }
 
     const timestamp = new Date().valueOf();
     const filename = 'U' +  String(timestamp) + request.file.originalname;
 
-    fs.writeFile("./images/" + filename, request.file.buffer, async function (err) {
+    fs.writeFile("./images/" + filename, request.file.buffer, async function (err1) {
+      if (err1) {
+        console.log("return status code of 500");
+        return response.status(500).json({error: "Could not save file"});
+      }
       let photo = new Photo({file_name: filename, user_id: request.session.user.id, comments: []});
       await photo.save();
-      response.status(200).json(photo);
+
+      console.log("return status code of 200");
+      return response.status(200).json(photo);
+      
   });
 
-  })
+    console.log("return status code of 500");
+    return response.status(500);
+  });
 });
 
 
