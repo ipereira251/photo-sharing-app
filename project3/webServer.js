@@ -442,7 +442,6 @@ app.post('/commentsOfPhoto/:photoId', async (request, response) => {
   }
 
   let photo = await Photo.findById(photoId).exec();
-  let entry = {comment: comment, user_id: userId};
 
   photo.comments.push({comment: comment, user_id: userId});
   await photo.save();

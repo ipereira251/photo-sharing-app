@@ -84,4 +84,4 @@ export const fetchUserComments = async (userId) => {
 export const postUserComment = async ({photoId, comment}) => {
   let response = await axios.post(`http://localhost:3001/commentsOfPhoto/${photoId}`, {comment: comment}, {withCredentials: true});
   return response.data;
-}
+};
