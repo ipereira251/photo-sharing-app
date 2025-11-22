@@ -1,5 +1,7 @@
 import React, { useEffect, useRef } from 'react';
-import { AppBar, Button, Checkbox, FormControlLabel, Toolbar, Typography } from '@mui/material';
+import { AppBar, Box, Button, FormControlLabel, IconButton, Switch, Toolbar, Tooltip, Typography } from '@mui/material';
+import UploadIcon from '@mui/icons-material/Upload';
+import LogoutIcon from '@mui/icons-material/Logout';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import './styles.css';
@@ -113,38 +115,62 @@ function TopBar() {
   return (
     <AppBar className="topbar-appBar" position="absolute">
       <Toolbar className='topbar-toolbar'>
-
-        {loggedIn && (
-          <>
-            <Typography variant="h5" color="inherit" className="topbar-name">
-              Hi {firstName}
-            </Typography>   {/* toggle or toggleAdvEnabled both? vv */}
-            <FormControlLabel control={
-              <Checkbox checked={advEnabled} onChange={() => toggleAdvEnabled()} color="default" /> 
-              } label="Advanced Features" />
-            <Button variant="contained" onClick={() => handleLogoutClick()}>Logout</Button>
-          </>
-        )}
-
-      {loggedIn &&
-        <>
-          <input type="file" accept="image/*" ref={uploadInputRef}/>
-          <Button variant="contained" onClick={() => handleUpload()}>Upload Photo</Button>
-        </>
-      }
-        {!loggedIn && (
+        <Box sx={{ display:'flex', alignItems: 'center', gap:3}}>
           <Typography variant="h5" color="inherit" className="topbar-name">
-            Please Sign In
+            {loggedIn ? `Hi ${firstName}` : "Please Sign In"}
           </Typography>
-        )}
+          {loggedIn && (
+            <FormControlLabel control={(
+              <Switch checked={advEnabled} onChange={() => toggleAdvEnabled()}
+                sx={{
+                  '& .MuiSwitch-thumb': {
+                    backgroundColor: advEnabled ? 'white' : '#B0B0B0',
+                  },
+                  '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                    backgroundColor: advEnabled ? '#D3D3D3' : '#D3D3D3', 
+                  },
+                }}
+              />
+            )} label="Advanced Features" />
+          )}
+        </Box>
 
-
-        {context && (
-          <Typography variant="h5">
-            {context}
-          </Typography>
-        )}
-        
+        <Box sx={{ display:'flex', alignItems: 'center', gap:3}}>
+          {loggedIn && (
+          <>
+            <Tooltip title="Upload Photo">
+              <IconButton onClick={() => uploadInputRef.current.click()}
+                sx={{ 
+                  display: 'flex', 
+                  alignItems:'center',
+                  '&.MuiButtonBase-root.MuiIconButton-root': {color: 'white'}
+                }}
+              >
+                <UploadIcon />
+              </IconButton>
+            </Tooltip>
+            <input 
+              type="file"
+              accept="image/*"
+              ref={uploadInputRef}
+              style={{display: 'none'}}
+              onChange={() => handleUpload()}
+            />
+            <Button 
+              variant="contained" 
+              endIcon={<LogoutIcon />}
+              onClick={() => handleLogoutClick()}
+            >
+              Logout
+            </Button>
+          </>
+          )}
+          {context && (
+            <Typography variant="h5">
+              {context}
+            </Typography>
+          )}
+        </Box>
       </Toolbar>
     </AppBar>
   );
