@@ -7,6 +7,8 @@ import useSessionStore from "../../store/sessionStore"
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { postUserComment } from '../../axiosAPI';
 import crypto from 'node:crypto';
+import { Box, TextField, IconButton } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 
 function PhotoCard({photoInfo}){
   let selectedPhoto = useAppStore((s) => s.selectedPhoto);
@@ -20,30 +22,6 @@ function PhotoCard({photoInfo}){
   let mutatation = useMutation({
     mutationFn: postUserComment,
     onSettled: () => queryClient.invalidateQueries({ queryKey: ['photos', photoInfo.user_id] }),
-    
-  //   onMutate: async ({ photoId, comment }) => {
-  //   await queryClient.cancelQueries(['photos', photoInfo.user_id]);
-
-  //   const prevPhotoList = queryClient.getQueryData(['photos', photoInfo.user_id]);
-
-  //   const tempId = crypto.randomUUID();
-  //   queryClient.setQueryData(['photos', photoInfo.user_id], (old) => {
-  //     return [...old.map(photo => {
-  //       if (photo._id.toString() === photoId) {
-  //         return {
-  //           ...photo,
-  //           comments: [
-  //             ...photo.comments,
-  //             { comment, user_id: photo.user_id, _id: tempId, date_time: new Date(), user: {user_id: photo.user_id, first_name: "", last_name: ""} } // optimistic temp obj
-  //           ]
-  //         };
-  //       }
-  //       return photo; // ⬅ must return untouched items too
-  //     })]
-  //   });
-
-  //   return { prevPhotoList };
-  // }
   });
 
   const { isPending, submittedAt, variables, mutate, isError } = mutatation
@@ -79,9 +57,15 @@ function PhotoCard({photoInfo}){
     unselectPhoto()
   }
 
+  function handleShortcutSubmit(e) {
+    if (e.key === "Enter") {
+      submitComment();
+    }
+  }
+
   function unselectPhoto(e) {
     setSelectedPhoto(null);
-    setCurrentText("");
+    setCurrentText(""); 
   }
 
   function viewLogic() {
@@ -91,12 +75,36 @@ function PhotoCard({photoInfo}){
                         Add a comment 
               </Button>;
     else {
-            return  <>
-                      <Typography variant="body2" className="no-comment-text">{firstName}</Typography>
-                      <button onClick={unselectPhoto}>x</button>
-                      <input type='text' onChange={recordChange}/>
-                      <button onClick={submitComment}>submit</button>
-                    </>
+            return  (
+              <>
+                <Box 
+                  display="flex" 
+                  alignItems="center" 
+                  gap={2}        
+                  sx={{ padding: 1 }}
+                >
+                  <IconButton onClick={unselectPhoto} size="small">
+                    <CloseIcon />
+                  </IconButton>
+
+                  <TextField
+                    variant="outlined"
+                    size="small"
+                    placeholder="Write a comment..."
+                    onChange={recordChange}
+                    onKeyDown={handleShortcutSubmit}
+                  />
+
+                  <Button 
+                    variant="contained" 
+                    size="small" 
+                    onClick={submitComment}
+                  >
+                    Submit
+                  </Button>
+                </Box>
+              </>
+            );
     }
   }
   
