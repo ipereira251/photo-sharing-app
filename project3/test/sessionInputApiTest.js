@@ -349,7 +349,7 @@ describe("Photo App: Session and Input API Tests", function () {
     
     it("can create a new user", function (done) {
 
-      const params = {
+      const params = { formData : {
         login_name: newUniqueLoginName,
         password: "weak2",
         first_name: "Fn" + newUniqueLoginName,
@@ -357,6 +357,7 @@ describe("Photo App: Session and Input API Tests", function () {
         location: "Loc" + newUniqueLoginName,
         description: "Desc" + newUniqueLoginName,
         occupation: "Occ" + newUniqueLoginName,
+      }
       };
       axios
         .post(makeFullUrl("/user"), params)

@@ -57,7 +57,7 @@ function TopBar() {
     const file = uploadInputRef.current.files[0];
     console.log(file);
     const domForm = new FormData();
-    domForm.append("myImage", file);
+    domForm.append("uploadedphoto", file);
     axios.post('http://localhost:3001/photos/new', domForm, {withCredentials: true})
     .then((res) => {
       queryClient.invalidateQueries({ queryKey: ['photos', userId] });
