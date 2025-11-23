@@ -1,4 +1,4 @@
-import User from "../schema/user.js"
+import User from "../schema/user.js";
 
 export async function login(request, response) {
   //console.log("/admin/login called", request.body); 
@@ -26,7 +26,7 @@ export async function login(request, response) {
         console.log(err);
         return response.status(400).send("Bad Request");
     }
-};
+}
 
 export async function logout(request, response) {
   request.session.destroy((err) => {
@@ -37,7 +37,7 @@ export async function logout(request, response) {
     response.clearCookie("connect.sid");
     return response.json({ success:true });
   });
-};
+}
 
 export async function register(request, response) {
   //see if a user with that login_name exists already
@@ -84,7 +84,7 @@ export async function register(request, response) {
   catch(err) {
     return response.status(400).send("Bad Request");
   }
-};
+}
 
 export async function getSession(request, response) {
   //console.log("request", request.session);
@@ -96,14 +96,14 @@ export async function getSession(request, response) {
     }
   }
   return response.status(401);
-};
+}
 
 export function isAuthenicated(request, response, next) {
   if (request.session.user) {
     return next();
   }
   return response.status(401).send();
-};
+}
 
 
 

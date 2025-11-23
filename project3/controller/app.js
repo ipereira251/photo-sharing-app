@@ -2,9 +2,8 @@ import multer from "multer";
 import fs from 'node:fs';
 import { ObjectId } from "mongodb";
 
-import User from "../schema/user.js"
+import User from "../schema/user.js";
 import Photo from "../schema/photo.js";
-import SchemaInfo from "../schema/schemaInfo.js";
 
 export async function getUserList(request, response) {
   try{
@@ -23,7 +22,7 @@ export async function getUserList(request, response) {
     //console.error(err);
     response.status(400).send("Internal server error");
   }
-};
+}
 
 export async function getUser(request, response) {
   try{
@@ -41,7 +40,7 @@ export async function getUser(request, response) {
     console.error(err);
     response.status(400).send("Internal server error");
   }
-};
+}
 
 export async function getPhotos(request, response) {
   try{
@@ -151,7 +150,7 @@ export async function getCountStats(request, response) {
     //console.error(err);
     response.status(400).send("Internal server error");
   }
-};
+}
 
 export async function getUserComments (request, response) {
   try{
@@ -205,7 +204,7 @@ export async function getUserComments (request, response) {
   } catch(err){
     //console.error(err);
   }
-};
+}
 
 export async function postComment (request, response) {
 
@@ -229,7 +228,7 @@ export async function postComment (request, response) {
   ////console.log(entry);
 
   return response.status(200).json({comment: comment, user_id: userId});
-};
+}
 
 const processFormBody = multer({storage: multer.memoryStorage()}).single("uploadedphoto");
 
@@ -260,4 +259,4 @@ export async function postPhoto(request, response) {
     //console.log("return status code of 500");
     return response.status(500);
   });
-};
+}

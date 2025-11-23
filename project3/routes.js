@@ -1,13 +1,5 @@
 import {Router} from "express";
-import multer from "multer";
-import fs from 'node:fs';
-import { ObjectId } from "mongodb";
 import {getUserList, getUser, getPhotos, getCountStats, getUserComments, postComment, postPhoto} from "./controller/app.js";
-
-import User from "./schema/user.js";
-import Photo from "./schema/photo.js";
-import SchemaInfo from "./schema/schemaInfo.js";
-
 
 const router = Router();
 

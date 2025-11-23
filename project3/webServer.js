@@ -11,12 +11,10 @@ import bluebird from "bluebird";
 import express from "express";
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
-import { ObjectId } from "mongodb";
 import session from "express-session";
 import router from "./routes.js";
-import { login, logout, register, getSession, isAuthenicated } from "./controller/authentication.js"
+import { login, logout, register, getSession, isAuthenicated } from "./controller/authentication.js";
 
-import User from "./schema/user.js";
 import Photo from "./schema/photo.js";
 import SchemaInfo from "./schema/schemaInfo.js";
 
