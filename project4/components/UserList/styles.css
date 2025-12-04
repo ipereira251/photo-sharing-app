@@ -1,0 +1,19 @@
+.photo-count-button {
+  background-color: green !important;
+  color: white !important;
+  width: 40px !important;
+}
+
+.comment-count-button {
+  background-color: red !important;
+  color: white !important;
+  width: 40px !important;
+}
+
+.photo-count-button:hover {
+  background-color: darkgreen !important;
+}
+
+.comment-count-button:hover {
+  background-color: darkred !important;
+}
