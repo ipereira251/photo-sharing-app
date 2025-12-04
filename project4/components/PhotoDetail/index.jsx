@@ -2,9 +2,9 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { IconButton } from '@mui/material';
+import { useQuery } from '@tanstack/react-query';
 import './styles.css';
 import { fetchUserPhotos } from '../../axiosAPI';
-import { useQuery } from '@tanstack/react-query';
 import PhotoCard from '../PhotoCard';
 import useStore from '../../store/appStore';
 

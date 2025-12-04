@@ -98,7 +98,7 @@ export async function getSession(request, response) {
   return response.status(401);
 }
 
-export function isAuthenicated(request, response, next) {
+export function isAuthenticated(request, response, next) {
   if (request.session.user) {
     return next();
   }

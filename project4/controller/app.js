@@ -1,6 +1,7 @@
 import multer from "multer";
 import fs from 'node:fs';
 import { ObjectId } from "mongodb";
+import mongoose from "mongoose";
 
 import User from "../schema/user.js";
 import Photo from "../schema/photo.js";
@@ -108,6 +109,133 @@ export async function getPhotos(request, response) {
     }
   } catch (err){
     //console.error(err);
+    response.status(400).send("Internal server error");
+  }
+}
+
+export async function getPopularPhotos(request, response) {
+  try{
+    console.log("Given id:", request.params.id);
+    if(!ObjectId.isValid(request.params.id)){
+      response.status(400).send("Bad Request");
+      return;
+    }
+    const userId = new ObjectId(request.params.id);
+
+    const mostRecentPhoto = await Photo.aggregate([
+      /*{
+        $match: { user_id: userId }
+      }, {
+        $sort: { date_time: -1 }
+      }, {
+        $limit: 1
+      }*/
+      {
+        $match: { user_id: userId }
+      }, {
+        $unwind: { path:`$comments`, preserveNullAndEmptyArrays: true}
+      }, {
+        $lookup: {
+          from: 'users', 
+          localField: 'comments.user_id', 
+          foreignField: '_id', 
+          pipeline: [{$project: {first_name: 1, last_name: 1}}],
+          as: 'commenter'
+        }
+      }, {
+        $addFields: {
+          "comments.user": { $arrayElemAt: ["$commenter", 0]}
+        }
+      }, {
+        $project: {
+          "comments.user_id": 0
+        }
+      }, {
+        $group: {
+          _id: `$_id`, 
+          file_name: { $first: `$file_name` },
+          date_time: { $first: `$date_time` },
+          comments: { $push: `$comments` },
+          user_id: { $first: `$user_id` }
+        }
+      }, {
+        $addFields: {
+          comments: {
+            $cond: {
+              if: { $and: [
+                { $eq: [{ $size: "$comments" }, 1] },
+                { $eq: [{ $objectToArray: { $arrayElemAt: ["$comments", 0] } }, []] }
+              ] },
+              then: [],
+              else: "$comments"
+            }
+          }
+        }
+      }, {
+        $sort: { date_time: -1 }
+      }, {
+        $limit: 1
+      }
+    ]);
+
+    const mostCommentedPhoto = await Photo.aggregate([
+      {
+        $match: { user_id: userId }
+      }, {
+        $unwind: { path:`$comments`, preserveNullAndEmptyArrays: true}
+      }, {
+        $lookup: {
+          from: 'users', 
+          localField: 'comments.user_id', 
+          foreignField: '_id', 
+          pipeline: [{$project: {first_name: 1, last_name: 1}}],
+          as: 'commenter'
+        }
+      }, {
+        $addFields: {
+          "comments.user": { $arrayElemAt: ["$commenter", 0]}, 
+        }
+      }, {
+        $group: {
+          _id: `$_id`, 
+          file_name: { $first: `$file_name` },
+          date_time: { $first: `$date_time` },
+          comments: { $push: `$comments` },
+          user_id: { $first: `$user_id` }
+        }
+      }, {
+        $addFields: {
+          commentCount: {
+            $sum: {
+              $size: {
+                $filter: {
+                  input: "$comments", 
+                  as: "comment", 
+                  cond: { 
+                    $ne: ["$$comment", {}] 
+                  }
+                }
+              }
+            }
+          }
+        }
+      }, {
+        $sort: { 
+          commentCount: -1
+        }
+      }, {
+        $limit: 1
+      }
+    ]);
+
+    if(!mostRecentPhoto || !mostCommentedPhoto){
+      response.status(404).send("No photos found for user");
+    }
+    console.log(mostCommentedPhoto);
+    response.status(200).json({mostRecent: mostRecentPhoto[0], mostCommented: mostCommentedPhoto[0]});
+    
+  } catch (err){
+    console.error(err);
     response.status(400).send("Internal server error");
   }
 }

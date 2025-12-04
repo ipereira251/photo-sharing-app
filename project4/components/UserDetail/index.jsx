@@ -5,26 +5,41 @@ import { Typography, Button } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
 
 import './styles.css';
-import { fetchUserInfo } from '../../axiosAPI';
+import { fetchUserInfo, fetchPopularPhotos } from '../../axiosAPI';
 import useStore from '../../store/appStore';
+import PhotoCard from "../PhotoCard";
 
 
 function UserDetail({userId}) {
   let advEnabled = useStore((s) => s.advEnabled);
   const navigate = useNavigate();
 
-
+  //query for user details
   let {data: user, isLoading, error} = useQuery({
     queryKey: ['userDetail', userId],
     queryFn: () => fetchUserInfo(userId)
+  });
+
+  //query for user photos
+  let {data: photos, isLoading: photosLoading, error: photosError} = useQuery({
+    queryKey: ['userDetailPhotos', userId],
+    queryFn: () => fetchPopularPhotos(userId)
   });
 
   if (isLoading) {
     return 'Loading ...';
   }
 
+  if(photosLoading){
+    return 'Loading photos...';
+  }
+
   if (error) {
     return 'Could not fetch User profile';
+  }
+
+  if(photosError){
+    return 'Could not fetch photos';
   }
 
   const handleViewImgClick = () => {
@@ -40,6 +55,13 @@ function UserDetail({userId}) {
     return <p>No such user found.</p>;
   }
 
+  if(!photos || photos.length === 0){
+    return 'No photos available';
+  }
+
+  const mostRecentPhotoInfo = photos.mostRecent;
+  const mostCommentedPhotoInfo = photos.mostCommented;
+
   return (
     <>
     <div> 
@@ -53,7 +75,24 @@ function UserDetail({userId}) {
         {user.description}
       </Typography>
     </div>
-    <Button variant="contained" onClick={() => handleViewImgClick()}>{`View ${user.first_name}'s images`}</Button>
+    <div>
+      <Typography variant="h6">
+        Photo Spotlight
+      </Typography>
+      <div>
+        <Typography variant='body1'>
+          Most Recent
+        </Typography>
+        <PhotoCard photoInfo={mostRecentPhotoInfo} />
+      </div>
+      <div>
+        <Typography variant='body1'>
+          Most Commented
+        </Typography>
+        <PhotoCard photoInfo={mostCommentedPhotoInfo} />
+      </div>
+    </div>
+    <Button variant="contained" onClick={() => handleViewImgClick()}>{`View all ${user.first_name}'s images`}</Button>
     </>
     
   );
