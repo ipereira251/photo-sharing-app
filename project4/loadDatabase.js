@@ -2,7 +2,7 @@
  * Loads the Project 2 demo data into MongoDB using Mongoose.
  * Run: node loadDatabase.js (MongoDB must be running locally)
  *
- * Loads into the MongoDB database named 'project2'.
+ * Loads into the MongoDB database named 'project4'.
  * Collections affected: User, Photo, SchemaInfo. Existing data is cleared.
  *
  * Uses Promises for async DB calls.
@@ -22,7 +22,7 @@ import SchemaInfo from "./schema/schemaInfo.js";
 
 mongoose.Promise = bluebird;
 mongoose.set("strictQuery", false);
-mongoose.connect("mongodb://127.0.0.1/project3", {
+mongoose.connect("mongodb://127.0.0.1/project4", {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });

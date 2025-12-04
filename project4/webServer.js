@@ -1,5 +1,5 @@
 /**
- * Project 3 Express server connected to MongoDB 'project3'.
+ * Project 4 Express server connected to MongoDB 'project4'.
  * Start with: node webServer.js
  * Client uses axios to call these endpoints.
  */
@@ -49,7 +49,7 @@ app.use(session({
 
 mongoose.Promise = bluebird;
 mongoose.set("strictQuery", false);
-mongoose.connect("mongodb://127.0.0.1/project3", {
+mongoose.connect("mongodb://127.0.0.1/project4", {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
