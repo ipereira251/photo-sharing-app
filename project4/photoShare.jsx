@@ -5,25 +5,48 @@ import {
   BrowserRouter, Route, Routes,
 } from 'react-router-dom';
 import {  
-  QueryClient, QueryClientProvider 
+  QueryClient, QueryClientProvider, useQuery
 } from '@tanstack/react-query';
-
+import axios from 'axios';
 import './styles/main.css';
 import TopBar from './components/TopBar';
 import UserList from './components/UserList';
 import LoginRegister from './components/LoginRegister';
 import { UserDetailRoute, UserPhotosRoute, PhotoDetailRoute, CommentDetailRoute } from './components/Wrappers';
 import useSessionStore from './store/sessionStore';
-
+import { fetchSession } from './axiosAPI';
 
 const queryClient = new QueryClient();
 
 function PhotoShare() {
+  const { setSession, clearSession } = useSessionStore();
   let loggedIn = useSessionStore((s) => s.loggedIn);
+
+  const { data, error, isLoading, isError } = useQuery({
+    queryKey: ['session'],
+    queryFn: () => fetchSession(),
+    retry: false
+  });
+
+  if(data){
+    console.log("Data:", data);
+    if(!loggedIn){
+      console.log("Setting session data");
+      setSession({
+        username: data.username,
+        firstName: data.firstName,
+      });
+      console.log("initializing");
+      useSessionStore.getState().initSession();
+    }
+  }
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <BrowserRouter>   
-      <QueryClientProvider client={queryClient}>
         <div>
           <Grid container spacing={2}>
             <Grid item xs={12}>
@@ -50,10 +73,14 @@ function PhotoShare() {
             </Grid>
           </Grid>
         </div>
-      </QueryClientProvider>
     </BrowserRouter>
   );
 }
 
 const root = ReactDOM.createRoot(document.getElementById('photoshareapp'));
-root.render(<PhotoShare />);
+root.render(
+  <QueryClientProvider client={queryClient}>
+     <PhotoShare />
+  </QueryClientProvider>
+ 
+);

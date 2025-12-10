@@ -35,6 +35,7 @@ function PhotoDetail({userId, initialIndex}){
   //If the index is not in bounds
   //then yell at the user
   if(!/[0-9]+/.test(String(initialIndex))) {
+    //navigate
     return "Not a number";
   }
 
@@ -43,6 +44,7 @@ function PhotoDetail({userId, initialIndex}){
   //If the index is not in bounds
   //then yell at the user
   if(! (currentIndex >= 0 && currentIndex < photos.length)) {
+    // navigate
     return "out of bounds";
   }
 
