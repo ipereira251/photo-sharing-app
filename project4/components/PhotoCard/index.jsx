@@ -24,7 +24,7 @@ function PhotoCard({photoInfo}){
     onSettled: () => queryClient.invalidateQueries({ queryKey: ['photos', photoInfo.user_id] }),
   });
 
-  const { isPending, submittedAt, variables, mutate, isError } = mutatation
+  const { isPending, submittedAt, variables, mutate, isError } = mutatation;
 
 
   const comments = photoInfo.comments || [];
@@ -68,13 +68,14 @@ function PhotoCard({photoInfo}){
 
   function viewLogic() {
     if (photoInfo._id.toString() !== selectedPhoto)
-      return <Button variant="text" className="user-name-button comment-user-name-button"
-                        onClick={selectPhoto}>
-                        Add a comment 
-              </Button>;
+      {return (
+        <Button variant="text" className="user-name-button comment-user-name-button"
+          onClick={selectPhoto}>
+            Add a comment 
+        </Button>
+);}
     else {
-            return  (
-              <>
+      return  (
                 <Box 
                   display="flex" 
                   alignItems="center" 
@@ -101,7 +102,6 @@ function PhotoCard({photoInfo}){
                     Submit
                   </Button>
                 </Box>
-              </>
             );
     }
   }

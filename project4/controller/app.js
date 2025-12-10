@@ -1,7 +1,6 @@
 import multer from "multer";
 import fs from 'node:fs';
 import { ObjectId } from "mongodb";
-import mongoose from "mongoose";
 
 import User from "../schema/user.js";
 import Photo from "../schema/photo.js";
@@ -115,7 +114,7 @@ export async function getPhotos(request, response) {
 
 export async function getPopularPhotos(request, response) {
   try{
-    console.log("Given id:", request.params.id);
+    //console.log("Given id:", request.params.id);
     if(!ObjectId.isValid(request.params.id)){
       response.status(400).send("Bad Request");
       return;
@@ -123,13 +122,6 @@ export async function getPopularPhotos(request, response) {
     const userId = new ObjectId(request.params.id);
 
     const mostRecentPhoto = await Photo.aggregate([
-      /*{
-        $match: { user_id: userId }
-      }, {
-        $sort: { date_time: -1 }
-      }, {
-        $limit: 1
-      }*/
       {
         $match: { user_id: userId }
       }, {
@@ -231,7 +223,7 @@ export async function getPopularPhotos(request, response) {
     if(!mostRecentPhoto || !mostCommentedPhoto){
       response.status(404).send("No photos found for user");
     }
-    console.log(mostCommentedPhoto);
+    //console.log(mostCommentedPhoto);
     response.status(200).json({mostRecent: mostRecentPhoto[0], mostCommented: mostCommentedPhoto[0]});
     
   } catch (err){

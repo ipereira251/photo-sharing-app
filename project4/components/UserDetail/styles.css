@@ -6,3 +6,16 @@
   font-weight: 400;
   font-size: 1rem;
 }
+.photo-spotlight-images{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 0px;
+}
+.spotlight-text.MuiTypography-body1{
+  padding: 10px 0px;
+}
+.spotlight-header.MuiTypography-h6{
+  padding: 10px 0px 0px 0px;
+}

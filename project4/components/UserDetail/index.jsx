@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { Typography, Button } from '@mui/material';
+import { Typography, Button, Divider } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
 
 import './styles.css';
@@ -51,6 +51,12 @@ function UserDetail({userId}) {
     }
   };
 
+  const handleSpotlightImgClick = (imageInfo) => {
+    console.log("Clicked spotlight image");
+    console.log("image info", imageInfo);
+    //navigate to photo detail view
+  };
+
   if(!user){
     return <p>No such user found.</p>;
   }
@@ -75,22 +81,26 @@ function UserDetail({userId}) {
         {user.description}
       </Typography>
     </div>
+    <Divider />
     <div>
-      <Typography variant="h6">
+      <Typography variant="h6" className="spotlight-header">
         Photo Spotlight
       </Typography>
-      <div>
-        <Typography variant='body1'>
-          Most Recent
-        </Typography>
-        <PhotoCard photoInfo={mostRecentPhotoInfo} />
+      <div className="photo-spotlight-images">
+        <div onClick={() => handleSpotlightImgClick(mostRecentPhotoInfo)} >
+          <Typography variant='body1' className="spotlight-text">
+            Most Recent
+          </Typography>
+          <PhotoCard photoInfo={mostRecentPhotoInfo} />          
+        </div>
+        <div onClick={() => handleSpotlightImgClick(mostCommentedPhotoInfo)}>
+          <Typography variant='body1' className="spotlight-text">
+            Most Commented
+          </Typography>
+          <PhotoCard photoInfo={mostCommentedPhotoInfo} />
+        </div>
       </div>
-      <div>
-        <Typography variant='body1'>
-          Most Commented
-        </Typography>
-        <PhotoCard photoInfo={mostCommentedPhotoInfo} />
-      </div>
+      
     </div>
     <Button variant="contained" onClick={() => handleViewImgClick()}>{`View all ${user.first_name}'s images`}</Button>
     </>
