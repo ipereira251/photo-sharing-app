@@ -37,8 +37,8 @@ function CommentDetail({userId}){
   const handleListItemClick = (comment) => {
     console.log("Clicked list item", comment);
     if(comment.originalPostersId && comment.photoIndexInPosters !== undefined){
-      console.log("Navigating", `/photos/${comment.originalPostersId}/${comment.photoIndexInPosters}`);
-      navigate(`/photos/${comment.originalPostersId}/${comment.photoIndexInPosters}`);
+      console.log("Navigating", `/photos/${comment.originalPostersId}/${comment._id}`);
+      navigate(`/photos/${comment.originalPostersId}/${comment._id}`);
     }
   };
 

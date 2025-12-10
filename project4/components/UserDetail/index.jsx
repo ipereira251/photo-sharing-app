@@ -52,8 +52,7 @@ function UserDetail({userId}) {
   };
 
   const handleSpotlightImgClick = (imageInfo) => {
-    console.log("Clicked spotlight image");
-    console.log("image info", imageInfo);
+    navigate(`/photos/${userId}/${imageInfo._id}`);
     //navigate to photo detail view
   };
 

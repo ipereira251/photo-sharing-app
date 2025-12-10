@@ -9,9 +9,16 @@ import PhotoCard from '../PhotoCard';
 import useStore from '../../store/appStore';
 
 
-function PhotoDetail({userId, initialIndex}){
+function PhotoDetail({userId}){
   let advEnabled = useStore((s) => s.advEnabled);
   let setAdvEnabled = useStore((s) => s.setAdvEnabled);
+  let currentIndex = 0;
+  let photoId;
+  let url = window.location.pathname;
+  const terms = url.split("/");
+  if(terms[3]){
+    photoId = terms[3];
+  }
 
   let navigate = useNavigate();
 
@@ -31,39 +38,42 @@ function PhotoDetail({userId, initialIndex}){
   if (error) {
     return "Could not load User Photo";
   }
-  
-  //If the index is not in bounds
-  //then yell at the user
-  if(!/[0-9]+/.test(String(initialIndex))) {
-    //navigate
-    return "Not a number";
-  }
 
-  let currentIndex = Number(initialIndex);
-
-  //If the index is not in bounds
-  //then yell at the user
-  if(! (currentIndex >= 0 && currentIndex < photos.length)) {
-    // navigate
-    return "out of bounds";
-  }
-
-  //let url = window.location.pathname;
   let pathStem = `/photos/${userId}/`;
+  
+  console.log("Photo id i'm looking for", photoId);
+  const index = photos.findIndex((x) => x._id === photoId);
+  console.log("index", index);
+  console.log("photos", photos);
+  if(index !== -1){
+    currentIndex = index;
+  } else /*if(photoId === 0)*/{
+    console.log("setting current index to 0");
+    currentIndex = 0;
+    if(photos[0]){
+      console.log("photos[0] exists");
+      photoId = photos[0]._id;
+      navigate(pathStem + photos[0]._id);
+    } else {
+      console.log("photos[0] does not exist");
+      navigate(pathStem);
+    }
+  }
   
   const goToPrev = () => {
     if(currentIndex > 0){
-      navigate(pathStem + (currentIndex - 1));
+      console.log("prev id:", photos[(currentIndex - 1)]._id);
+      navigate(pathStem + photos[(currentIndex - 1)]._id);
     }
   };
 
   const goToNext = () => {
     if(currentIndex < photos.length - 1){
-      navigate(pathStem + (currentIndex + 1));
+      console.log("next id:", photos[(currentIndex + 1)]._id);
+      navigate(pathStem + photos[(currentIndex + 1)]._id);
     }
-    console.log("go to next: ", currentIndex);
+    console.log("go to next index ", currentIndex);
   };
-    
 
   return (
     <div className="carousel-container">
@@ -87,8 +97,7 @@ function PhotoDetail({userId, initialIndex}){
 }
 
 PhotoDetail.propTypes = {
-  userId: PropTypes.string.isRequired, 
-  initialIndex: PropTypes.number.isRequired,
+  userId: PropTypes.string.isRequired
 };
 
 export default PhotoDetail;

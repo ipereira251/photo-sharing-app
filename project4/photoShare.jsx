@@ -7,7 +7,6 @@ import {
 import {  
   QueryClient, QueryClientProvider, useQuery
 } from '@tanstack/react-query';
-import axios from 'axios';
 import './styles/main.css';
 import TopBar from './components/TopBar';
 import UserList from './components/UserList';
