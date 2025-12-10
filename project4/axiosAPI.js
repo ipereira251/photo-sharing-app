@@ -101,9 +101,6 @@ export const fetchSession = async () => {
     return response.data;
   } catch (err){
     console.error("Fetching session:", err);
-    return "No session";
+    return null;
   }
-  //console.log("sending session request");
- // const response = await axios.get("http://localhost:3001/session", { withCredentials: true });
-  
 };
