@@ -12,6 +12,7 @@ const useSessionStore = create((set) => ({
   clearSession: () => {
     set({ loggedIn: false, username: null, firstName: "", userId: null });
     localStorage.removeItem('user');
+    window.location.reload();
   }, 
   initSession: () => {
     const savedUser = localStorage.getItem('user');

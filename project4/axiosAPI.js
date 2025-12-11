@@ -1,4 +1,5 @@
 import axios from "axios";
+import useSessionStore from "./store/sessionStore";
 
 export const getUserFromUrl = async (url) => {
     if (url === '/') {
@@ -76,6 +77,11 @@ export const fetchUserPhotos = async (userId) => {
     return response.data;
 };
 
+export const fetchPopularPhotos = async (userId) => {
+  const response = await axios.get(`http://localhost:3001/popularPhotosOfUser/${userId}`, {withCredentials: true});
+  return response.data;
+};
+
 export const fetchUserComments = async (userId) => {
   let response = await axios.get(`http://localhost:3001/comments/${userId}`, {withCredentials: true});
   return response.data;
@@ -84,4 +90,17 @@ export const fetchUserComments = async (userId) => {
 export const postUserComment = async ({photoId, comment}) => {
   let response = await axios.post(`http://localhost:3001/commentsOfPhoto/${photoId}`, {comment: comment}, {withCredentials: true});
   return response.data;
+};
+
+export const fetchSession = async () => {
+  try {
+    console.log("sending session request");
+    const response = await axios.get("http://localhost:3001/session", { withCredentials: true });
+    console.log("Found a session", response.data);
+    //useSessionStore.getState().initSession();
+    return response.data;
+  } catch (err){
+    console.error("Fetching session:", err);
+    return null;
+  }
 };

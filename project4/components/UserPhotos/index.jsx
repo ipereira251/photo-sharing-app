@@ -1,10 +1,10 @@
 import React from 'react';
 import { Typography } from '@mui/material';
 import PropTypes from 'prop-types';
+import { useQuery } from '@tanstack/react-query';
 import './styles.css';
 import { fetchUserPhotos } from '../../axiosAPI';
 import PhotoCard from "../PhotoCard";
-import { useQuery } from '@tanstack/react-query';
 import useStore from '../../store/appStore';
 
 function UserPhotos({ userId }) {

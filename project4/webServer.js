@@ -13,7 +13,7 @@ import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import session from "express-session";
 import router from "./routes.js";
-import { login, logout, register, getSession, isAuthenicated } from "./controller/authentication.js";
+import { login, logout, register, getSession, isAuthenticated } from "./controller/authentication.js";
 
 import Photo from "./schema/photo.js";
 import SchemaInfo from "./schema/schemaInfo.js";
@@ -119,7 +119,7 @@ app.get("/session", getSession);
  * SESSION CHECKER MIDDLEWARE
  */
 
-app.use(isAuthenicated, router);  
+app.use(isAuthenticated, router);  
 
 const server = app.listen(portno, function () {
   const port = server.address().port;

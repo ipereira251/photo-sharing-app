@@ -1,5 +1,13 @@
 import {Router} from "express";
-import {getUserList, getUserDetails, getPhotos, getCountStats, getUserComments, postComment, postPhoto} from "./controller/app.js";
+import {getUserList, 
+        getUserDetails, 
+        getPhotos, 
+        getPopularPhotos,
+        getCountStats, 
+        getUserComments, 
+        postComment, 
+        postPhoto, 
+      } from "./controller/app.js";
 
 const router = Router();
 
@@ -17,6 +25,11 @@ router.get('/user/:id', getUserDetails);
  * URL /photosOfUser/:id - Returns the Photos for User (id).
  */
 router.get('/photosOfUser/:id', getPhotos);
+
+/**
+ * URL /popularPhotosOfUser/:id - Returns the most recent and most commented-on Photos for User (id).
+ */
+router.get('/popularPhotosOfUser/:id', getPopularPhotos);
 
 /**
  * URL /counts/:id - Returns the number of comments and photos by User (id).

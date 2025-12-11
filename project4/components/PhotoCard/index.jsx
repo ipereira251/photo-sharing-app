@@ -24,21 +24,19 @@ function PhotoCard({photoInfo}){
     onSettled: () => queryClient.invalidateQueries({ queryKey: ['photos', photoInfo.user_id] }),
   });
 
-  const { isPending, submittedAt, variables, mutate, isError } = mutatation
+  const { isPending, submittedAt, variables, mutate, isError } = mutatation;
 
 
- 
   const comments = photoInfo.comments || [];
   const fileName = `/images/${photoInfo.file_name}`;
   const date = new Date(photoInfo.date_time);
   const formattedDate = date.toLocaleString();
   const photoId = photoInfo._id.toString();
 
-
   //handle name click
   const handleProfileClick = (userId) => {
     navigate(`/users/${userId}`);
-  }
+  };
 
   function selectPhoto() {
     setSelectedPhoto(photoId);
@@ -47,14 +45,14 @@ function PhotoCard({photoInfo}){
 
   function recordChange(e) {
     setCurrentText(e.target.value);
-    console.log(`Recorded:  ${e.target.value}`)
+    console.log(`Recorded:  ${e.target.value}`);
   }
 
   function submitComment(e) {
-    console.log(`Send post request with \`${currentText}\``)
-    mutatation.mutate({photoId: photoId, comment: currentText})
+    console.log(`Send post request with \`${currentText}\``);
+    mutatation.mutate({photoId: photoId, comment: currentText});
 
-    unselectPhoto()
+    unselectPhoto();
   }
 
   function handleShortcutSubmit(e) {
@@ -70,13 +68,14 @@ function PhotoCard({photoInfo}){
 
   function viewLogic() {
     if (photoInfo._id.toString() !== selectedPhoto)
-      return <Button variant="text" className="user-name-button comment-user-name-button"
-                        onClick={selectPhoto}>
-                        Add a comment 
-              </Button>;
+      {return (
+        <Button variant="text" className="user-name-button comment-user-name-button"
+          onClick={selectPhoto}>
+            Add a comment 
+        </Button>
+);}
     else {
-            return  (
-              <>
+      return  (
                 <Box 
                   display="flex" 
                   alignItems="center" 
@@ -103,7 +102,6 @@ function PhotoCard({photoInfo}){
                     Submit
                   </Button>
                 </Box>
-              </>
             );
     }
   }
@@ -140,15 +138,17 @@ function PhotoCard({photoInfo}){
             <Typography variant="body2" className="no-comment-text">No comments found.</Typography>
           ))}
 
-          {isPending && <div className="commenter-info">
-                          <Button variant="text" className="user-name-button comment-user-name-button">
-                            {firstName}
-                          </Button>
-                          <Typography variant="p" className="date-time date-time-comment">
-                            {new Date().toLocaleString()}
-                          </Typography>
-                          <Typography variant="p">{variables.comment}</Typography>
-                </div>}
+          {isPending && (
+            <div className="commenter-info">
+              <Button variant="text" className="user-name-button comment-user-name-button">
+                {firstName}
+              </Button>
+              <Typography variant="p" className="date-time date-time-comment">
+                {new Date().toLocaleString()}
+              </Typography>
+              <Typography variant="p">{variables.comment}</Typography>
+            </div>
+          )}
 
           {viewLogic()}
 
