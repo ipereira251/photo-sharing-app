@@ -26,7 +26,12 @@ function PhotoCard({photoInfo}){
 
   const { isPending, submittedAt, variables, mutate, isError } = mutatation;
 
+  // edge case where user has no photos
+  if (!photoInfo) {
+    return <></>
+  }
 
+  
   const comments = photoInfo.comments || [];
   const fileName = `/images/${photoInfo.file_name}`;
   const date = new Date(photoInfo.date_time);
