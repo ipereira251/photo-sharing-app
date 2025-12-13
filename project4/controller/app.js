@@ -92,10 +92,30 @@ export async function getPhotos(request, response) {
               then: [],
               else: "$comments"
             }
-          }
+          },
+          likes: "$likes",
         }
       }, {
-        $sort: { date_time: -1 }
+          $lookup: {
+            from: "users",
+            let: {uid: userId},
+            pipeline: [
+              { $match: { $expr: { $eq: ["$_id", "$$uid"]}}},
+              { $project: {_id: 0, liked_photos: 1}}
+            ],
+            as: "ph"
+          }
+        }, {
+          $addFields: {
+            liked_photos: {
+              $in: [
+                "$_id",
+                { $ifNull: [{$first: "$ph.liked_photos"}, []]}
+              ]
+            }
+          }
+        }, {
+        $sort: {likes: -1,  date_time: -1 }
       }
     ]);
 
