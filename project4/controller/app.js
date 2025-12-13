@@ -78,6 +78,7 @@ export async function getPhotos(request, response) {
           _id: `$_id`, 
           file_name: { $first: `$file_name` },
           date_time: { $first: `$date_time` },
+          likes: { $first: `$likes`},
           comments: { $push: `$comments` },
           user_id: { $first: `$user_id` }
         }
@@ -93,7 +94,6 @@ export async function getPhotos(request, response) {
               else: "$comments"
             }
           },
-          likes: "$likes",
         }
       }, {
           $lookup: {
