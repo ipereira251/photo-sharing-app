@@ -27,7 +27,7 @@ const photoSchema = new mongoose.Schema({
   // Array of comment objects representing the comments made on this photo.
   comments: [commentSchema],
   // Number of likes associated with a photo
-  likes: {
+  like_count: {
     type: Number,
     default: 0,
     min: 0

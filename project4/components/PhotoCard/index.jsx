@@ -34,7 +34,7 @@ function PhotoCard({photoInfo}){
 
   useEffect(() => {
     setLiked(photoId, photoInfo.liked ?? false);
-    setLikeCount(photoId, photoInfo.likes ?? 0)
+    setLikeCount(photoId, photoInfo.like_count ?? 0)
 
   }, [photoId, photoInfo.liked])
 
