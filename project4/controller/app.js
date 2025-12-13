@@ -377,7 +377,7 @@ export async function postLike(request, response) {
     const photoId = new ObjectId(request.params.photoId);
     const userId = request.session.user.id
 
-    print(`Request to posting like for ${photoId} under ${userId}`)
+    console.log(`Request to posting like for ${photoId} under ${userId}`)
 
     let user = await User.findById(userId)
     
@@ -386,10 +386,12 @@ export async function postLike(request, response) {
 
     // inc is passed to an accumlation aggregation stage for the photos collection
 
-    let inc = user.liked_photos.includes(photoId) ? -1: 1
+    let liked_photos = user.liked_photos || []
+
+    let inc = liked_photos.includes(photoId) ? -1: 1
     
 
-      user.liked_photos = user.liked_photos.filter((currPhotoId) => currPhotoId !== photoId)
+      user.liked_photos = liked_photos.filter((currPhotoId) => currPhotoId !== photoId)
       let saved_user_promise = user.save()
 
       let edit_photo_promise = Photo.updateOne(
@@ -405,11 +407,13 @@ export async function postLike(request, response) {
       .then(() => {
         return response.status(200).send("Successfully updated photo")
       })
-      .catch(() => {
+      .catch((err) => {
+        console.log(err)
         return response.status(500).send("Failed liking the photo")
       })
   }
   catch (err) {
+    console.log(err)
     return response.status(500).send("Failed liking the photo")
   }
 }
@@ -432,7 +436,7 @@ export async function postPhoto(request, response) {
         ////console.log("return status code of 500");
         return response.status(500).json({error: "Could not save file"});
       }
-      let photo = new Photo({file_name: filename, user_id: request.session.user.id, comments: []});
+      let photo = new Photo({file_name: filename, user_id: request.session.user.id, comments: [], likes: 0});
       await photo.save();
 
       //console.log("return status code of 200");

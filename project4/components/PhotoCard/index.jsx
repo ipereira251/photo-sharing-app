@@ -8,6 +8,7 @@ import useAppStore from "../../store/appStore"
 import useSessionStore from "../../store/sessionStore"
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { postUserComment, postLike } from '../../axiosAPI';
+import axios from "axios";
 import { Box, TextField, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 
@@ -40,19 +41,19 @@ function PhotoCard({photoInfo}){
   const navigate = useNavigate();
   let queryClient = useQueryClient();
 
-  let likeMutation = useMutation({
-    mutationFn: postLike
+  // let likeMutation = useMutation({
+  //   mutationFn: postLike
 
-    // I feel like it doesn't make sense to invalidate queires since updates are 
-    // done opmitmistically on client side
-  })
+  //   // I feel like it doesn't make sense to invalidate queires since updates are 
+  //   // done opmitmistically on client side
+  // })
 
-  let commentMutatation = useMutation({
-    mutationFn: postLike,
-    onSettled: () => queryClient.invalidateQueries({ queryKey: ['photos', photoInfo.user_id] }),
-  });
+  // let commentMutatation = useMutation({
+  //   mutationFn: postLike,
+  //   onSettled: () => queryClient.invalidateQueries({ queryKey: ['photos', photoInfo.user_id] }),
+  // });
 
-  const { isPending, submittedAt, variables, mutate, isError } = commentMutatation;
+  // const { isPending, submittedAt, variables, mutate, isError } = commentMutatation;
 
   // edge case where user has no photos
   if (!photoInfo) {
@@ -84,7 +85,7 @@ function PhotoCard({photoInfo}){
 
   function submitComment(e) {
     console.log(`Send post request with \`${currentText}\``);
-    commentMutatation.mutate({photoId: photoId, comment: currentText});
+    axios.post(`http://localhost:3001/commentsOfPhoto/${photoId}`, {comment: currentText}, {withCredentials: true});
 
     unselectPhoto();
   }
@@ -110,7 +111,7 @@ function PhotoCard({photoInfo}){
       setLikeCount(photoId, --likeCount)
     }
 
-    likeMutation.mutate({photoId})
+    axios.post(`http://localhost:3001/likePhoto/${photoId}`, {}, {withCredentials: true});
 
     
   }
@@ -203,7 +204,7 @@ function PhotoCard({photoInfo}){
             <Typography variant="body2" className="no-comment-text">No comments found.</Typography>
           ))}
 
-          {isPending && (
+          {/* {isPending && (
             <div className="commenter-info">
               <Button variant="text" className="user-name-button comment-user-name-button">
                 {firstName}
@@ -213,7 +214,7 @@ function PhotoCard({photoInfo}){
               </Typography>
               <Typography variant="p">{variables.comment}</Typography>
             </div>
-          )}
+          )} */}
 
           {viewLogic()}
 
