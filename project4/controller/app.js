@@ -51,9 +51,12 @@ export async function getPhotos(request, response) {
       return;
     }
     const userId = new ObjectId(request.params.id);
-    const loggedInUserId = request.session.user.id
+    const loggedInUserId = new ObjectId(request.session.user.id)
 
-    ////console.log(`Trying to get ${userId} for ${loggedInUserId}`)
+    // console.log(loggedInUserId.equals(new ObjectId("693a5bc454fac965d25917cb")))
+
+    console.log(`Trying to get ${userId} for ${loggedInUserId}`)
+    console.log(typeof(loggedInUserId))
     ////////console.log("Userid, objid:", userId);
 
     const photos = await Photo.aggregate([
@@ -127,12 +130,12 @@ export async function getPhotos(request, response) {
       response.status(404).send("No photos found");
     }
     else {
+      console.log(photos)
       response.status(200).json(photos);
       ////////console.log("Photos of user:", photos);
-      console.log(photos)
     }
-  } catch (err){
-    //console.error(err);
+  } catch (err) {
+    console.error(err);
     response.status(400).send("Internal server error");
   }
 }
