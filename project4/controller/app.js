@@ -16,6 +16,8 @@ export async function getUserList(request, response) {
         last_name: model.last_name
       };
     });
+
+    // console.log(users)
     const toRet = users.flat();
     response.status(200).json(toRet);
     ////////console.log(toRet);
@@ -51,7 +53,7 @@ export async function getPhotos(request, response) {
       return;
     }
     const userId = new ObjectId(request.params.id);
-    const loggedInUserId = new ObjectId(request.session.user.id)
+    const loggedInUserId = new ObjectId(request.session.user.id);
 
     // console.log(loggedInUserId.equals(new ObjectId("693a5bc454fac965d25917cb")))
 
@@ -122,7 +124,7 @@ export async function getPhotos(request, response) {
             }
           }
         }, {
-        $sort: {likes: -1,  date_time: -1 }
+        $sort: {like_count: -1,  date_time: -1 }
       }
     ]);
 
@@ -148,6 +150,7 @@ export async function getPopularPhotos(request, response) {
       return;
     }
     const userId = new ObjectId(request.params.id);
+    const loggedInUserId = new ObjectId(request.session.user.id);
 
     const mostRecentPhoto = await Photo.aggregate([
       {
@@ -174,6 +177,7 @@ export async function getPopularPhotos(request, response) {
         $group: {
           _id: `$_id`, 
           file_name: { $first: `$file_name` },
+          like_count: { $first: `$like_count`},
           date_time: { $first: `$date_time` },
           comments: { $push: `$comments` },
           user_id: { $first: `$user_id` }
@@ -192,6 +196,25 @@ export async function getPopularPhotos(request, response) {
           }
         }
       }, {
+          $lookup: {
+            from: "users",
+            let: {uid: loggedInUserId},
+            pipeline: [
+              { $match: { $expr: { $eq: ["$_id", "$$uid"]}}},
+              { $project: {_id: 0, liked_photos: 1}}
+            ],
+            as: "ph"
+          }
+        }, {
+          $addFields: {
+            liked: {
+              $in: [
+                "$_id",
+                { $ifNull: [{$first: "$ph.liked_photos"}, []]}
+              ]
+            }
+          }
+        }, {
         $sort: { date_time: -1 }
       }, {
         $limit: 1
@@ -219,6 +242,7 @@ export async function getPopularPhotos(request, response) {
         $group: {
           _id: `$_id`, 
           file_name: { $first: `$file_name` },
+          like_count: { $first: `$like_count` },
           date_time: { $first: `$date_time` },
           comments: { $push: `$comments` },
           user_id: { $first: `$user_id` }
@@ -240,6 +264,25 @@ export async function getPopularPhotos(request, response) {
           }
         }
       }, {
+          $lookup: {
+            from: "users",
+            let: {uid: loggedInUserId},
+            pipeline: [
+              { $match: { $expr: { $eq: ["$_id", "$$uid"]}}},
+              { $project: {_id: 0, liked_photos: 1}}
+            ],
+            as: "ph"
+          }
+        }, {
+          $addFields: {
+            liked: {
+              $in: [
+                "$_id",
+                { $ifNull: [{$first: "$ph.liked_photos"}, []]}
+              ]
+            }
+          }
+        }, {
         $sort: { 
           commentCount: -1
         }

@@ -6,31 +6,24 @@ const useStore = create((set) => ({
     currentText: "",
     likedById: {},
     likeCountbyId: {},
+
     setAdvEnabled: (value) => set(() => ({advEnabled: value})),
     setSelectedPhoto: (value) => set(() => ({selectedPhoto: value})),
     setCurrentText: (value) => set(() => ({currentText: value})),
-    
-    toggleLike: (photoId) =>
+
+    setLiked: (photoId, bool_value) =>
         set((state) => ({
         likedById: {
             ...state.likedById,
-            [photoId]: !state.likedById[photoId],
+            [photoId]: bool_value,
         },
         })),
 
-    setLiked: (photoId, value) =>
-        set((state) => ({
-        likedById: {
-            ...state.likedById,
-            [photoId]: value,
-        },
-        })),
-
-    setLikeCount: (photoId, value) =>
+    setLikeCount: (photoId, num_value) =>
         set((state) => ({
         likeCountbyId: {
             ...state.likeCountbyId,
-            [photoId]: value,
+            [photoId]: num_value,
         },
         })),
 

@@ -24,11 +24,8 @@ function PhotoCard({photoInfo}){
   const liked = useAppStore(
       (s) => s.likedById[photoId] ?? photoInfo.liked ?? false
   );
-  let likeCountbyId = useAppStore(
-    (s) => s.likeCountbyId
-  )
 
-  const toggleLike = useAppStore((s) => s.toggleLike);
+  let likeCountbyId = useAppStore((s) => s.likeCountbyId)
   const setLiked = useAppStore((s) => s.setLiked);
   const setLikeCount = useAppStore((s) => s.setLikeCount)
 
