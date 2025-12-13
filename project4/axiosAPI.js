@@ -94,6 +94,7 @@ export const postUserComment = async ({photoId, comment}) => {
 
 export const postLike = async ({photoId}) => {
   let response = await axios.post(`http://localhost:3001/likePhoto/${photoId}`, {withCredentials: true});
+  //right now data is just a generic response code, not the new liked value
   return response.data;
 };
 

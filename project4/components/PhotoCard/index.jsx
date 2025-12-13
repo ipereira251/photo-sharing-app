@@ -41,15 +41,15 @@ function PhotoCard({photoInfo}){
   let queryClient = useQueryClient();
 
   let likeMutation = useMutation({
+    mutationFn: postLike
+
     // I feel like it doesn't make sense to invalidate queires since updates are 
     // done opmitmistically on client side
-    mutationFn: postLike
   })
 
   let commentMutatation = useMutation({
     mutationFn: postLike,
-    // I feel like it doesn't make sense to invalidate queires since updates are 
-    // done opmitmistically on client side
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ['photos', photoInfo.user_id] }),
   });
 
   const { isPending, submittedAt, variables, mutate, isError } = commentMutatation;
@@ -109,6 +109,8 @@ function PhotoCard({photoInfo}){
     } else {
       setLikeCount(photoId, --likeCount)
     }
+
+    likeMutation.mutate({photoId})
 
     
   }
