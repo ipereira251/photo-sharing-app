@@ -4,6 +4,7 @@ import { ObjectId } from "mongodb";
 
 import User from "../schema/user.js";
 import Photo from "../schema/photo.js";
+import { PassThrough } from "node:stream";
 
 export async function getUserList(request, response) {
   try{
@@ -369,6 +370,48 @@ export async function postComment (request, response) {
   ////console.log(entry);
 
   return response.status(200).json({comment: comment, user_id: userId});
+}
+
+export async function postLike(request, response) {
+  try {
+    const photoId = new ObjectId(request.params.photoId);
+    const userId = request.session.user.id
+
+    print(`Request to posting like for ${photoId} under ${userId}`)
+
+    let user = await User.findById(userId)
+    
+    // if User has already liked the photo, then unlike it,
+    // else like it
+
+    // inc is passed to an accumlation aggregation stage for the photos collection
+
+    let inc = user.liked_photos.includes(photoId) ? -1: 1
+    
+
+      user.liked_photos = user.liked_photos.filter((currPhotoId) => currPhotoId !== photoId)
+      let saved_user_promise = user.save()
+
+      let edit_photo_promise = Photo.updateOne(
+        {_id: photoId,
+          // Sanity check just in case
+          likes: {$gt: 0}
+        }, {
+          $inc: {likes: inc }
+        }
+      )
+
+      Promise.all([saved_user_promise, edit_photo_promise])
+      .then(() => {
+        return response.status(200).send("Successfully updated photo")
+      })
+      .catch(() => {
+        return response.status(500).send("Failed liking the photo")
+      })
+  }
+  catch (err) {
+    return response.status(500).send("Failed liking the photo")
+  }
 }
 
 const processFormBody = multer({storage: multer.memoryStorage()}).single("uploadedphoto");

@@ -5,7 +5,8 @@ import {getUserList,
         getPopularPhotos,
         getCountStats, 
         getUserComments, 
-        postComment, 
+        postComment,
+        postLike, 
         postPhoto, 
       } from "./controller/app.js";
 
@@ -46,6 +47,12 @@ router.get('/comments/:id', getUserComments);
  */
 
 router.post('/commentsOfPhoto/:photoId', postComment);
+
+/**
+ * URL /likePhoto/:photoId - Post a like (toggles on and off)
+ */
+
+router.post('/likePhoto/:photoId', postLike);
 
 /**
  * URL /photos/new - Post a photo under the current user

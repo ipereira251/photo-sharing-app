@@ -92,6 +92,11 @@ export const postUserComment = async ({photoId, comment}) => {
   return response.data;
 };
 
+export const postLike = async ({photoId}) => {
+  let response = await axios.post(`http://localhost:3001/likePhoto/${photoId}`, {withCredentials: true});
+  return response.data;
+};
+
 export const fetchSession = async () => {
   try {
     console.log("sending session request");
