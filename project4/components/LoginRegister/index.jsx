@@ -92,6 +92,7 @@ function LoginRegister({register}){
           console.log(response.data.first_name);
 
           setSession({username: response.data.user.username, firstName: response.data.first_name, userId: response.data._id });
+          useSessionStore.getState().initSession();
           navigate(`/users/${response.data._id}`);
         }
       } catch (err){
@@ -167,6 +168,7 @@ function LoginRegister({register}){
         if(response.status === 201){
           console.log("201 status", response);
           setSession({username: response.data.username, firstName: response.data.first_name});
+          useSessionStore.getState().initSession();
           navigate(`/users/${response.data.id}`);
         }
         

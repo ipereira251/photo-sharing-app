@@ -87,18 +87,17 @@ export async function register(request, response) {
 }
 
 export async function getSession(request, response) {
-  console.log("request", request.session);
+  //console.log("request", request.session);
   if(request.session.user){
-    console.log("user", request.session.user);
+    //console.log("user", request.session.user);
     const user = await User.findById(request.session.user.id); 
     if(user){
-      console.log("found user", user.login_name);
+      //console.log("found user", user.login_name);
       return response.status(200).json({ username: user.login_name, firstName: user.first_name});
     }
-    console.log("Did not find user");
+    //console.log("Did not find user");
     return response.status(404).json();
   }
-  console.log("Sending 401");
   return response.status(401).json();
 }
 
