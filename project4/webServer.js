@@ -9,6 +9,8 @@ import mongoose from "mongoose";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import bluebird from "bluebird";
 import express from "express";
+import http from "http";
+import { Server } from "socket.io";
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import session from "express-session";
@@ -17,10 +19,42 @@ import { login, logout, register, getSession, isAuthenticated } from "./controll
 
 import Photo from "./schema/photo.js";
 import SchemaInfo from "./schema/schemaInfo.js";
+import User from "./schema/user.js";
 
 
 const portno = 3001; // Port number to use
 const app = express();
+const server = http.createServer(app);
+
+const io = new Server(server, {
+  cors: {
+    origin: "http://localhost:3000", // or 3000, depending on your React dev server
+    methods: ["GET", "POST"],
+    credentials: true,
+  },
+});
+
+io.on("connection", (socket) => {
+  console.log("connected:", socket.id);
+
+  socket.on("disconnect", () => {
+    console.log("disconnected:", socket.id);
+  });
+
+  // Example: handle a like event from client
+  socket.on("photo:like", async ({ photoId }) => {
+    console.log(photoId)
+    let photo = await Photo.findById(photoId)
+
+    // broadcast to everyone viewing that photo
+    socket.broadcast.emit("photo:like", { photoId, like_count: photo.like_count });
+
+    // optional ack response to the sender
+    // socket.emit("photo:likeAck", { ok: true });
+  });
+});
+
+
 
 // Enable CORS for all routes
 app.use((req, res, next) => {
@@ -121,12 +155,7 @@ app.get("/session", getSession);
 
 app.use(isAuthenticated, router);  
 
-const server = app.listen(portno, function () {
-  const port = server.address().port;
-  console.log(
-    "Listening at http://localhost:" +
-      port +
-      " exporting the directory " +
-      __dirname
-  );
+
+server.listen(portno, () => {
+  console.log(`server listening on ${portno}`);
 });

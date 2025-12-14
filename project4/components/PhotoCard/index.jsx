@@ -6,6 +6,7 @@ import "./styles.css";
 import { useNavigate } from "react-router-dom";
 import useAppStore from "../../store/appStore"
 import useSessionStore from "../../store/sessionStore"
+import socket from "../../socket"
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { postUserComment, postLike } from '../../axiosAPI';
 import axios from "axios";
@@ -32,6 +33,16 @@ function PhotoCard({photoInfo}){
   useEffect(() => {
     setLiked(photoId, photoInfo.liked ?? false);
     setLikeCount(photoId, photoInfo.like_count ?? 0)
+
+    let updateLikes = ({photoId, like_count}) => {
+      setLikeCount(photoId, like_count)
+    }
+
+    socket.on("photo:like", updateLikes)
+
+    return () => {
+      socket.off("photo:like", updateLikes)
+    }
 
   }, [photoId, photoInfo.liked])
 
@@ -108,7 +119,10 @@ function PhotoCard({photoInfo}){
       setLikeCount(photoId, --likeCount)
     }
 
-    axios.post(`http://localhost:3001/likePhoto/${photoId}`, {}, {withCredentials: true});
+    axios.post(`http://localhost:3001/likePhoto/${photoId}`, {}, {withCredentials: true})
+    .then(() => {
+      socket.emit("photo:like", {photoId})
+    })
 
     
   }
