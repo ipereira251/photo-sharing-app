@@ -9,16 +9,15 @@ import {
 } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import { fetchUserListDisplay } from '../../axiosAPI';
 
 import './styles.css';
-import useStore from '../../store/appStore';
-import useSessionStore from '../../store/sessionStore';
 import CircleIcon from "@mui/icons-material/Circle";
 import PriorityHighIcon from "@mui/icons-material/PriorityHigh";
 import ChatIcon from "@mui/icons-material/Chat";
 import PhotoCameraIcon from "@mui/icons-material/PhotoCamera";
-
+import useStore from '../../store/appStore';
+import useSessionStore from '../../store/sessionStore';
+import { fetchUserListDisplay } from '../../axiosAPI';
 
 function UserList() {
   let advEnabled = useStore((s) => s.advEnabled);
@@ -108,9 +107,9 @@ function UserList() {
     REGISTERED: <PriorityHighIcon color="error" sx={{pr: 1}} />,
     POST_COMMENT: <ChatIcon sx={{ fontSize: 20, color: "action.active", pr: 1 }} />,
     POST_PHOTO: <PhotoCameraIcon sx={{color: "primary", pr: 1}} />
-  }
+  };
 
-  console.log(users)
+  console.log(users);
 
   return (
     <div>
