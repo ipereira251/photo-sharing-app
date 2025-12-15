@@ -116,7 +116,8 @@ export async function getSession(request, response) {
     const user = await User.findById(request.session.user.id); 
     if(user){
       //console.log.log("found user", user.login_name);
-      return response.status(200).json({ username: user.login_name, firstName: user.first_name});
+      console.log(typeof (request.session.user.id))
+      return response.status(200).json({ username: user.login_name, firstName: user.first_name, userId: request.session.user.id});
     }
     //console.log.log("Did not find user");
     return response.status(404).json();

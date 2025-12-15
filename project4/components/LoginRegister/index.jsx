@@ -6,7 +6,7 @@ import { Visibility, VisibilityOff } from "@mui/icons-material";
 import axios from "axios";
 import useSessionStore from "../../store/sessionStore";
 
-function LoginRegister({register}){
+function LoginRegister({register}) {
   const navigate = useNavigate();
   const {loggedIn, setSession, clearSession} = useSessionStore();
   const [formData, setFormData] = useState({
@@ -91,8 +91,11 @@ function LoginRegister({register}){
           console.log("updating zustand session");
           console.log(response.data.first_name);
 
-          setSession({username: response.data.user.username, firstName: response.data.first_name, userId: response.data._id });
-          navigate(`/users/${response.data._id}`);
+          console.log(response.data)
+
+          setSession({username: response.data.user.username, firstName: response.data.first_name, userId: response.data.user.id });
+          
+          navigate(`/users/${response.data.user.id}`);
         }
       } catch (err){
         clearSession();
@@ -166,7 +169,9 @@ function LoginRegister({register}){
         }
         if(response.status === 201 || response.status === 200){
           console.log("201 status", response);
-          setSession({username: response.data.username, firstName: response.data.first_name});
+          
+          console.log(response.data)
+          setSession({username: response.data.username, firstName: response.data.first_name, userId: response.data.id});
           navigate(`/users/${response.data.id}`);
         }
         
