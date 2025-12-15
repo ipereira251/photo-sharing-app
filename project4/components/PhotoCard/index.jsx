@@ -1,4 +1,8 @@
-import React from 'react';
+import React, {useEffect} from 'react';
+import { useNavigate } from "react-router-dom";
+import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
+import axios from "axios";
+import "./styles.css";
 import { Typography, 
         Card, 
         CardContent, 
@@ -10,15 +14,15 @@ import { Typography,
         TextField, 
         IconButton, 
         Tooltip} from "@mui/material";
-import "./styles.css";
-import { useNavigate } from "react-router-dom";
-import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
+
+import ThumbUpIcon from "@mui/icons-material/ThumbUp";
+import ThumbUpOutlinedIcon from "@mui/icons-material/ThumbUpOutlined";
 import CloseIcon from '@mui/icons-material/Close';
 import StarIcon from '@mui/icons-material/Star';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
 import useAppStore from "../../store/appStore";
 import useSessionStore from "../../store/sessionStore";
-import { postUserComment, fetchUserFavorites, addUserFavorite } from '../../axiosAPI';
+import { postUserComment, fetchUserFavorites, addUserFavorite, postLike } from '../../axiosAPI';
 
 function PhotoCard({photoInfo}){
   let selectedPhoto = useAppStore((s) => s.selectedPhoto);
@@ -26,16 +30,50 @@ function PhotoCard({photoInfo}){
   let currentText = useAppStore((s) => s.currentText);
   let setCurrentText = useAppStore((s) => s.setCurrentText);
   let firstName = useSessionStore((s) => s.firstName);
+
+  const photoId = photoInfo._id.toString();
+
+  const liked = useAppStore(
+      (s) => s.likedById[photoId] ?? photoInfo.liked ?? false
+  );
+
+  let likeCountbyId = useAppStore((s) => s.likeCountbyId)
+  const setLiked = useAppStore((s) => s.setLiked);
+  const setLikeCount = useAppStore((s) => s.setLikeCount)
+
+  useEffect(() => {
+    setLiked(photoId, photoInfo.liked ?? false);
+    setLikeCount(photoId, photoInfo.like_count ?? 0)
+
+    let updateLikes = ({photoId, like_count}) => {
+      setLikeCount(photoId, like_count)
+    }
+
+    socket.on("photo:like", updateLikes)
+
+    return () => {
+      socket.off("photo:like", updateLikes)
+    }
+
+  }, [photoId, photoInfo.liked])
+
   const navigate = useNavigate();
   let queryClient = useQueryClient();
   const currentUserId = useSessionStore((s) => s.userId);
 
-  let mutatation = useMutation({
-    mutationFn: postUserComment,
-    onSettled: () => queryClient.invalidateQueries({ queryKey: ['photos', photoInfo.user_id] }),
-  });
+  // let likeMutation = useMutation({
+  //   mutationFn: postLike
 
-  const { isPending, submittedAt, variables, mutate, isError } = mutatation;
+  //   // I feel like it doesn't make sense to invalidate queires since updates are 
+  //   // done opmitmistically on client side
+  // })
+
+  // let commentMutatation = useMutation({
+  //   mutationFn: postLike,
+  //   onSettled: () => queryClient.invalidateQueries({ queryKey: ['photos', photoInfo.user_id] }),
+  // });
+
+  // const { isPending, submittedAt, variables, mutate, isError } = commentMutatation;
 
   //favorites
   let {data: favorites} = useQuery({
@@ -58,7 +96,8 @@ function PhotoCard({photoInfo}){
   const fileName = `/images/${photoInfo.file_name}`;
   const date = new Date(photoInfo.date_time);
   const formattedDate = date.toLocaleString();
-  const photoId = photoInfo._id.toString();
+  let likeCount = likeCountbyId[photoId]
+
 
   let isFavorited = false;
   if(favorites && favorites.length){
@@ -82,7 +121,7 @@ function PhotoCard({photoInfo}){
 
   function submitComment() {
     console.log(`Send post request with \`${currentText}\``);
-    mutatation.mutate({photoId: photoId, comment: currentText});
+    axios.post(`http://localhost:3001/commentsOfPhoto/${photoId}`, {comment: currentText}, {withCredentials: true});
 
     unselectPhoto();
   }
@@ -96,6 +135,25 @@ function PhotoCard({photoInfo}){
   function unselectPhoto() {
     setSelectedPhoto(null);
     setCurrentText(""); 
+  }
+
+  function likeHandler(e) {
+    e.stopPropagation(); //prevent from going to photo detail
+    let oppState = !liked;
+    setLiked(photoId, oppState);
+
+    if(oppState) {
+      setLikeCount(photoId, ++likeCount);
+    } else {
+      setLikeCount(photoId, --likeCount);
+    }
+
+    axios.post(`http://localhost:3001/likePhoto/${photoId}`, {}, {withCredentials: true})
+    .then(() => {
+      socket.emit("photo:like", {photoId});
+    });
+
+    
   }
 
   function viewLogic() {
@@ -163,6 +221,22 @@ function PhotoCard({photoInfo}){
       component="img" image={fileName} />
 
       <CardContent> 
+        <IconButton
+              onClick={likeHandler}
+              aria-label="like photo"
+            >
+
+              {liked ? (
+                <ThumbUpIcon />
+              ) : (
+                <ThumbUpOutlinedIcon />
+              )}
+
+              <Typography variant="body2" sx={{ ml: 0.5 }}  >
+                {likeCount}
+              </Typography>
+        </IconButton>
+
         <Typography variant="body2" noWrap={true} className="date-time">
           Posted {formattedDate}.
         </Typography>
@@ -189,7 +263,7 @@ function PhotoCard({photoInfo}){
             <Typography variant="body2" className="no-comment-text">No comments found.</Typography>
           ))}
 
-          {isPending && (
+          {/* {isPending && (
             <div className="commenter-info">
               <Button variant="text" className="user-name-button comment-user-name-button">
                 {firstName}
@@ -199,7 +273,7 @@ function PhotoCard({photoInfo}){
               </Typography>
               <Typography variant="p">{variables.comment}</Typography>
             </div>
-          )}
+          )} */}
 
           {viewLogic()}
 

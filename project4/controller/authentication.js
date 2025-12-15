@@ -1,7 +1,7 @@
 import User from "../schema/user.js";
 
 export async function login(request, response) {
-  //console.log("/admin/login called", request.body); 
+  ////console.log.log("/admin/login called", request.body); 
   try {
     const { login_name, password } = request.body;
 
@@ -16,14 +16,14 @@ export async function login(request, response) {
         name: user.first_name, 
         username: user.login_name
       };
-      //console.log("session:", request.session);
+      ////console.log.log("session:", request.session);
       return response.status(200).json({ success: true, user: request.session.user, _id: user._id, first_name: user.first_name });
     } else {
-      //console.log("failed log in");
+      ////console.log.log("failed log in");
       return response.status(400).send("Invalid username or password");
     }
     } catch (err) {
-        console.log(err);
+        //console.log.log(err);
         return response.status(400).send("Bad Request");
     }
 }
@@ -31,7 +31,7 @@ export async function login(request, response) {
 export async function logout(request, response) {
   request.session.destroy((err) => {
     if(err){
-      //console.error("Couldn't destroy session", err);
+      ////console.log.error("Couldn't destroy session", err);
       return response.status(500).send("Error logging out");
     }
     response.clearCookie("connect.sid");
@@ -42,18 +42,18 @@ export async function logout(request, response) {
 export async function register(request, response) {
   //see if a user with that login_name exists already
   if(!request.body){
-    //console.log("/user: no request body");
+    ////console.log.log("/user: no request body");
     return response.status(400).send("No request body");
   }  
-  //console.log(request.body);
+  ////console.log.log(request.body);
 
   try {
   const { first_name, last_name, login_name, password, location, occupation, description } = request.body.formData;
   
-    //console.log(login_name);
+    ////console.log.log(login_name);
     const user = await User.findOne({ login_name });
     if(user){
-      //console.log("Duplicate:", user);
+      ////console.log.log("Duplicate:", user);
       return response.status(409).json({error: "Username already in use"});
     }
     try{
@@ -77,7 +77,7 @@ export async function register(request, response) {
       }
       return response.status(500).send("Failed to create user");
     } catch (err){ 
-      //console.error(err);
+      ////console.log.error(err);
       return response.status(500).send("Failed to create user");
     }
   }
@@ -87,17 +87,18 @@ export async function register(request, response) {
 }
 
 export async function getSession(request, response) {
-  //console.log("request", request.session);
+  //console.log.log("request", request.session);
   if(request.session.user){
-    //console.log("user", request.session.user);
+    //console.log.log("user", request.session.user);
     const user = await User.findById(request.session.user.id); 
     if(user){
-      //console.log("found user", user.login_name);
+      //console.log.log("found user", user.login_name);
       return response.status(200).json({ username: user.login_name, firstName: user.first_name});
     }
-    //console.log("Did not find user");
+    //console.log.log("Did not find user");
     return response.status(404).json();
   }
+  //console.log.log("Sending 401");
   return response.status(401).json();
 }
 

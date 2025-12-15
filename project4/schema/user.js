@@ -15,7 +15,9 @@ const userSchema = new mongoose.Schema({
   favorited_photos: [{
     photo_id: { type: Schema.Types.ObjectId, ref: 'Photo' }, 
     favorited_at: { type: Date, default: Date.now }
-  }]
+  }],
+  // Stores the id of all photos that a user liked 
+  liked_photos: [mongoose.Schema.Types.ObjectId]
 });
 
 /**
