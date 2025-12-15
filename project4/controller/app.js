@@ -58,8 +58,8 @@ export async function getPhotos(request, response) {
 
     // console.log(loggedInUserId.equals(new ObjectId("693a5bc454fac965d25917cb")))
 
-    console.log(`Trying to get ${userId} for ${loggedInUserId}`)
-    console.log(typeof(loggedInUserId))
+    console.log(`Trying to get ${userId} for ${loggedInUserId}`);
+    console.log(typeof(loggedInUserId));
     ////////console.log("Userid, objid:", userId);
 
     const photos = await Photo.aggregate([
@@ -129,7 +129,11 @@ export async function getPhotos(request, response) {
       }
     ]);
 
-    if(!photos || photos.length === 0) {
+    if(photos.length === 0){
+      response.status(200).json({});
+    }
+    
+    if(!photos) {
       response.status(404).send("No photos found");
     }
     else {
@@ -556,7 +560,11 @@ export async function getFavorites(request, response) {
         populate: {path: "comments.user_id", select: "first_name last_name"}
       });
 
-    if(!user || !user.favorited_photos.length) {
+    if(user.favorited_photos.length === 0){
+      return response.status(200).json({});
+    }
+
+    if(!user) {
       return response.status(404).send("No favorites found");
     }
 
