@@ -93,7 +93,11 @@ function PhotoCard({photoInfo}){
 
   function submitComment(e) {
     console.log(`Send post request with \`${currentText}\``);
-    axios.post(`http://localhost:3001/commentsOfPhoto/${photoId}`, {comment: currentText}, {withCredentials: true});
+    axios.post(`http://localhost:3001/commentsOfPhoto/${photoId}`, {comment: currentText}, {withCredentials: true})
+    .then(() => {
+      queryClient.invalidateQueries({ queryKey: ['photos', photoInfo.user_id.toString()] });
+      queryClient.invalidateQueries({ queryKey: ['userList'] });
+    });
 
     unselectPhoto();
   }
@@ -122,6 +126,8 @@ function PhotoCard({photoInfo}){
     axios.post(`http://localhost:3001/likePhoto/${photoId}`, {}, {withCredentials: true})
     .then(() => {
       socket.emit("photo:like", {photoId})
+      // This is needed for user details view
+      queryClient.invalidateQueries({ queryKey: ['photos', photoInfo.user_id.toString()] });
     })
 
     

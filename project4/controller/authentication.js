@@ -35,11 +35,24 @@ export async function login(request, response) {
 }
 
 export async function logout(request, response) {
+
+  if( request.session?.user?.id ) {
+   await User.updateOne({
+      _id: request.session.user.id
+    }, {
+      $set: {
+        last_activity: "LOGGED_OUT",
+        context_of_last_activity: ""
+      }
+    })
+  }
+
   request.session.destroy((err) => {
     if(err){
       ////console.log.error("Couldn't destroy session", err);
       return response.status(500).send("Error logging out");
     }
+
     response.clearCookie("connect.sid");
     return response.json({ success:true });
   });

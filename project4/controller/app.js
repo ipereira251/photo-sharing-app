@@ -13,7 +13,9 @@ export async function getUserList(request, response) {
       return {
         _id: model.id,
         first_name: model.first_name,
-        last_name: model.last_name
+        last_name: model.last_name,
+        last_activity: model.last_activity,
+        context_of_last_activity: model.context_of_last_activity
       };
     });
 
