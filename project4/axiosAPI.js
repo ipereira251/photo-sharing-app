@@ -52,10 +52,6 @@ export const fetchUserListDisplay = async (advEnabled) => {
     console.log("UserList: Response:", users); 
     console.log("UserList: Fetched users.");
 
-    if (!advEnabled) {
-        return {users, counts: null};
-    }
-
     const fetchAllCounts = async () => {
         const arr = await Promise.all(users.map(async (user) => {
             const x = await axios.get(`http://localhost:3001/counts/${user._id}`, {withCredentials: true});
@@ -65,6 +61,7 @@ export const fetchUserListDisplay = async (advEnabled) => {
         return arr.flat();
     };
       
+
     let counts = await fetchAllCounts();
     return {users, counts};
 };

@@ -43,8 +43,8 @@ function PhotoCard({photoInfo}){
   const setLikeCount = useAppStore((s) => s.setLikeCount);
 
   useEffect(() => {
-    setLiked(photoId, photoInfo.liked ?? false);
-    setLikeCount(photoId, photoInfo.like_count ?? 0);
+    setLiked(photoId, photoInfo?.liked ?? false);
+    setLikeCount(photoId, photoInfo?.like_count ?? 0);
 
     let updateLikes = ({photoId, like_count}) => {
       setLikeCount(photoId, like_count);

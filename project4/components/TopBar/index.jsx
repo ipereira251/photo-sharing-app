@@ -85,6 +85,10 @@ function TopBar() {
       const currIsAdvEnabled = !(prev.advEnabled);
       console.log("PHOTOSHARE New state:", currIsAdvEnabled);
 
+      // if (currIsAdvEnabled) {
+      //   queryClient.invalidateQueries({ queryKey: ['userList'] });
+      // }
+
       let path = window.location.pathname;
       let photoDetailRouteMatch = /^\/photos\/[a-z0-9]+\/[0-9]+/.exec(path);
 
