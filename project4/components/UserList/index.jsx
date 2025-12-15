@@ -4,7 +4,8 @@ import {
   List,
   ListItemButton, /* changed from plain List Item */
   ListItemText,
-  IconButton
+  IconButton,
+  CardMedia
 } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
@@ -118,9 +119,9 @@ function UserList() {
           <React.Fragment key={user._id}>
             <ListItemButton onClick={() => handleUserClick(user)}>
               {activityIcons[user.last_activity]}
-              {user.context_of_last_activity && <CardMedia className="thumbnail-photo" component="img" image={user.context_of_last_activity} /> }              
+              {user.context_of_last_activity && <CardMedia className="thumbnail-photo" component="img" image={`/images/${user.context_of_last_activity}`} sx={{pr:1}} /> }              
               <ListItemText primary={user.first_name + " " + user.last_name} />
-              {context_of_last_activity && (
+              {advEnabled && (
                 <>
                   <IconButton className="photo-count-button" 
                   onClick={(e) => {
