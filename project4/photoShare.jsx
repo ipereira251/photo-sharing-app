@@ -35,6 +35,7 @@ function PhotoShare() {
       setSession({
         username: data.username,
         firstName: data.firstName,
+        userId: data.userId
       });
       console.log("initializing");
       useSessionStore.getState().initSession();

@@ -13,7 +13,7 @@ import useSessionStore from '../../store/sessionStore';
 
 function TopBar() {
   let queryClient = useQueryClient();
-  let {advEnabled} = useStore();
+  let advEnabled = useStore((s) => s.advEnabled);
   let {loggedIn, firstName, clearSession} = useSessionStore();
   let set = useStore((s) => s.set);
   let userId = useSessionStore(s => s.userId);
@@ -44,8 +44,14 @@ function TopBar() {
   const handleLogoutClick = async () => {
     try{
       const response = await axios.post("http://localhost:3001/admin/logout", {}, {withCredentials:true});
+      queryClient.invalidateQueries({ queryKey: ['userList'] });
+      
       if(response){
         console.log("Successfully logged out");
+        
+        //setContext("Home");
+        clearSession();
+        navigate("/login", { replace: true });
       }
     } catch (err){
       console.error("Couldn't log out.", err);
@@ -62,6 +68,7 @@ function TopBar() {
     axios.post('http://localhost:3001/photos/new', domForm, {withCredentials: true})
     .then((res) => {
       queryClient.invalidateQueries({ queryKey: ['photos', userId] });
+      queryClient.invalidateQueries({ queryKey: ['userList'] });
       navigate(`/photos/${userId}`);
 
       uploadInputRef.current.value = "";

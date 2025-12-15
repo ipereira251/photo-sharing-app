@@ -52,6 +52,9 @@ Promise.all(removePromises)
         occupation: user.occupation,
         login_name: user.last_name.toLowerCase(),
         password: "weak",
+        liked_photos: [],
+        last_activity: "LOGGED_OUT",
+        context_of_last_activity: ""
       })
         .then(function (userObj) {
           // Set the unique ID of the object. We use the MongoDB generated _id
@@ -87,6 +90,7 @@ Promise.all(removePromises)
           file_name: photo.file_name,
           date_time: photo.date_time,
           user_id: mapFakeId2RealId[photo.user_id],
+          like_count: 0
         })
           .then(function (photoObj) {
             photo.objectID = photoObj._id;

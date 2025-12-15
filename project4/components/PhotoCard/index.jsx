@@ -32,10 +32,10 @@ function PhotoCard({photoInfo}){
   let setCurrentText = useAppStore((s) => s.setCurrentText);
   let firstName = useSessionStore((s) => s.firstName);
 
-  const photoId = photoInfo._id.toString();
-
+  const photoId = photoInfo?._id ? photoInfo._id.toString() : null;
+  
   const liked = useAppStore(
-      (s) => s.likedById[photoId] ?? photoInfo.liked ?? false
+      (s) => s.likedById[photoId] ?? photoInfo?.liked ?? false
   );
 
   let likeCountbyId = useAppStore((s) => s.likeCountbyId);
@@ -56,7 +56,7 @@ function PhotoCard({photoInfo}){
       socket.off("photo:like", updateLikes);
     };
 
-  }, [photoId, photoInfo.liked]);
+  }, [photoId, photoInfo?.liked])
 
   const navigate = useNavigate();
   let queryClient = useQueryClient();
@@ -92,6 +92,12 @@ function PhotoCard({photoInfo}){
   if (!photoInfo) {
     return <></>;
   }
+
+  if (! (photoInfo?._id)) {
+    return <></>
+  }
+
+
   
   const comments = photoInfo.comments || [];
   const fileName = `/images/${photoInfo.file_name}`;
@@ -129,6 +135,9 @@ function PhotoCard({photoInfo}){
     console.log(`Send post request with \`${currentText}\``);
     axios.post(`http://localhost:3001/commentsOfPhoto/${photoId}`, {comment: currentText}, {withCredentials: true})
     .then(() => {
+      queryClient.invalidateQueries({ queryKey: ['photos', photoInfo.user_id.toString()] });
+      queryClient.invalidateQueries({ queryKey: ['userList'] });
+
       queryClient.invalidateQueries(['userDetailPhotos', photoInfo.user_id]);
       refetch();
     });
@@ -161,8 +170,10 @@ function PhotoCard({photoInfo}){
 
     axios.post(`http://localhost:3001/likePhoto/${photoId}`, {}, {withCredentials: true})
     .then(() => {
-      socket.emit("photo:like", {photoId});
-    });
+      socket.emit("photo:like", {photoId})
+      // This is needed for user details view
+      queryClient.invalidateQueries({ queryKey: ['photos', photoInfo.user_id.toString()] });
+    })
 
     
   }

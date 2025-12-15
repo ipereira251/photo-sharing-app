@@ -9,7 +9,7 @@ import PhotoCard from '../PhotoCard';
 import useStore from '../../store/appStore';
 
 
-function PhotoDetail({userId}){
+function PhotoDetail({userId, initialIndex}){
   let advEnabled = useStore((s) => s.advEnabled);
   let setAdvEnabled = useStore((s) => s.setAdvEnabled);
   let currentIndex = 0;
@@ -22,8 +22,11 @@ function PhotoDetail({userId}){
 
   let navigate = useNavigate();
 
-  if (!advEnabled){
+  if (initialIndex){
     setAdvEnabled(true);
+  }
+  else {
+    setAdvEnabled(false);
   }
 
   let {data: photos, isLoading, error} = useQuery({

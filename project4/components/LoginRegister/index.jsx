@@ -6,7 +6,7 @@ import { Visibility, VisibilityOff } from "@mui/icons-material";
 import axios from "axios";
 import useSessionStore from "../../store/sessionStore";
 
-function LoginRegister({register}){
+function LoginRegister({register}) {
   const navigate = useNavigate();
   const {loggedIn, setSession, clearSession} = useSessionStore();
   const [formData, setFormData] = useState({
@@ -165,7 +165,7 @@ function LoginRegister({register}){
         if(response){
           console.log("Response from /user", response);
         }
-        if(response.status === 201){
+        if(response.status === 201 || response.status === 200){
           console.log("201 status", response);
           setSession({username: response.data.username, firstName: response.data.first_name});
           useSessionStore.getState().initSession();
