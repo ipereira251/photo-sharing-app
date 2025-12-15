@@ -499,15 +499,15 @@ export async function postLike(request, response) {
       return response.status(200).send("Successfully updated photo");
     })
     .catch((err) => {
-      ////console.log(err)
-      return response.status(500).send("Failed liking the photo", err);
+      console.log(err);
+      return response.status(500).send("Failed liking the photo");
     });
   }
   catch (err) {
     ////console.log(err)
     return response.status(500).send("Failed liking the photo");
   }
-  return response.status(500).send("Failed liking the photo");
+  //return response.status(500).send("Failed liking the photo");
 }
 
 const processFormBody = multer({storage: multer.memoryStorage()}).single("uploadedphoto");
