@@ -87,8 +87,17 @@ export const fetchUserComments = async (userId) => {
   return response.data;
 };
 
+// NOTE THE FOLLWOING POST HANDLER FUNCTIONS ARE NOT USED BECAUSE FOR SOME REASON
+// I'M THE GETTING 401 UNAUTHORIZED USING THEM
+
 export const postUserComment = async ({photoId, comment}) => {
   let response = await axios.post(`http://localhost:3001/commentsOfPhoto/${photoId}`, {comment: comment}, {withCredentials: true});
+  return response.data;
+};
+
+export const postLike = async ({photoId}) => {
+  let response = await axios.post(`http://localhost:3001/likePhoto/${photoId}`, {withCredentials: true});
+  //right now data is just a generic response code, not the new liked value
   return response.data;
 };
 
