@@ -10,6 +10,9 @@ export const getUserFromUrl = async (url) => {
     if(url === '/register'){
       return "Register";
     }
+    if(url === '/favorites'){
+      return "Favorites";
+    }
 
     const terms = url.split("/");
 
@@ -114,6 +117,7 @@ export const addUserFavorite = async (photoId) => {
 };
 
 export const removeUserFavorite = async (photoId) => {
-  let response = await axios.delete(`http://localhost:3001/favorites/${photoId}`, {}, {withCredentials: true});
+  let response = await axios.delete(`http://localhost:3001/favorites/${photoId}`, {withCredentials: true});
+  console.log("removeUserFavorite response", response.data);
   return response.data;
 };

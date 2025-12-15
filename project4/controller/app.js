@@ -399,7 +399,7 @@ export async function getFavorites(request, response) {
       favorited_at: fav.favorited_at, 
       photo: fav.photo_id
     }));
-
+    console.log("favorites: ", favorites);
     return response.status(200).json(favorites);
 
   } catch(err){
@@ -427,15 +427,28 @@ export async function postFavorite(request, response) {
   user.favorited_photos.push({ photo_id: photoId, favorited_at: favoritedTime});
   try{
     await user.save();
-    return response.status(200).json({ photoId: photoId, favoritedTime: favoritedTime})
+    return response.status(200).json({ photoId: photoId, favoritedTime: favoritedTime});
   } catch (err){
     return response.status(500).json({error: err});
   }
 }
 
 export async function deleteFavorite(request, response) {
-  const userId = new ObjectId(request.session.user.id);
-  const photoId = new ObjectId(request.params.photoId);
-
-
+  try{ 
+    const userId = new ObjectId(request.session.user.id);
+    const photoId = new ObjectId(request.params.photoId);
+    const user = await User.findById(userId);
+    if(!user){
+      return response.status(401).send("Request not from a valid user");
+    }
+    const photoIndex = user.favorited_photos.findIndex((fav) => fav.photo_id.toString() === photoId.toString());
+    if(photoIndex === -1){
+      return response.status(404).send("Photo not found in user's favorites");
+    }
+    user.favorited_photos.splice(photoIndex, 1);
+    await user.save();
+    return response.status(200).json(user);
+  } catch (err){
+    return response.status(500).send("Server error");
+  }
 }

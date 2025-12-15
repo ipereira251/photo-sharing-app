@@ -62,13 +62,13 @@ router.post('/photos/new', postPhoto);
 router.get('/favorites', getFavorites);
 
 /**
- * URL POST /favorites/post/:photoId - Adds photo to user's favorites list
+ * URL POST /favorites/:photoId - Adds photo to user's favorites list
  */
 router.post('/favorites/:photoId', postFavorite);
 
 /**
- * URL DELETE /favorites/delete/:photoId - Removes photo from user's favorites list
+ * URL DELETE /favorites/:photoId - Removes photo from user's favorites list
  */
-router.post('/favorites/:photoId', deleteFavorite);
+router.delete('/favorites/:photoId', deleteFavorite);
 
 export default router;
