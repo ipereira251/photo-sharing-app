@@ -14,6 +14,7 @@ import LoginRegister from './components/LoginRegister';
 import { UserDetailRoute, UserPhotosRoute, PhotoDetailRoute, CommentDetailRoute } from './components/Wrappers';
 import useSessionStore from './store/sessionStore';
 import { fetchSession } from './axiosAPI';
+import FavoritesDetail from './components/FavoritesDetail';
 
 const queryClient = new QueryClient();
 
@@ -68,6 +69,7 @@ function PhotoShare() {
                   <Route path="/users" element={<UserList />} />
                   <Route path="/login" element={<LoginRegister register={false} />} />
                   <Route path="/register" element={<LoginRegister register={true} />} />
+                  <Route path="/favorites" element={<FavoritesDetail />} />
                 </Routes>
               </Paper>
             </Grid>

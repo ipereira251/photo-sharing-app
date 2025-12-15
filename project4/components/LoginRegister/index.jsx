@@ -91,11 +91,9 @@ function LoginRegister({register}) {
           console.log("updating zustand session");
           console.log(response.data.first_name);
 
-          console.log(response.data)
-
-          setSession({username: response.data.user.username, firstName: response.data.first_name, userId: response.data.user.id });
-          
-          navigate(`/users/${response.data.user.id}`);
+          setSession({username: response.data.user.username, firstName: response.data.first_name, userId: response.data._id });
+          useSessionStore.getState().initSession();
+          navigate(`/users/${response.data._id}`);
         }
       } catch (err){
         clearSession();
@@ -169,9 +167,8 @@ function LoginRegister({register}) {
         }
         if(response.status === 201 || response.status === 200){
           console.log("201 status", response);
-          
-          console.log(response.data)
-          setSession({username: response.data.username, firstName: response.data.first_name, userId: response.data.id});
+          setSession({username: response.data.username, firstName: response.data.first_name});
+          useSessionStore.getState().initSession();
           navigate(`/users/${response.data.id}`);
         }
         

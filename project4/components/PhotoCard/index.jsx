@@ -1,17 +1,29 @@
 import React, {useEffect} from 'react';
-import { Typography, Card, CardContent, CardMedia, Button, List, ListItem } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
+import axios from "axios";
+import "./styles.css";
+import { Typography, 
+        Card, 
+        CardContent, 
+        CardMedia, 
+        Button, 
+        List, 
+        ListItem,  
+        Box, 
+        TextField, 
+        IconButton, 
+        Tooltip} from "@mui/material";
+
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import ThumbUpOutlinedIcon from "@mui/icons-material/ThumbUpOutlined";
-import "./styles.css";
-import { useNavigate } from "react-router-dom";
-import useAppStore from "../../store/appStore"
-import useSessionStore from "../../store/sessionStore"
-import socket from "../../socket"
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { postUserComment, postLike } from '../../axiosAPI';
-import axios from "axios";
-import { Box, TextField, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+import StarIcon from '@mui/icons-material/Star';
+import StarBorderIcon from '@mui/icons-material/StarBorder';
+import socket from "../../socket";
+import useAppStore from "../../store/appStore";
+import useSessionStore from "../../store/sessionStore";
+import { postUserComment, fetchUserFavorites, addUserFavorite, postLike } from '../../axiosAPI';
 
 function PhotoCard({photoInfo}){
   let selectedPhoto = useAppStore((s) => s.selectedPhoto);
@@ -26,28 +38,29 @@ function PhotoCard({photoInfo}){
       (s) => s.likedById[photoId] ?? photoInfo?.liked ?? false
   );
 
-  let likeCountbyId = useAppStore((s) => s.likeCountbyId)
+  let likeCountbyId = useAppStore((s) => s.likeCountbyId);
   const setLiked = useAppStore((s) => s.setLiked);
-  const setLikeCount = useAppStore((s) => s.setLikeCount)
+  const setLikeCount = useAppStore((s) => s.setLikeCount);
 
   useEffect(() => {
-    setLiked(photoId, photoInfo?.liked ?? false);
-    setLikeCount(photoId, photoInfo?.like_count ?? 0)
+    setLiked(photoId, photoInfo.liked ?? false);
+    setLikeCount(photoId, photoInfo.like_count ?? 0);
 
     let updateLikes = ({photoId, like_count}) => {
-      setLikeCount(photoId, like_count)
-    }
+      setLikeCount(photoId, like_count);
+    };
 
-    socket.on("photo:like", updateLikes)
+    socket.on("photo:like", updateLikes);
 
     return () => {
-      socket.off("photo:like", updateLikes)
-    }
+      socket.off("photo:like", updateLikes);
+    };
 
   }, [photoId, photoInfo?.liked])
 
   const navigate = useNavigate();
   let queryClient = useQueryClient();
+  const currentUserId = useSessionStore((s) => s.userId);
 
   // let likeMutation = useMutation({
   //   mutationFn: postLike
@@ -63,9 +76,21 @@ function PhotoCard({photoInfo}){
 
   // const { isPending, submittedAt, variables, mutate, isError } = commentMutatation;
 
+  //favorites
+  let {data: favorites} = useQuery({
+    queryKey: ['userFavorites', currentUserId], 
+    queryFn: () => fetchUserFavorites(currentUserId)
+  });
+
+  //usemutation for a click
+  let mutateFavorites = useMutation({
+    mutationFn: addUserFavorite, 
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['userFavorites', currentUserId]})
+  });
+
   // edge case where user has no photos
   if (!photoInfo) {
-    return <></>
+    return <></>;
   }
 
   if (! (photoInfo?._id)) {
@@ -78,32 +103,46 @@ function PhotoCard({photoInfo}){
   const fileName = `/images/${photoInfo.file_name}`;
   const date = new Date(photoInfo.date_time);
   const formattedDate = date.toLocaleString();
-  let likeCount = likeCountbyId[photoId]
+  let likeCount = likeCountbyId[photoId];
 
+
+  let isFavorited = false;
+  if(favorites && favorites.length){
+    isFavorited = favorites.some(fav => fav.photo && fav.photo._id && fav.photo._id.toString() === photoId);
+  }
 
   //handle name click
   const handleProfileClick = (userId) => {
     navigate(`/users/${userId}`);
   };
 
-  function selectPhoto() {
+  function selectPhoto(e) {
+    e.stopPropagation();
+    e.preventDefault();
     setSelectedPhoto(photoId);
     setCurrentText("");
   }
 
   function recordChange(e) {
+    e.stopPropagation();
+    e.preventDefault();
     setCurrentText(e.target.value);
     console.log(`Recorded:  ${e.target.value}`);
   }
 
   function submitComment(e) {
+    if (e) e.stopPropagation();
     console.log(`Send post request with \`${currentText}\``);
     axios.post(`http://localhost:3001/commentsOfPhoto/${photoId}`, {comment: currentText}, {withCredentials: true})
     .then(() => {
       queryClient.invalidateQueries({ queryKey: ['photos', photoInfo.user_id.toString()] });
       queryClient.invalidateQueries({ queryKey: ['userList'] });
-    });
 
+      queryClient.invalidateQueries(['userDetailPhotos', photoInfo.user_id]);
+      refetch();
+    });
+    console.log("invalidating");
+    
     unselectPhoto();
   }
 
@@ -113,19 +152,20 @@ function PhotoCard({photoInfo}){
     }
   }
 
-  function unselectPhoto(e) {
+  function unselectPhoto() {
     setSelectedPhoto(null);
     setCurrentText(""); 
   }
 
   function likeHandler(e) {
-    let oppState = !liked
-    setLiked(photoId, oppState)
+    e.stopPropagation(); //prevent from going to photo detail
+    let oppState = !liked;
+    setLiked(photoId, oppState);
 
     if(oppState) {
-      setLikeCount(photoId, ++likeCount)
+      setLikeCount(photoId, ++likeCount);
     } else {
-      setLikeCount(photoId, --likeCount)
+      setLikeCount(photoId, --likeCount);
     }
 
     axios.post(`http://localhost:3001/likePhoto/${photoId}`, {}, {withCredentials: true})
@@ -142,7 +182,7 @@ function PhotoCard({photoInfo}){
     if (photoInfo._id.toString() !== selectedPhoto)
       {return (
         <Button variant="text" className="user-name-button comment-user-name-button"
-          onClick={selectPhoto}>
+          onClick={(e) => selectPhoto(e)}>
             Add a comment 
         </Button>
 );}
@@ -154,7 +194,7 @@ function PhotoCard({photoInfo}){
                   gap={2}        
                   sx={{ padding: 1 }}
                 >
-                  <IconButton onClick={unselectPhoto} size="small">
+                  <IconButton onClick={(e) => unselectPhoto(e)} size="small">
                     <CloseIcon />
                   </IconButton>
 
@@ -164,12 +204,13 @@ function PhotoCard({photoInfo}){
                     placeholder="Write a comment..."
                     onChange={recordChange}
                     onKeyDown={handleShortcutSubmit}
+                    onClick={(e) => e.stopPropagation()}
                   />
 
                   <Button 
                     variant="contained" 
                     size="small" 
-                    onClick={submitComment}
+                    onClick={(e) => submitComment(e)}
                   >
                     Submit
                   </Button>
@@ -177,9 +218,28 @@ function PhotoCard({photoInfo}){
             );
     }
   }
+
+  const handleFavoriteClick = () => {
+    //mutate the current user's favorite list
+    mutateFavorites.mutate(photoId);
+  };
   
   return (
     <Card className="photo-card">
+      <div className="favorite-star-wrapper">
+        {isFavorited ? (
+          <Tooltip title="Already in favorites"> 
+            <StarIcon className="gold-star-fill" sx={{ color: 'gold' }} /> 
+          </Tooltip>
+        ) : (
+          <IconButton onClick={(e) => {
+            e.stopPropagation();
+            handleFavoriteClick();}}> 
+            <StarBorderIcon />
+          </IconButton>
+        )}
+      </div>
+
       <CardMedia className="photo-card-photo"
       component="img" image={fileName} />
 
