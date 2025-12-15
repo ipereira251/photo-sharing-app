@@ -18,12 +18,14 @@ export async function login(request, response) {
       };
       ////console.log.log("session:", request.session);
 
-      user.last_activity = "LOGGED_IN"
-      user.context_of_last_activity = ""
+      user.last_activity = "LOGGED_IN";
+      user.context_of_last_activity = "";
 
-      user.save().then(
+      /*user.save().then(
         () => response.status(200).json({ success: true, user: request.session.user, _id: user._id, first_name: user.first_name })
-      )
+      );*/
+      await user.save();
+      return response.status(200).json({ success: true, user: request.session.user, _id: user._id, first_name: user.first_name });
     } else {
       ////console.log.log("failed log in");
       return response.status(400).send("Invalid username or password");
@@ -44,7 +46,7 @@ export async function logout(request, response) {
         last_activity: "LOGGED_OUT",
         context_of_last_activity: ""
       }
-    })
+    });
   }
 
   request.session.destroy((err) => {
@@ -116,7 +118,7 @@ export async function getSession(request, response) {
     const user = await User.findById(request.session.user.id); 
     if(user){
       //console.log.log("found user", user.login_name);
-      console.log(typeof (request.session.user.id))
+      console.log(typeof (request.session.user.id));
       return response.status(200).json({ username: user.login_name, firstName: user.first_name, userId: request.session.user.id});
     }
     //console.log.log("Did not find user");

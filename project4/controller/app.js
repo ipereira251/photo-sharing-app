@@ -4,7 +4,6 @@ import { ObjectId } from "mongodb";
 
 import User from "../schema/user.js";
 import Photo from "../schema/photo.js";
-import { PassThrough } from "node:stream";
 
 export async function getUserList(request, response) {
   try{
@@ -137,7 +136,7 @@ export async function getPhotos(request, response) {
       response.status(404).send("No photos found");
     }
     else {
-      console.log(photos)
+      console.log(photos);
       response.status(200).json(photos);
       ////////console.log("Photos of user:", photos);
     }
@@ -416,14 +415,14 @@ export async function postComment (request, response) {
 
   let photo = await Photo.findById(photoId).exec();
 
-  let _ = await User.updateOne({
+  await User.updateOne({
     _id: userId
   }, {
     $set: {
       last_activity: "POST_COMMENT",
       context_of_last_activity: ""
     }
-  })
+  });
 
   photo.comments.push({comment: comment, user_id: userId});
   try {
@@ -439,11 +438,11 @@ export async function postComment (request, response) {
 export async function postLike(request, response) {
   try {
     const photoId = new ObjectId(request.params.photoId);
-    const userId = request.session.user.id
+    const userId = request.session.user.id;
 
     ////console.log(`Request to posting like for ${photoId} under ${userId}`)
 
-    let user = await User.findById(userId)
+    let user = await User.findById(userId);
     
     // if User has already liked the photo, then unlike it,
     // else like it
@@ -467,24 +466,24 @@ export async function postLike(request, response) {
 
 
     if (!didUserPrevLikedPhoto) {
-      currOperation = LIKE_OP
-      liked_photos.push(photoId)
+      currOperation = LIKE_OP;
+      liked_photos.push(photoId);
     } else {
-      currOperation = UNLIKE_OP
+      currOperation = UNLIKE_OP;
       
       // removes photoId from list of liked photos
 
       // make sure not to use === as that compares references
       // and were comparing by values
-      liked_photos = liked_photos.filter(entry => !entry.equals(photoId))
+      liked_photos = liked_photos.filter(entry => !entry.equals(photoId));
     }
 
     // prevents unliking a photo with 0 likes, the use of -1 is to match all photos
     // Used in updating the photos likes in the mongodb collection
-    let zero_likes_edge_case = currOperation === UNLIKE_OP ? 0 : -1
+    let zero_likes_edge_case = currOperation === UNLIKE_OP ? 0 : -1;
 
-    user.liked_photos = liked_photos
-    let saved_user_promise = user.save()
+    user.liked_photos = liked_photos;
+    let saved_user_promise = user.save();
 
     let edit_photo_promise = Photo.updateOne(
       {_id: photoId,
@@ -493,21 +492,22 @@ export async function postLike(request, response) {
       }, {
         $inc: {like_count: currOperation }
       }
-    )
+    );
 
     Promise.all([saved_user_promise, edit_photo_promise])
     .then(() => {
-      return response.status(200).send("Successfully updated photo")
+      return response.status(200).send("Successfully updated photo");
     })
     .catch((err) => {
       ////console.log(err)
-      return response.status(500).send("Failed liking the photo")
-    })
+      return response.status(500).send("Failed liking the photo", err);
+    });
   }
   catch (err) {
     ////console.log(err)
-    return response.status(500).send("Failed liking the photo")
+    return response.status(500).send("Failed liking the photo");
   }
+  return response.status(500).send("Failed liking the photo");
 }
 
 const processFormBody = multer({storage: multer.memoryStorage()}).single("uploadedphoto");
@@ -531,14 +531,14 @@ export async function postPhoto(request, response) {
       let photo = new Photo({file_name: filename, user_id: request.session.user.id, comments: [], likes: 0});
       await photo.save();
 
-      let _ = await User.updateOne({
+      await User.updateOne({
         _id: request.session.user.id
       }, {
         $set: {
           last_activity: "POST_PHOTO",
           context_of_last_activity: filename
         }
-      })
+      });
 
       //////console.log("return status code of 200");
       return response.status(200).json(photo);

@@ -11,16 +11,14 @@ const useStore = create((set) => ({
     setSelectedPhoto: (value) => set(() => ({selectedPhoto: value})),
     setCurrentText: (value) => set(() => ({currentText: value})),
 
-    setLiked: (photoId, bool_value) =>
-        set((state) => ({
+    setLiked: (photoId, bool_value) => set((state) => ({
         likedById: {
             ...state.likedById,
             [photoId]: bool_value,
         },
         })),
 
-    setLikeCount: (photoId, num_value) =>
-        set((state) => ({
+    setLikeCount: (photoId, num_value) => set((state) => ({
         likeCountbyId: {
             ...state.likeCountbyId,
             [photoId]: num_value,

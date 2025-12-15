@@ -58,7 +58,7 @@ let sessionMiddleware = session({
     httpOnly: true, 
     secure: false
   }
-})
+});
 
 app.use(sessionMiddleware);
 
@@ -68,7 +68,8 @@ io.use((socket, next) => {
 
 io.on("connection", (socket) => {
   console.log("connected:", socket.id);
-  let session = socket.request.session
+  // eslint-disable-next-line no-shadow
+  let session = socket.request.session;
 
   socket.on("disconnect", () => {
     if (session?.user?.id) {
@@ -79,15 +80,15 @@ io.on("connection", (socket) => {
           last_activity: "LOGGED_OUT",
           context_of_last_activity: ""
         }
-      })
+      });
     }
     console.log("disconnected:", socket.id);
   });
 
   // Example: handle a like event from client
   socket.on("photo:like", async ({ photoId }) => {
-    console.log(photoId)
-    let photo = await Photo.findById(photoId)
+    console.log(photoId);
+    let photo = await Photo.findById(photoId);
 
     // broadcast to everyone viewing that photo
     socket.broadcast.emit("photo:like", { photoId, like_count: photo.like_count });

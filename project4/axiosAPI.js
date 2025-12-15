@@ -45,7 +45,7 @@ returns an object with 2 properties which is used to populate the userList displ
 
 */
 
-export const fetchUserListDisplay = async (advEnabled) => {
+export const fetchUserListDisplay = async () => {
     let response = await axios.get('http://localhost:3001/user/list', {withCredentials: true});
     let users = response.data;
 
