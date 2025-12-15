@@ -17,7 +17,13 @@ export async function login(request, response) {
         username: user.login_name
       };
       ////console.log.log("session:", request.session);
-      return response.status(200).json({ success: true, user: request.session.user, _id: user._id, first_name: user.first_name });
+
+      user.last_activity = "LOGGED_IN"
+      user.context_of_last_activity = ""
+
+      user.save().then(
+        () => response.status(200).json({ success: true, user: request.session.user, _id: user._id, first_name: user.first_name })
+      )
     } else {
       ////console.log.log("failed log in");
       return response.status(400).send("Invalid username or password");
@@ -64,7 +70,11 @@ export async function register(request, response) {
         password: password,  //hash!!
         location: location, 
         occupation: occupation, 
-        description: description
+        description: description,
+        liked_photos: [],
+        last_activity: "REGISTERED",
+        context_of_last_activity: ""
+
       });
       const savedUser = await newUser.save();
       if(savedUser){

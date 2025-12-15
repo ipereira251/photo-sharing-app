@@ -34,10 +34,53 @@ const io = new Server(server, {
   },
 });
 
+
+// Enable CORS for all routes
+app.use((req, res, next) => {
+  //This might be an issue when we do web sockets for project 4 since it's a different scheme than htpp
+  res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  if (req.method === 'OPTIONS') {
+    res.sendStatus(200);
+  } else {
+    next();
+  }
+});
+
+let sessionMiddleware = session({
+  secret: 'something', 
+  resave: false, 
+  saveUninitialized: false, 
+  cookie: {
+    maxAge: 7200000, 
+    httpOnly: true, 
+    secure: false
+  }
+})
+
+app.use(sessionMiddleware);
+
+io.use((socket, next) => {
+  sessionMiddleware(socket.request, {}, next);
+});
+
 io.on("connection", (socket) => {
   console.log("connected:", socket.id);
+  let session = socket.request.session
 
   socket.on("disconnect", () => {
+    if (session?.user?.id) {
+      User.updateOne({
+        _id: session.user.id
+      }, {
+        $set: {
+          last_activity: "LOGGED_OUT",
+          context_of_last_activity: ""
+        }
+      })
+    }
     console.log("disconnected:", socket.id);
   });
 
@@ -54,32 +97,6 @@ io.on("connection", (socket) => {
   });
 });
 
-
-
-// Enable CORS for all routes
-app.use((req, res, next) => {
-  //This might be an issue when we do web sockets for project 4 since it's a different scheme than htpp
-  res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-  res.header('Access-Control-Allow-Credentials', 'true');
-  if (req.method === 'OPTIONS') {
-    res.sendStatus(200);
-  } else {
-    next();
-  }
-});
-
-app.use(session({
-  secret: 'something', 
-  resave: false, 
-  saveUninitialized: false, 
-  cookie: {
-    maxAge: 7200000, 
-    httpOnly: true, 
-    secure: false
-  }
-}));
 
 mongoose.Promise = bluebird;
 mongoose.set("strictQuery", false);

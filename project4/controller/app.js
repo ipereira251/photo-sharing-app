@@ -411,6 +411,15 @@ export async function postComment (request, response) {
 
   let photo = await Photo.findById(photoId).exec();
 
+  let _ = await User.updateOne({
+    _id: userId
+  }, {
+    $set: {
+      last_activity: "POST_COMMENT",
+      context_of_last_activity: ""
+    }
+  })
+
   photo.comments.push({comment: comment, user_id: userId});
   try {
     await photo.save();
@@ -516,6 +525,15 @@ export async function postPhoto(request, response) {
       }
       let photo = new Photo({file_name: filename, user_id: request.session.user.id, comments: [], likes: 0});
       await photo.save();
+
+      let _ = await User.updateOne({
+        _id: request.session.user.id
+      }, {
+        $set: {
+          last_activity: "POST_PHOTO",
+          context_of_last_activity: filename
+        }
+      })
 
       //////console.log("return status code of 200");
       return response.status(200).json(photo);
