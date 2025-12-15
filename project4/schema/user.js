@@ -13,7 +13,9 @@ const userSchema = new mongoose.Schema({
   login_name: String, 
   password: String,
   // Stores the id of all photos that a user liked 
-  liked_photos: [mongoose.Schema.Types.ObjectId]
+  liked_photos: [mongoose.Schema.Types.ObjectId],
+  last_activity: String,
+  context_of_last_activity: String
 });
 
 /**
