@@ -20,6 +20,7 @@ import ThumbUpOutlinedIcon from "@mui/icons-material/ThumbUpOutlined";
 import CloseIcon from '@mui/icons-material/Close';
 import StarIcon from '@mui/icons-material/Star';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
+import socket from "../../socket";
 import useAppStore from "../../store/appStore";
 import useSessionStore from "../../store/sessionStore";
 import { postUserComment, fetchUserFavorites, addUserFavorite, postLike } from '../../axiosAPI';
@@ -37,25 +38,25 @@ function PhotoCard({photoInfo}){
       (s) => s.likedById[photoId] ?? photoInfo.liked ?? false
   );
 
-  let likeCountbyId = useAppStore((s) => s.likeCountbyId)
+  let likeCountbyId = useAppStore((s) => s.likeCountbyId);
   const setLiked = useAppStore((s) => s.setLiked);
-  const setLikeCount = useAppStore((s) => s.setLikeCount)
+  const setLikeCount = useAppStore((s) => s.setLikeCount);
 
   useEffect(() => {
     setLiked(photoId, photoInfo.liked ?? false);
-    setLikeCount(photoId, photoInfo.like_count ?? 0)
+    setLikeCount(photoId, photoInfo.like_count ?? 0);
 
     let updateLikes = ({photoId, like_count}) => {
-      setLikeCount(photoId, like_count)
-    }
+      setLikeCount(photoId, like_count);
+    };
 
-    socket.on("photo:like", updateLikes)
+    socket.on("photo:like", updateLikes);
 
     return () => {
-      socket.off("photo:like", updateLikes)
-    }
+      socket.off("photo:like", updateLikes);
+    };
 
-  }, [photoId, photoInfo.liked])
+  }, [photoId, photoInfo.liked]);
 
   const navigate = useNavigate();
   let queryClient = useQueryClient();
@@ -96,7 +97,7 @@ function PhotoCard({photoInfo}){
   const fileName = `/images/${photoInfo.file_name}`;
   const date = new Date(photoInfo.date_time);
   const formattedDate = date.toLocaleString();
-  let likeCount = likeCountbyId[photoId]
+  let likeCount = likeCountbyId[photoId];
 
 
   let isFavorited = false;
@@ -109,20 +110,30 @@ function PhotoCard({photoInfo}){
     navigate(`/users/${userId}`);
   };
 
-  function selectPhoto() {
+  function selectPhoto(e) {
+    e.stopPropagation();
+    e.preventDefault();
     setSelectedPhoto(photoId);
     setCurrentText("");
   }
 
   function recordChange(e) {
+    e.stopPropagation();
+    e.preventDefault();
     setCurrentText(e.target.value);
     console.log(`Recorded:  ${e.target.value}`);
   }
 
-  function submitComment() {
+  function submitComment(e) {
+    if (e) e.stopPropagation();
     console.log(`Send post request with \`${currentText}\``);
-    axios.post(`http://localhost:3001/commentsOfPhoto/${photoId}`, {comment: currentText}, {withCredentials: true});
-
+    axios.post(`http://localhost:3001/commentsOfPhoto/${photoId}`, {comment: currentText}, {withCredentials: true})
+    .then(() => {
+      queryClient.invalidateQueries(['userDetailPhotos', photoInfo.user_id]);
+      refetch();
+    });
+    console.log("invalidating");
+    
     unselectPhoto();
   }
 
@@ -160,7 +171,7 @@ function PhotoCard({photoInfo}){
     if (photoInfo._id.toString() !== selectedPhoto)
       {return (
         <Button variant="text" className="user-name-button comment-user-name-button"
-          onClick={selectPhoto}>
+          onClick={(e) => selectPhoto(e)}>
             Add a comment 
         </Button>
 );}
@@ -172,7 +183,7 @@ function PhotoCard({photoInfo}){
                   gap={2}        
                   sx={{ padding: 1 }}
                 >
-                  <IconButton onClick={unselectPhoto} size="small">
+                  <IconButton onClick={(e) => unselectPhoto(e)} size="small">
                     <CloseIcon />
                   </IconButton>
 
@@ -182,12 +193,13 @@ function PhotoCard({photoInfo}){
                     placeholder="Write a comment..."
                     onChange={recordChange}
                     onKeyDown={handleShortcutSubmit}
+                    onClick={(e) => e.stopPropagation()}
                   />
 
                   <Button 
                     variant="contained" 
                     size="small" 
-                    onClick={submitComment}
+                    onClick={(e) => submitComment(e)}
                   >
                     Submit
                   </Button>

@@ -21,7 +21,7 @@ function UserDetail({userId}) {
   });
 
   //query for user photos
-  let {data: photos, isLoading: photosLoading, error: photosError} = useQuery({
+  let {data: photos, isLoading: photosLoading, error: photosError, refetch} = useQuery({
     queryKey: ['userDetailPhotos', userId],
     queryFn: () => fetchPopularPhotos(userId)
   });
