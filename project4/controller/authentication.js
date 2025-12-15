@@ -106,7 +106,6 @@ export function isAuthenticated(request, response, next) {
   if (request.session.user) {
     return next();
   }
-    console.log("401 from isAuthenticated");
   return response.status(401).send();
 }
 

@@ -1,5 +1,5 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import mongoose, { Schema } from "mongoose";
+import mongoose from "mongoose";
 
 /**
  * Define the Mongoose Schema for a User.
@@ -11,11 +11,7 @@ const userSchema = new mongoose.Schema({
   description: String,
   occupation: String,
   login_name: String, 
-  password: String, 
-  favorited_photos: [{
-    photo_id: { type: Schema.Types.ObjectId, ref: 'Photo' }, 
-    favorited_at: { type: Date, default: Date.now }
-  }],
+  password: String,
   // Stores the id of all photos that a user liked 
   liked_photos: [mongoose.Schema.Types.ObjectId]
 });

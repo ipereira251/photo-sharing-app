@@ -40,6 +40,7 @@ export async function getUserDetails(request, response) {
     };
     response.status(200).json(user);
   } catch (err){
+    console.error(err);
     response.status(400).send("Internal server error");
   }
 }
@@ -297,7 +298,7 @@ export async function getPopularPhotos(request, response) {
     response.status(200).json({mostRecent: mostRecentPhoto[0], mostCommented: mostCommentedPhoto[0]});
     
   } catch (err){
-    //console.error(err);
+    console.error(err);
     response.status(400).send("Internal server error");
   }
 }
@@ -524,76 +525,4 @@ export async function postPhoto(request, response) {
     //////console.log("return status code of 500");
     return response.status(500);
   });
-}
-
-export async function getFavorites(request, response) {
-  try{
-    console.log("Session:", request.session);
-    const userId = new ObjectId(request.session.user.id);
-    const user = await User.findById(userId)
-      .populate({
-        path: "favorited_photos.photo_id", 
-        populate: {path: "comments.user_id", select: "first_name last_name"}
-      });
-
-    if(!user || !user.favorited_photos.length) {
-      return response.status(404).send("No favorites found");
-    }
-
-    const favorites = user.favorited_photos.map(fav => ({
-      favorited_at: fav.favorited_at, 
-      photo: fav.photo_id
-    }));
-    console.log("favorites: ", favorites);
-    return response.status(200).json(favorites);
-
-  } catch(err){
-    return response.status(400).send("Internal server error");
-  }
-}
-
-export async function postFavorite(request, response) {
-  const favoritedTime = Date.now();
-  const userId = new ObjectId(request.session.user.id);
-  const photoId = new ObjectId(request.params.photoId);
-  const user = await User.findById(userId); 
-
-  if(!user){
-    return response.status(404).send("User not found");
-  }
-
-  const alreadyFavorited = user.favorited_photos.some(
-    fav => fav.photo_id && fav.photo_id.equals(photoId));
-    
-  if(alreadyFavorited){
-    return response.status(400).send("Photo already favorited");
-  }
-
-  user.favorited_photos.push({ photo_id: photoId, favorited_at: favoritedTime});
-  try{
-    await user.save();
-    return response.status(200).json({ photoId: photoId, favoritedTime: favoritedTime});
-  } catch (err){
-    return response.status(500).json({error: err});
-  }
-}
-
-export async function deleteFavorite(request, response) {
-  try{ 
-    const userId = new ObjectId(request.session.user.id);
-    const photoId = new ObjectId(request.params.photoId);
-    const user = await User.findById(userId);
-    if(!user){
-      return response.status(401).send("Request not from a valid user");
-    }
-    const photoIndex = user.favorited_photos.findIndex((fav) => fav.photo_id.toString() === photoId.toString());
-    if(photoIndex === -1){
-      return response.status(404).send("Photo not found in user's favorites");
-    }
-    user.favorited_photos.splice(photoIndex, 1);
-    await user.save();
-    return response.status(200).json(user);
-  } catch (err){
-    return response.status(500).send("Server error");
-  }
 }

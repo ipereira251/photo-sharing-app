@@ -1,4 +1,5 @@
 import axios from "axios";
+import useSessionStore from "./store/sessionStore";
 
 export const getUserFromUrl = async (url) => {
     if (url === '/') {
@@ -9,9 +10,6 @@ export const getUserFromUrl = async (url) => {
     }
     if(url === '/register'){
       return "Register";
-    }
-    if(url === '/favorites'){
-      return "Favorites";
     }
 
     const terms = url.split("/");
@@ -105,28 +103,13 @@ export const postLike = async ({photoId}) => {
 
 export const fetchSession = async () => {
   try {
-    //console.log("sending session request");
+    console.log("sending session request");
     const response = await axios.get("http://localhost:3001/session", { withCredentials: true });
-    //console.log("Found a session", response.data);
+    console.log("Found a session", response.data);
+    //useSessionStore.getState().initSession();
     return response.data;
   } catch (err){
+    console.error("Fetching session:", err);
     return null;
   }
-};
-
-export const fetchUserFavorites = async () => {
-  let response = await axios.get(`http://localhost:3001/favorites/`, {withCredentials: true});
-  return response.data;
-};
-
-export const addUserFavorite = async (photoId) => {
-  let response = await axios.post(`http://localhost:3001/favorites/${photoId}`, {}, {withCredentials: true});
-  console.log("addUserFavorite response", response.data);
-  return response.data;
-};
-
-export const removeUserFavorite = async (photoId) => {
-  let response = await axios.delete(`http://localhost:3001/favorites/${photoId}`, {withCredentials: true});
-  console.log("removeUserFavorite response", response.data);
-  return response.data;
 };

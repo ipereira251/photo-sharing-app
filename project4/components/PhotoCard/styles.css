@@ -89,12 +89,3 @@
   align-items: center;
   margin-bottom: 8px;
 }
-
-.favorite-star-wrapper{
-  display: flex;
-  justify-content: right;
-}
-
-.gold-star-fill{
-  padding: 8px
-}

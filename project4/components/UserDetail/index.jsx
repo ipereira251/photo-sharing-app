@@ -43,6 +43,7 @@ function UserDetail({userId}) {
   }
 
   const handleViewImgClick = () => {
+    console.log("Clicked to view images from userId", userId);
     if(advEnabled){
       navigate(`/photos/${userId}/0`);
     } else{
@@ -78,7 +79,6 @@ function UserDetail({userId}) {
       <Typography variant="body1" className="user-desc">
         {user.description}
       </Typography>
-      <Button variant="contained" onClick={() => handleViewImgClick()}>{`View all ${user.first_name}'s images`}</Button>
     </div>
     <Divider />
     <div>
@@ -101,6 +101,7 @@ function UserDetail({userId}) {
       </div>
       
     </div>
+    <Button variant="contained" onClick={() => handleViewImgClick()}>{`View all ${user.first_name}'s images`}</Button>
     </>
     
   );
