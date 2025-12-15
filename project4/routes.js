@@ -8,6 +8,9 @@ import {getUserList,
         postComment,
         postLike, 
         postPhoto, 
+        getFavorites, 
+        postFavorite, 
+        deleteFavorite
       } from "./controller/app.js";
 
 const router = Router();
@@ -59,5 +62,20 @@ router.post('/likePhoto/:photoId', postLike);
  */
 
 router.post('/photos/new', postPhoto);
+
+/**
+ * URL GET /favorites - Returns a user's favorited photos
+ */
+router.get('/favorites', getFavorites);
+
+/**
+ * URL POST /favorites/:photoId - Adds photo to user's favorites list
+ */
+router.post('/favorites/:photoId', postFavorite);
+
+/**
+ * URL DELETE /favorites/:photoId - Removes photo from user's favorites list
+ */
+router.delete('/favorites/:photoId', deleteFavorite);
 
 export default router;

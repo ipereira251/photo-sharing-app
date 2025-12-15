@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { AppBar, Box, Button, FormControlLabel, IconButton, Switch, Toolbar, Tooltip, Typography } from '@mui/material';
 import UploadIcon from '@mui/icons-material/Upload';
 import LogoutIcon from '@mui/icons-material/Logout';
+import StarIcon from '@mui/icons-material/Star';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import './styles.css';
@@ -41,18 +42,16 @@ function TopBar() {
   }
 
   const handleLogoutClick = async () => {
-    console.log("Clicked topbar logout button");
     try{
       const response = await axios.post("http://localhost:3001/admin/logout", {}, {withCredentials:true});
       if(response){
         console.log("Successfully logged out");
-        //setContext("Home");
-        clearSession();
-        navigate("/login", { replace: true });
       }
     } catch (err){
       console.error("Couldn't log out.", err);
     }
+    clearSession();
+    navigate("/login", { replace: true });
   };
 
   function handleUpload() {
@@ -138,6 +137,11 @@ function TopBar() {
         <Box sx={{ display:'flex', alignItems: 'center', gap:3}}>
           {loggedIn && (
           <>
+            <Tooltip title="View Favorites">
+              <IconButton onClick={() => navigate('/favorites')}>
+                <StarIcon sx={{ color: 'white' }} />
+              </IconButton>
+            </Tooltip>
             <Tooltip title="Upload Photo">
               <IconButton onClick={() => uploadInputRef.current.click()}
                 sx={{ 

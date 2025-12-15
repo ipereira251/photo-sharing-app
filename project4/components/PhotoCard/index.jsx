@@ -1,17 +1,28 @@
 import React, {useEffect} from 'react';
-import { Typography, Card, CardContent, CardMedia, Button, List, ListItem } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
+import axios from "axios";
+import "./styles.css";
+import { Typography, 
+        Card, 
+        CardContent, 
+        CardMedia, 
+        Button, 
+        List, 
+        ListItem,  
+        Box, 
+        TextField, 
+        IconButton, 
+        Tooltip} from "@mui/material";
+
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import ThumbUpOutlinedIcon from "@mui/icons-material/ThumbUpOutlined";
-import "./styles.css";
-import { useNavigate } from "react-router-dom";
-import useAppStore from "../../store/appStore"
-import useSessionStore from "../../store/sessionStore"
-import socket from "../../socket"
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { postUserComment, postLike } from '../../axiosAPI';
-import axios from "axios";
-import { Box, TextField, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+import StarIcon from '@mui/icons-material/Star';
+import StarBorderIcon from '@mui/icons-material/StarBorder';
+import useAppStore from "../../store/appStore";
+import useSessionStore from "../../store/sessionStore";
+import { postUserComment, fetchUserFavorites, addUserFavorite, postLike } from '../../axiosAPI';
 
 function PhotoCard({photoInfo}){
   let selectedPhoto = useAppStore((s) => s.selectedPhoto);
@@ -48,6 +59,7 @@ function PhotoCard({photoInfo}){
 
   const navigate = useNavigate();
   let queryClient = useQueryClient();
+  const currentUserId = useSessionStore((s) => s.userId);
 
   // let likeMutation = useMutation({
   //   mutationFn: postLike
@@ -63,11 +75,22 @@ function PhotoCard({photoInfo}){
 
   // const { isPending, submittedAt, variables, mutate, isError } = commentMutatation;
 
+  //favorites
+  let {data: favorites} = useQuery({
+    queryKey: ['userFavorites', currentUserId], 
+    queryFn: () => fetchUserFavorites(currentUserId)
+  });
+
+  //usemutation for a click
+  let mutateFavorites = useMutation({
+    mutationFn: addUserFavorite, 
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['userFavorites', currentUserId]})
+  });
+
   // edge case where user has no photos
   if (!photoInfo) {
-    return <></>
+    return <></>;
   }
-
   
   const comments = photoInfo.comments || [];
   const fileName = `/images/${photoInfo.file_name}`;
@@ -75,6 +98,11 @@ function PhotoCard({photoInfo}){
   const formattedDate = date.toLocaleString();
   let likeCount = likeCountbyId[photoId]
 
+
+  let isFavorited = false;
+  if(favorites && favorites.length){
+    isFavorited = favorites.some(fav => fav.photo && fav.photo._id && fav.photo._id.toString() === photoId);
+  }
 
   //handle name click
   const handleProfileClick = (userId) => {
@@ -91,7 +119,7 @@ function PhotoCard({photoInfo}){
     console.log(`Recorded:  ${e.target.value}`);
   }
 
-  function submitComment(e) {
+  function submitComment() {
     console.log(`Send post request with \`${currentText}\``);
     axios.post(`http://localhost:3001/commentsOfPhoto/${photoId}`, {comment: currentText}, {withCredentials: true});
 
@@ -104,7 +132,7 @@ function PhotoCard({photoInfo}){
     }
   }
 
-  function unselectPhoto(e) {
+  function unselectPhoto() {
     setSelectedPhoto(null);
     setCurrentText(""); 
   }
@@ -167,9 +195,28 @@ function PhotoCard({photoInfo}){
             );
     }
   }
+
+  const handleFavoriteClick = () => {
+    //mutate the current user's favorite list
+    mutateFavorites.mutate(photoId);
+  };
   
   return (
     <Card className="photo-card">
+      <div className="favorite-star-wrapper">
+        {isFavorited ? (
+          <Tooltip title="Already in favorites"> 
+            <StarIcon className="gold-star-fill" sx={{ color: 'gold' }} /> 
+          </Tooltip>
+        ) : (
+          <IconButton onClick={(e) => {
+            e.stopPropagation();
+            handleFavoriteClick();}}> 
+            <StarBorderIcon />
+          </IconButton>
+        )}
+      </div>
+
       <CardMedia className="photo-card-photo"
       component="img" image={fileName} />
 
