@@ -20,10 +20,10 @@ function PhotoCard({photoInfo}){
   let setCurrentText = useAppStore((s) => s.setCurrentText);
   let firstName = useSessionStore((s) => s.firstName);
 
-  const photoId = photoInfo._id.toString();
-
+  const photoId = photoInfo?._id ? photoInfo._id.toString() : null;
+  
   const liked = useAppStore(
-      (s) => s.likedById[photoId] ?? photoInfo.liked ?? false
+      (s) => s.likedById[photoId] ?? photoInfo?.liked ?? false
   );
 
   let likeCountbyId = useAppStore((s) => s.likeCountbyId)
@@ -31,8 +31,8 @@ function PhotoCard({photoInfo}){
   const setLikeCount = useAppStore((s) => s.setLikeCount)
 
   useEffect(() => {
-    setLiked(photoId, photoInfo.liked ?? false);
-    setLikeCount(photoId, photoInfo.like_count ?? 0)
+    setLiked(photoId, photoInfo?.liked ?? false);
+    setLikeCount(photoId, photoInfo?.like_count ?? 0)
 
     let updateLikes = ({photoId, like_count}) => {
       setLikeCount(photoId, like_count)
@@ -44,7 +44,7 @@ function PhotoCard({photoInfo}){
       socket.off("photo:like", updateLikes)
     }
 
-  }, [photoId, photoInfo.liked])
+  }, [photoId, photoInfo?.liked])
 
   const navigate = useNavigate();
   let queryClient = useQueryClient();
@@ -67,6 +67,11 @@ function PhotoCard({photoInfo}){
   if (!photoInfo) {
     return <></>
   }
+
+  if (! (photoInfo?._id)) {
+    return <></>
+  }
+
 
   
   const comments = photoInfo.comments || [];
