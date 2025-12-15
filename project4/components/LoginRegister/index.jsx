@@ -164,7 +164,7 @@ function LoginRegister({register}){
         if(response){
           console.log("Response from /user", response);
         }
-        if(response.status === 201){
+        if(response.status === 201 || response.status === 200){
           console.log("201 status", response);
           setSession({username: response.data.username, firstName: response.data.first_name});
           navigate(`/users/${response.data.id}`);
