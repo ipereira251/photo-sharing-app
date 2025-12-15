@@ -110,19 +110,20 @@ function PhotoCard({photoInfo}){
   }
 
   function likeHandler(e) {
-    let oppState = !liked
-    setLiked(photoId, oppState)
+    e.stopPropagation(); //prevent from going to photo detail
+    let oppState = !liked;
+    setLiked(photoId, oppState);
 
     if(oppState) {
-      setLikeCount(photoId, ++likeCount)
+      setLikeCount(photoId, ++likeCount);
     } else {
-      setLikeCount(photoId, --likeCount)
+      setLikeCount(photoId, --likeCount);
     }
 
     axios.post(`http://localhost:3001/likePhoto/${photoId}`, {}, {withCredentials: true})
     .then(() => {
-      socket.emit("photo:like", {photoId})
-    })
+      socket.emit("photo:like", {photoId});
+    });
 
     
   }
